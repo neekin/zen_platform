@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_01_205927) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_01_224249) do
+  create_table "api_keys", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "key"
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["key"], name: "index_api_keys_on_key", unique: true
+    t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email"
@@ -21,4 +32,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_205927) do
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
+
+  add_foreign_key "api_keys", "users"
 end

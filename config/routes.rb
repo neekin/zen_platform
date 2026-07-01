@@ -15,4 +15,12 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
   end
+
+  namespace :api do
+    namespace :v1 do
+      get "health", to: "health#check"
+      resources :users, only: %i[index show]
+      resources :payment, only: %i[create]
+    end
+  end
 end

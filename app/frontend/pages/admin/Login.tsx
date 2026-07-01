@@ -9,7 +9,6 @@ import {
 } from '@ant-design/icons'
 import {
   LoginFormPage,
-  ProConfigProvider,
   ProFormCaptcha,
   ProFormCheckbox,
   ProFormText,
@@ -338,9 +337,7 @@ const Page = () => {
 
 const LoginPage = () => {
   return (
-    <ProConfigProvider dark>
-      <Page />
-    </ProConfigProvider>
+    <Page />
   );
 };
 

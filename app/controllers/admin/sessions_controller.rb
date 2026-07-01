@@ -5,7 +5,7 @@ module Admin
     layout "admin"
 
     def new
-      redirect_to admin_root_path if session[:user_id]
+      redirect_to admin_root_path if current_user
 
       render inertia: "admin/Login"
     end
@@ -15,6 +15,7 @@ module Admin
 
       if user&.authenticate(params[:password])
         session[:user_id] = user.id
+        cookies.signed.permanent[:remember_token] = user.id if params[:autoLogin] == "true"
         redirect_to admin_root_path, notice: "登录成功"
       else
         redirect_to admin_login_path, alert: "账号或密码错误"
@@ -23,6 +24,7 @@ module Admin
 
     def destroy
       session.delete(:user_id)
+      cookies.delete(:remember_token)
       redirect_to admin_login_path, notice: "已退出登录"
     end
   end

@@ -183,6 +183,7 @@ const Page = () => {
             router.post('/admin/login', {
               account: values.username,
               password: values.password,
+              autoLogin: values.autoLogin ? 'true' : 'false',
             }, {
               onFinish: () => setLoading(false),
             })

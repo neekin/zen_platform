@@ -17,6 +17,28 @@ export { ActiveStorageUploader, createImageUploader, createFileUploader } from '
 export { serializeEditorState, deserializeEditorState, isEmptyContent, EMPTY_STATE } from './serializer/lexical'
 export { extractPlainText, getContentSummary } from './serializer/html'
 
+// ==================== 插件 ====================
+export {
+  builtinPlugins,
+  pluginMap,
+  getPlugin,
+  registerPlugin,
+  boldPlugin,
+  italicPlugin,
+  underlinePlugin,
+  strikethroughPlugin,
+  codePlugin,
+  historyPlugin,
+  headingPlugin,
+  quotePlugin,
+  listPlugin,
+  linkPlugin,
+  imagePlugin,
+  createImagePlugin,
+} from './editor/plugins'
+
+export type { ImagePluginConfig } from './editor/plugins/image'
+
 // ==================== 类型 ====================
 export type {
   EditorContent,

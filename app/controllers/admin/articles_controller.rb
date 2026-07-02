@@ -14,7 +14,7 @@ module Admin
     # 列表页，显示所有 Article 记录
     # Props: { articles: Array }
     def index
-      @articles = Article.all
+      @articles = ::Article.all
       render inertia: "admin/Articles/Index",
         props: { articles: @articles.as_json }
     end
@@ -30,7 +30,7 @@ module Admin
     # GET /admin/articles/new
     # 新建页面
     def new
-      @article = Article.new
+      @article = ::Article.new
       render inertia: "admin/Articles/New"
     end
 
@@ -38,7 +38,7 @@ module Admin
     # 创建新记录
     # 成功后跳转到详情页，失败则重新显示表单
     def create
-      @article = Article.new(article_params)
+      @article = ::Article.new(article_params)
       if @article.save
         redirect_to admin_articles_path(@article), notice: "创建成功"
       else
@@ -79,7 +79,7 @@ module Admin
 
     # 加载单条记录，用于 show/edit/update/destroy 操作
     def set_article
-      @article = Article.find(params[:id])
+      @article = ::Article.find(params[:id])
     end
 
     # 强参数配置

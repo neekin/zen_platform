@@ -21,23 +21,8 @@ module Zen
       template "index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Index.tsx"
     end
 
-    def create_show_page
-      template "show.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Show.tsx"
-    end
-
-    def create_new_page
-      template "new.tsx.tt", "app/frontend/pages/admin/#{plural_name}/New.tsx"
-    end
-
-    def create_edit_page
-      template "edit.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Edit.tsx"
-    end
-
     def add_routes
-      # 将路由添加到 admin 命名空间中
-      # 在 delete "logout" 行之后插入，需要先添加换行符
-      route_config = "\n    resources :#{plural_name}, only: [:index, :show, :new, :create, :edit, :update, :destroy]"
-      
+      route_config = "\n    resources :#{plural_name}, only: [:index, :show, :create, :update, :destroy]"
       insert_into_file "config/routes.rb", route_config, after: 'delete "logout", to: "sessions#destroy"'
     end
 

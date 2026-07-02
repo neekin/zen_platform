@@ -38,6 +38,8 @@ import type {
 import Toolbar from './toolbar/Toolbar'
 import { parseToolbarConfig } from '../toolbar/ToolbarPlugin'
 import { serializeEditorState, deserializeEditorState, EMPTY_STATE } from '../serializer/lexical'
+import { ImageNode } from './plugins/image/ImageNode'
+import { ImagePluginComponent } from './plugins/image'
 
 // ==================== 内部插件 ====================
 
@@ -160,7 +162,7 @@ export default function RichTextEditor({
         code: 'zen-text-code',
       },
     },
-    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode],
+    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode],
     editable: !readOnly,
     editorState: value ? undefined : EMPTY_STATE,
     onError: (error: Error) => {
@@ -227,6 +229,9 @@ export default function RichTextEditor({
           <InitialValuePlugin value={value} />
           <ChangePlugin onChange={onChange} />
           <MaxLengthPlugin maxLength={maxLength} />
+
+          {/* 图片插件 */}
+          <ImagePluginComponent config={{ uploader, maxWidth: 800 }} />
 
           {/* 业务插件 */}
           {plugins.map((plugin) => plugin.renderUI?.())}

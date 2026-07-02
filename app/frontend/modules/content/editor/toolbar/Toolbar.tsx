@@ -27,6 +27,11 @@ import {
   AlignRightOutlined,
 } from '@ant-design/icons'
 import { FORMAT_TEXT_COMMAND, UNDO_COMMAND, REDO_COMMAND } from 'lexical'
+import { $getSelection, $isRangeSelection } from 'lexical'
+import { $createHeadingNode } from '@lexical/rich-text'
+import { $createQuoteNode } from '@lexical/rich-text'
+import { $setBlocksType } from '@lexical/selection'
+import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
 import { useCallback, useEffect, useState } from 'react'
 import type { ToolbarItemId, ToolbarGroup } from '../../types'
 import { parseToolbarConfig, TOOLBAR_ITEM_META } from './ToolbarPlugin'
@@ -100,7 +105,36 @@ export default function Toolbar({ config, disabled }: ToolbarProps) {
         case 'code':
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code')
           break
-        // 其他命令需要在插件中实现
+        case 'heading':
+          editor.update(() => {
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createHeadingNode('h2'))
+            }
+          })
+          break
+        case 'quote':
+          editor.update(() => {
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              $setBlocksType(selection, () => $createQuoteNode())
+            }
+          })
+          break
+        case 'bullet-list':
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+          break
+        case 'numbered-list':
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+          break
+        case 'link':
+          // TODO: 打开链接对话框
+          console.log('Link command')
+          break
+        case 'image':
+          // TODO: 打开图片上传对话框
+          console.log('Image command')
+          break
         default:
           console.warn(`Command not implemented: ${id}`)
       }

@@ -5,21 +5,27 @@
  * 快捷键: Ctrl+E
  */
 import { FORMAT_TEXT_COMMAND } from 'lexical'
+import { CodeOutlined } from '@ant-design/icons'
 import { createPlugin } from '../factory'
 import type { PluginContext } from '../../../types'
+import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+
+// 自注册工具栏项
+toolbarRegistry.register({
+  id: 'code',
+  label: '行内代码',
+  icon: <CodeOutlined />,
+  shortcut: 'Ctrl+E',
+  group: 'format',
+  execute: (editor) => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code'),
+})
 
 export const codePlugin = createPlugin({
   id: 'code',
   name: '行内代码',
   version: '1.0.0',
   toolbarItems: [
-    {
-      id: 'code',
-      label: '行内代码',
-      shortcut: 'Ctrl+E',
-      group: 'format',
-      execute: () => {},
-    },
+    { id: 'code', label: '行内代码', shortcut: 'Ctrl+E', group: 'format', execute: () => {} },
   ],
   commands: [
     {

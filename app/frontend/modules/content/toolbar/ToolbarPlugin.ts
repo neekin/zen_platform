@@ -6,7 +6,8 @@
  * - 支持分组
  * - 支持自定义项
  */
-import type { ToolbarItem, ToolbarItemId, ToolbarGroup } from '../../types'
+import type { ToolbarItemId, ToolbarGroup } from '../../types'
+import { toolbarRegistry } from './ToolbarRegistry'
 
 /** 默认工具栏分组 */
 export const DEFAULT_TOOLBAR_GROUPS: ToolbarGroup[] = [
@@ -18,26 +19,15 @@ export const DEFAULT_TOOLBAR_GROUPS: ToolbarGroup[] = [
   { id: 'align', items: ['align-left', 'align-center', 'align-right'] },
 ]
 
-/** 工具栏项元数据 */
-export const TOOLBAR_ITEM_META: Record<ToolbarItemId, { label: string; shortcut?: string; group: string }> = {
-  undo: { label: '撤销', shortcut: 'Ctrl+Z', group: 'history' },
-  redo: { label: '重做', shortcut: 'Ctrl+Y', group: 'history' },
-  bold: { label: '加粗', shortcut: 'Ctrl+B', group: 'format' },
-  italic: { label: '斜体', shortcut: 'Ctrl+I', group: 'format' },
-  underline: { label: '下划线', shortcut: 'Ctrl+U', group: 'format' },
-  strikethrough: { label: '删除线', shortcut: 'Ctrl+Shift+S', group: 'format' },
-  code: { label: '行内代码', shortcut: 'Ctrl+E', group: 'format' },
-  heading: { label: '标题', group: 'block' },
-  quote: { label: '引用', group: 'block' },
-  'bullet-list': { label: '无序列表', group: 'list' },
-  'numbered-list': { label: '有序列表', group: 'list' },
-  link: { label: '链接', shortcut: 'Ctrl+K', group: 'insert' },
-  image: { label: '图片', group: 'insert' },
-  table: { label: '表格', group: 'insert' },
-  divider: { label: '分割线', group: 'insert' },
-  'align-left': { label: '左对齐', group: 'align' },
-  'align-center': { label: '居中', group: 'align' },
-  'align-right': { label: '右对齐', group: 'align' },
+/** 获取工具栏项元数据（从注册表） */
+export function getToolbarItemMeta(id: ToolbarItemId): { label: string; shortcut?: string; group: string } | undefined {
+  const item = toolbarRegistry.getItem(id)
+  if (!item) return undefined
+  return {
+    label: item.label,
+    shortcut: item.shortcut,
+    group: item.group,
+  }
 }
 
 /** 解析工具栏配置为分组 */
@@ -50,7 +40,7 @@ export function parseToolbarConfig(config: ToolbarGroup[] | ToolbarItemId[]): To
     const groupMap = new Map<string, ToolbarItemId[]>()
 
     for (const item of items) {
-      const meta = TOOLBAR_ITEM_META[item]
+      const meta = getToolbarItemMeta(item)
       if (!meta) continue
       const group = groupMap.get(meta.group) || []
       group.push(item)

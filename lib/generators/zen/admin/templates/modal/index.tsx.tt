@@ -6,33 +6,80 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { PageContainer, ProTable, ProForm, ProFormText, DrawerForm } from '@ant-design/pro-components'
-import { Button, Space, Popconfirm, message, Modal } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { PageContainer, ProTable, ProForm, ProFormText, ProFormTextArea, ProFormDigit, ProFormSwitch, ProFormSelect, ProFormDatePicker, ProFormDateTimePicker, DrawerForm } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Modal, Tag, Badge, Upload, Image, Table, Descriptions } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
+<% if has_rich_text? %>
+import { RichTextEditor, RichTextViewer, ActiveStorageUploader, getContentSummary } from '../../../modules/content'
+import type { EditorContent } from '../../../modules/content'
+<% end %>
 import type { ReactNode } from 'react'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 
 interface <%= class_name %> {
   id: number
-<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+<%= attributes.map { |a| "  #{a.name}: #{js_type(a.type)}" }.join("\n") %>
+<% belongs_to_associations.each do |assoc| %>
+  <%= assoc[:name] %>?: { id: number; <%= assoc[:display] %>: string }
+<% end %>
   created_at: string
   updated_at: string
 }
+<% if has_rich_text? %>
 
-function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
+// 创建上传器
+const uploader = new ActiveStorageUploader({
+  accept: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+  maxSize: 10 * 1024 * 1024,
+})
+<% end %>
+<% if has_enum? %>
+
+// 枚举值配置
+const ENUM_OPTIONS: Record<string, { label: string; value: string; color: string }[]> = {
+<% enum_fields.each do |name, values| %>
+<% enum_vals = values.is_a?(Array) ? values : values.to_s.split(",") %>
+  <%= name %>: [
+    <%= enum_vals.map { |v| "{ label: '#{v}', value: '#{v}', color: 'default' }" }.join(",\n    ") %>
+  ],
+<% end %>
+}
+<% end %>
+
+interface <%= class_name %>IndexProps {
+  <%= plural_name %>: <%= class_name %>[]
+<% belongs_to_associations.each do |assoc| %>
+  <%= assoc[:name] %>s: { id: number; <%= assoc[:display] %>: string }[]
+<% end %>
+<% has_many_associations.each do |assoc| %>
+  // <%= assoc[:name] %> 数据将通过详情接口获取
+<% end %>
+}
+
+function <%= class_name %>Index({ <%= plural_name %>, ...props }: <%= class_name %>IndexProps) {
+  const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<<%= class_name %> | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [viewing, setViewing] = useState<<%= class_name %> | null>(null)
+<% rich_text_attributes.each do |a| %>
+  const [<%= a.name %>Content, set<%= a.name.camelize %>Content] = useState<EditorContent>('{}')
+<% end %>
 
   const openCreate = () => {
     setEditing(null)
+<% rich_text_attributes.each do |a| %>
+    set<%= a.name.camelize %>Content('{}')
+<% end %>
     setModalOpen(true)
   }
 
   const openEdit = (record: <%= class_name %>) => {
     setEditing(record)
+<% rich_text_attributes.each do |a| %>
+    set<%= a.name.camelize %>Content(record.<%= a.name %> || '{}')
+<% end %>
     setModalOpen(true)
   }
 
@@ -48,15 +95,22 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
   }
 
   const handleFinish = async (values: Record<string, any>) => {
+    const data = {
+      ...values,
+<% rich_text_attributes.each do |a| %>
+      <%= a.name %>: <%= a.name %>Content,
+<% end %>
+    }
+
     if (editing) {
-      router.put(`/admin/<%= plural_name %>/${editing.id}`, values, {
+      router.put(`/admin/<%= plural_name %>/${editing.id}`, data, {
         onSuccess: () => {
           message.success('更新成功')
           setModalOpen(false)
         },
       })
     } else {
-      router.post('/admin/<%= plural_name %>', values, {
+      router.post('/admin/<%= plural_name %>', data, {
         onSuccess: () => {
           message.success('创建成功')
           setModalOpen(false)
@@ -66,9 +120,67 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
     return true
   }
 
+  // 列定义
   const columns: ProColumns<<%= class_name %>>[] = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-<%= attributes.map { |a| "    { title: '#{a.name}', dataIndex: '#{a.name}', key: '#{a.name}' }" }.join(",\n") %>,
+<% non_rich_text_attributes.each do |a| %>
+<% if enum?(a) %>
+    {
+      title: '<%= a.name %>',
+      dataIndex: '<%= a.name %>',
+      key: '<%= a.name %>',
+      render: (value: string) => {
+        const option = ENUM_OPTIONS.<%= a.name %>?.find(o => o.value === value)
+        return <Badge status={value === 'active' ? 'success' : 'default'} text={option?.label || value} />
+      },
+    },
+<% elsif a.type == 'boolean' %>
+    {
+      title: '<%= a.name %>',
+      dataIndex: '<%= a.name %>',
+      key: '<%= a.name %>',
+      render: (value: boolean) => <Tag color={value ? 'green' : 'default'}>{value ? '是' : '否'}</Tag>,
+    },
+<% elsif image?(a) %>
+    {
+      title: '<%= a.name %>',
+      dataIndex: '<%= a.name %>',
+      key: '<%= a.name %>',
+      width: 80,
+      render: (value: string) => value ? <Image src={value} width={50} height={50} style={{ objectFit: 'cover' }} /> : '-',
+    },
+<% elsif tags?(a) %>
+    {
+      title: '<%= a.name %>',
+      dataIndex: '<%= a.name %>',
+      key: '<%= a.name %>',
+      render: (value: string[]) => value?.map((tag: string) => <Tag key={tag}>{tag}</Tag>) || '-',
+    },
+<% elsif association_foreign_key?(a) %>
+    {
+      title: '<%= association_name_for_foreign_key(a.name) %>',
+      dataIndex: ['<%= association_name_for_foreign_key(a.name) %>', '<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %>'],
+      key: '<%= a.name %>',
+    },
+<% elsif a.type == 'datetime' %>
+    { title: '<%= a.name %>', dataIndex: '<%= a.name %>', key: '<%= a.name %>', valueType: 'relativeTime' },
+<% else %>
+    { title: '<%= a.name %>', dataIndex: '<%= a.name %>', key: '<%= a.name %>' },
+<% end %>
+<% end %>
+<% rich_text_attributes.each do |a| %>
+    {
+      title: '<%= a.name %>',
+      dataIndex: '<%= a.name %>',
+      key: '<%= a.name %>',
+      width: 200,
+      ellipsis: true,
+      render: (_: any, record: <%= class_name %>) => {
+        const text = getContentSummary(record.<%= a.name %>, 100)
+        return text || <span style={{ color: 'var(--ant-color-text-tertiary)' }}>-</span>
+      },
+    },
+<% end %>
     { title: '创建时间', dataIndex: 'created_at', key: 'created_at', valueType: 'dateTime' },
     {
       title: '操作',
@@ -104,7 +216,8 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
+        width={800}
       >
         <ProForm
           initialValues={editing || {}}
@@ -114,8 +227,53 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
             resetButtonProps: { onClick: () => setModalOpen(false) },
           }}
         >
-<% attributes.each do |a| %>
+<% non_rich_text_attributes.each do |a| %>
+<% if enum?(a) %>
+          <ProFormSelect
+            name="<%= a.name %>"
+            label="<%= a.name %>"
+            options={ENUM_OPTIONS.<%= a.name %> || []}
+            rules={[{ required: true, message: '请选择<%= a.name %>' }]}
+          />
+<% elsif association_foreign_key?(a) %>
+          <ProFormSelect
+            name="<%= a.name %>"
+            label="<%= association_name_for_foreign_key(a.name) %>"
+            options={(props.<%= association_name_for_foreign_key(a.name) %>s || []).map((item: any) => ({
+              label: item.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %>,
+              value: item.id,
+            }))}
+            showSearch
+            filterOption={(input: string, option: any) =>
+              (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
+            }
+            rules={[{ required: true, message: '请选择<%= association_name_for_foreign_key(a.name) %>' }]}
+          />
+<% elsif a.type == 'boolean' %>
+          <ProFormSwitch name="<%= a.name %>" label="<%= a.name %>" />
+<% elsif a.type == 'text' %>
+          <ProFormTextArea name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% elsif a.type == 'integer' || a.type == 'decimal' || a.type == 'float' %>
+          <ProFormDigit name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% elsif a.type == 'date' %>
+          <ProFormDatePicker name="<%= a.name %>" label="<%= a.name %>" />
+<% elsif a.type == 'datetime' %>
+          <ProFormDateTimePicker name="<%= a.name %>" label="<%= a.name %>" />
+<% else %>
           <ProFormText name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% end %>
+<% end %>
+<% rich_text_attributes.each do |a| %>
+          <div style={{ marginTop: 16 }}>
+            <div style={{ marginBottom: 8, fontWeight: 500 }}><%= a.name %></div>
+            <RichTextEditor
+              value={<%= a.name %>Content}
+              onChange={set<%= a.name.camelize %>Content}
+              toolbar={['bold', 'italic', 'underline', 'heading', 'quote', 'bullet-list', 'numbered-list', 'link', 'image']}
+              uploader={uploader}
+              placeholder="请输入<%= a.name %>..."
+            />
+          </div>
 <% end %>
         </ProForm>
       </Modal>
@@ -129,8 +287,51 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
       >
         {viewing && (
           <>
-<% attributes.each do |a| %>
-            <ProFormText name="<%= a.name %>" label="<%= a.name %>" initialValue={viewing.<%= a.name %>} disabled />
+            <Descriptions bordered column={1}>
+<% non_rich_text_attributes.each do |a| %>
+<% if enum?(a) %>
+              <Descriptions.Item label="<%= a.name %>">
+                <Badge status={viewing.<%= a.name %> === 'active' ? 'success' : 'default'} text={ENUM_OPTIONS.<%= a.name %>?.find(o => o.value === viewing.<%= a.name %>)?.label || viewing.<%= a.name %>} />
+              </Descriptions.Item>
+<% elsif a.type == 'boolean' %>
+              <Descriptions.Item label="<%= a.name %>">
+                <Tag color={viewing.<%= a.name %> ? 'green' : 'default'}>{viewing.<%= a.name %> ? '是' : '否'}</Tag>
+              </Descriptions.Item>
+<% elsif association_foreign_key?(a) %>
+              <Descriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">
+                {viewing.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}
+              </Descriptions.Item>
+<% elsif image?(a) %>
+              <Descriptions.Item label="<%= a.name %>">
+                {viewing.<%= a.name %> ? <Image src={viewing.<%= a.name %>} width={100} /> : '-'}
+              </Descriptions.Item>
+<% else %>
+              <Descriptions.Item label="<%= a.name %>">{viewing.<%= a.name %>}</Descriptions.Item>
+<% end %>
+<% end %>
+              <Descriptions.Item label="创建时间">{viewing.created_at}</Descriptions.Item>
+              <Descriptions.Item label="更新时间">{viewing.updated_at}</Descriptions.Item>
+            </Descriptions>
+
+<% rich_text_attributes.each do |a| %>
+            <div style={{ marginTop: 16 }}>
+              <div style={{ marginBottom: 8, fontWeight: 500 }}><%= a.name %></div>
+              {viewing.<%= a.name %> && viewing.<%= a.name %> !== '{}' ? (
+                <RichTextViewer content={viewing.<%= a.name %>} />
+              ) : (
+                <span style={{ color: 'var(--ant-color-text-tertiary)' }}>暂无内容</span>
+              )}
+            </div>
+<% end %>
+
+<% has_many_associations.each do |assoc| %>
+            {/* <%= assoc[:name] %> 列表 */}
+            <div style={{ marginTop: 24 }}>
+              <div style={{ marginBottom: 8, fontWeight: 500 }}><%= assoc[:name].to_s.titleize %></div>
+              <div style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
+                关联的<%= assoc[:name].to_s.titleize %>数据将通过详情接口加载
+              </div>
+            </div>
 <% end %>
           </>
         )}

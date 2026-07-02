@@ -5,7 +5,7 @@
 # 对应的 React 页面位于: app/frontend/pages/admin/<%= plural_name %>/
 #
 # 注意：AdminController 已配置自动从顶层命名空间查找模型
-# 所以可以直接使用 <%= class_name %> 而不需要 ::<%= class_name %>
+# 所以直接使用 <%= class_name %> 而不需要 ::<%= class_name %>
 module Admin
   class <%= class_name.pluralize %>Controller < AdminController
     before_action :require_login
@@ -14,14 +14,43 @@ module Admin
     # GET /admin/<%= plural_name %>
     def index
       @<%= plural_name %> = <%= class_name %>.all
-      render inertia: "admin/<%= plural_name %>/Index",
-        props: { <%= plural_name %>: @<%= plural_name %>.as_json }
+<% if has_belongs_to? %>
+      # 加载关联数据
+<% belongs_to_associations.each do |assoc| %>
+      @<%= assoc[:name] %>s = <%= assoc[:name].to_s.classify %>.all
+<% end %>
+<% end %>
+
+      render inertia: "admin/<%= plural_name %>/<%= kanban? ? 'Kanban' : 'Index' %>",
+        props: {
+          <%= plural_name %>: @<%= plural_name %>.as_json(
+            include: {
+<% belongs_to_associations.each do |assoc| %>
+              <%= assoc[:name] %>: { only: [:id, :<%= assoc[:display] %>] },
+<% end %>
+            }
+          ),
+<% belongs_to_associations.each do |assoc| %>
+          <%= assoc[:name] %>s: @<%= assoc[:name] %>s.as_json(only: [:id, :<%= assoc[:display] %>]),
+<% end %>
+        }
     end
 
     # GET /admin/<%= plural_name %>/:id
     def show
       render inertia: "admin/<%= plural_name %>/Show",
-        props: { <%= singular_name %>: @<%= singular_name %>.as_json }
+        props: {
+          <%= singular_name %>: @<%= singular_name %>.as_json(
+            include: {
+<% belongs_to_associations.each do |assoc| %>
+              <%= assoc[:name] %>: { only: [:id, :<%= assoc[:display] %>] },
+<% end %>
+<% has_many_associations.each do |assoc| %>
+              <%= assoc[:name] %>: { only: [:id] },
+<% end %>
+            }
+          )
+        }
     end
 
     # POST /admin/<%= plural_name %>

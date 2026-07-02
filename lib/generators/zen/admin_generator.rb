@@ -14,8 +14,17 @@ module Zen
     argument :attributes, type: :array, default: [], banner: "field:type field:type"
     class_option :modal, type: :boolean, default: nil, desc: "Use modal form for create/edit"
     class_option :page, type: :boolean, default: nil, desc: "Use separate pages for create/edit"
+    class_option :rich_text, type: :array, default: [], desc: "Fields that should use RichTextEditor"
+    class_option :image, type: :array, default: [], desc: "Image upload fields"
+    class_option :file, type: :array, default: [], desc: "File upload fields"
+    class_option :tags, type: :array, default: [], desc: "Tag input fields"
+    class_option :enums, type: :string, default: "", desc: "Enum fields as JSON (e.g. --enums='{\"status\":[\"draft\",\"active\"]}')"
+    class_option :belongs_to, type: :array, default: [], desc: "Belongs_to associations (e.g. --belongs-to=category,user)"
+    class_option :has_many, type: :array, default: [], desc: "Has_many associations (e.g. --has-many=comments,tags)"
+    class_option :product, type: :string, default: "crud", desc: "Product form (crud, kanban, calendar)"
 
     def ask_form_style
+      return if behavior == :revoke
       return if options[:modal] || options[:page]
 
       say ""
@@ -32,11 +41,16 @@ module Zen
     end
 
     def create_index_page
-      template "#{template_prefix}/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Index.tsx"
+      if kanban?
+        template "products/kanban/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Kanban.tsx"
+      else
+        template "#{template_prefix}/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Index.tsx"
+      end
     end
 
     def create_page_files
       return if use_modal?
+      return if kanban?
 
       template "page/show.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Show.tsx"
       template "page/new.tsx.tt", "app/frontend/pages/admin/#{plural_name}/New.tsx"
@@ -106,24 +120,273 @@ module Zen
       use_modal? ? "modal" : "page"
     end
 
+    # ============ 产品形态判断 ============
+
+    def kanban?
+      options[:product] == 'kanban'
+    end
+
+    def calendar?
+      options[:product] == 'calendar'
+    end
+
+    def crud?
+      options[:product] == 'crud' || options[:product].blank?
+    end
+
+    # ============ 看板配置 ============
+
+    # 获取看板分组字段（第一个枚举字段）
+    def kanban_group_field
+      enum_fields.keys.first || 'status'
+    end
+
+    # 获取看板标题字段（第一个 string 字段）
+    def kanban_title_field
+      string_attr = attributes.find { |a| a.type == 'string' && !association_foreign_key?(a) }
+      string_attr&.name || 'title'
+    end
+
+    # 获取看板描述字段（第一个 text 字段）
+    def kanban_description_field
+      text_attr = attributes.find { |a| a.type == 'text' }
+      text_attr&.name
+    end
+
+    # 获取看板标签字段
+    def kanban_tag_fields
+      tag_fields_list
+    end
+
+    # 获取看板列配置
+    def kanban_columns
+      values = enum_fields[kanban_group_field] || []
+      values = values.is_a?(Array) ? values : values.to_s.split(",")
+      
+      colors = ['#1890ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1', '#13c2c2']
+      values.each_with_index.map do |value, index|
+        {
+          id: value,
+          title: value.titleize,
+          color: colors[index % colors.length]
+        }
+      end
+    end
+
     def attributes_names
       attributes.map(&:name)
     end
 
     def permitted_params
-      attributes.map { |a| ":#{a.name}" }.join(", ")
+      params = attributes.map { |a| ":#{a.name}" }
+      # 添加数组类型参数
+      tag_fields_list.each { |f| params << "#{f}: []" }
+      params.join(", ")
     end
 
     def columns_for_table
       attributes.map { |a| { name: a.name, type: a.type } }
     end
 
+    # ============ 字段类型判断 ============
+
+    def rich_text_fields
+      options[:rich_text] || []
+    end
+
+    # 从选项中获取枚举字段
+    # 语法: --enums='{"status":["draft","active","archived"]}'
+    def enum_fields
+      @enum_fields ||= begin
+        return {} if options[:enums].blank?
+        JSON.parse(options[:enums])
+      rescue JSON::ParserError
+        {}
+      end
+    end
+
+    def image_fields
+      options[:image] || []
+    end
+
+    def file_fields
+      options[:file] || []
+    end
+
+    def tag_fields_list
+      options[:tags] || []
+    end
+
+    def has_rich_text?
+      rich_text_fields.any?
+    end
+
+    def has_enum?
+      enum_fields.any?
+    end
+
+    def has_image?
+      image_fields.any?
+    end
+
+    def has_file?
+      file_fields.any?
+    end
+
+    def has_tags?
+      tag_fields_list.any?
+    end
+
+    def rich_text_attributes
+      attributes.select { |a| rich_text_fields.include?(a.name) }
+    end
+
+    def non_rich_text_attributes
+      attributes.reject { |a| rich_text_fields.include?(a.name) }
+    end
+
+    def rich_text?(attr)
+      rich_text_fields.include?(attr.name)
+    end
+
+    def enum?(attr)
+      enum_fields.key?(attr.name)
+    end
+
+    def image?(attr)
+      image_fields.include?(attr.name)
+    end
+
+    def file?(attr)
+      file_fields.include?(attr.name)
+    end
+
+    def tags?(attr)
+      tag_fields_list.include?(attr.name)
+    end
+
+    def enum_values(attr)
+      return [] unless enum?(attr)
+      values = enum_fields[attr.name]
+      values.is_a?(Array) ? values : values.to_s.split(",")
+    end
+
+    # ============ 关联处理 ============
+
+    def belongs_to_associations
+      @belongs_to_associations ||= (options[:belongs_to] || []).map do |name|
+        { name: name, foreign_key: "#{name}_id", display: :name }
+      end
+    end
+
+    def has_many_associations
+      @has_many_associations ||= (options[:has_many] || []).map do |name|
+        { name: name }
+      end
+    end
+
+    def has_belongs_to?
+      belongs_to_associations.any?
+    end
+
+    def has_has_many?
+      has_many_associations.any?
+    end
+
+    def has_associations?
+      has_belongs_to? || has_has_many?
+    end
+
+    # 获取关联的外键字段（排除已定义的字段）
+    def association_foreign_keys
+      belongs_to_associations.map { |a| a[:foreign_key] } - attributes.map(&:name)
+    end
+
+    # 判断字段是否为关联外键
+    def association_foreign_key?(attr)
+      belongs_to_associations.any? { |a| a[:foreign_key] == attr.name }
+    end
+
+    # 获取关联名称（通过外键反查）
+    def association_name_for_foreign_key(foreign_key)
+      assoc = belongs_to_associations.find { |a| a[:foreign_key] == foreign_key }
+      assoc&.dig(:name)
+    end
+
+    # ============ 字段类型处理 ============
+
+    def js_type(type)
+      case type
+      when "integer", "decimal", "float" then "number"
+      when "boolean" then "boolean"
+      else "string"
+      end
+    end
+
     def js_default_value(type)
       case type
       when "integer", "decimal", "float" then "0"
       when "boolean" then "false"
+      when "rich_text" then "'{}'"
       else "''"
       end
+    end
+
+    # 获取字段的表单组件类型
+    def field_component(attr)
+      return "RichTextEditor" if rich_text?(attr)
+      return "EnumSelect" if enum?(attr)
+      return "ImageUpload" if image?(attr)
+      return "FileUpload" if file?(attr)
+      return "TagInput" if tags?(attr)
+
+      case attr.type
+      when "text"
+        "ProFormTextArea"
+      when "boolean"
+        "ProFormSwitch"
+      when "integer", "decimal", "float"
+        "ProFormDigit"
+      when "date"
+        "ProFormDatePicker"
+      when "datetime"
+        "ProFormDateTimePicker"
+      else
+        "ProFormText"
+      end
+    end
+
+    # 获取字段的列表展示类型
+    def list_display_type(attr)
+      return :rich_text_summary if rich_text?(attr)
+      return :enum_badge if enum?(attr)
+      return :image_thumbnail if image?(attr)
+      return :file_list if file?(attr)
+      return :tag_list if tags?(attr)
+
+      case attr.type
+      when "boolean"
+        :boolean_badge
+      when "datetime"
+        :relative_time
+      else
+        :text
+      end
+    end
+
+    # 检查是否有需要特殊导入的组件
+    def needs_special_imports?
+      has_rich_text? || has_enum? || has_image? || has_file? || has_tags?
+    end
+
+    # 获取需要导入的组件列表
+    def import_components
+      components = []
+      components << "RichTextEditor, RichTextViewer, getContentSummary" if has_rich_text?
+      components << "ImageUpload" if has_image?
+      components << "FileUpload" if has_file?
+      components << "TagInput" if has_tags?
+      components
     end
   end
 end

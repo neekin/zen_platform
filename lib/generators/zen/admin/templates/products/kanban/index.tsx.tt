@@ -1,0 +1,122 @@
+/**
+ * <%= class_name %> 看板视图
+ * 路由: /admin/<%= plural_name %>
+ *
+ * 支持拖拽排序、分组显示
+ */
+import { useState, useCallback } from 'react'
+import { router } from '@inertiajs/react'
+import { PageContainer } from '@ant-design/pro-components'
+import { App, Button, Modal, message } from 'antd'
+import { PlusOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import AdminLayout from '../../../layouts/AdminLayout'
+import KanbanBoard from '../../../modules/admin/components/products/KanbanBoard'
+import type { KanbanColumn, KanbanCard } from '../../../modules/admin/components/products/KanbanBoard'
+import type { ReactNode } from 'react'
+
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{js_type(a.type)}" }.join("\n") %>
+  created_at: string
+  updated_at: string
+}
+
+// 看板列配置
+const KANBAN_COLUMNS: KanbanColumn[] = [
+<% kanban_columns.each do |col| %>
+  { id: '<%= col[:id] %>', title: '<%= col[:title] %>', color: '<%= col[:color] %>' },
+<% end %>
+]
+
+interface <%= class_name %>KanbanProps {
+  <%= plural_name %>: <%= class_name %>[]
+<% belongs_to_associations.each do |assoc| %>
+  <%= assoc[:name] %>s: { id: number; <%= assoc[:display] %>: string }[]
+<% end %>
+}
+
+function <%= class_name %>Kanban({ <%= plural_name %>, ...props }: <%= class_name %>KanbanProps) {
+  const { message } = App.useApp()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<<%= class_name %> | null>(null)
+
+  // 将数据转换为看板卡片格式
+  const cards: KanbanCard[] = <%= plural_name %>.map((item) => ({
+    id: item.id,
+    title: item.<%= kanban_title_field %><%= kanban_description_field ? " || '-'" : "" %>,
+<% if kanban_description_field %>
+    description: item.<%= kanban_description_field %>,
+<% end %>
+    columnId: item.<%= kanban_group_field %>,
+<% if kanban_tag_fields.any? %>
+    tags: [
+<% kanban_tag_fields.each do |field| %>
+      item.<%= field %> && { label: item.<%= field %>, color: 'blue' },
+<% end %>
+    ].filter(Boolean),
+<% end %>
+    ...item,
+  }))
+
+  // 卡片点击
+  const handleCardClick = useCallback((card: KanbanCard) => {
+    setEditing(card as any)
+    setModalOpen(true)
+  }, [])
+
+  // 卡片拖拽移动
+  const handleCardMove = useCallback(
+    (cardId: string | number, fromColumn: string, toColumn: string) => {
+      // 更新卡片的分组字段
+      router.put(`/admin/<%= plural_name %>/${cardId}`, {
+        <%= kanban_group_field %>: toColumn,
+      }, {
+        onSuccess: () => {
+          message.success('移动成功')
+          router.reload()
+        },
+      })
+    },
+    [],
+  )
+
+  // 新增卡片
+  const handleAddCard = useCallback((columnId: string) => {
+    // 可以打开新增弹窗，或者直接跳转
+    router.visit('/admin/<%= plural_name %>/new')
+  }, [])
+
+  return (
+    <PageContainer
+      title="<%= class_name %>看板"
+      extra={[
+        <Button
+          key="list"
+          icon={<UnorderedListOutlined />}
+          onClick={() => router.visit('/admin/<%= plural_name %>')}
+        >
+          列表视图
+        </Button>,
+        <Button
+          key="add"
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => router.visit('/admin/<%= plural_name %>/new')}
+        >
+          新建
+        </Button>,
+      ]}
+    >
+      <KanbanBoard
+        columns={KANBAN_COLUMNS}
+        cards={cards}
+        onCardClick={handleCardClick}
+        onCardMove={handleCardMove}
+        onAddCard={handleAddCard}
+      />
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Kanban.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Kanban

@@ -31,7 +31,11 @@ function getCSRFToken(): string {
   // 从 cookie 获取（备用方式）
   const cookies = document.cookie.split(';')
   for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=')
+    const trimmed = cookie.trim()
+    const eqIndex = trimmed.indexOf('=')
+    if (eqIndex === -1) continue
+    const name = trimmed.substring(0, eqIndex)
+    const value = trimmed.substring(eqIndex + 1)
     if (name === 'csrf_token' || name === '_csrf_token') {
       return decodeURIComponent(value)
     }

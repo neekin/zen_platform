@@ -52,26 +52,8 @@ export interface EditorError {
 
 // ==================== 工具栏类型 ====================
 
-/** 工具栏项标识 */
-export type ToolbarItemId =
-  | 'undo'
-  | 'redo'
-  | 'bold'
-  | 'italic'
-  | 'underline'
-  | 'strikethrough'
-  | 'code'
-  | 'heading'
-  | 'quote'
-  | 'bullet-list'
-  | 'numbered-list'
-  | 'link'
-  | 'image'
-  | 'table'
-  | 'divider'
-  | 'align-left'
-  | 'align-center'
-  | 'align-right'
+/** 工具栏项标识 - 使用字符串以支持插件自定义 */
+export type ToolbarItemId = string
 
 /** 工具栏配置 */
 export type ToolbarConfig = ToolbarItemId[] | ToolbarGroup[] | boolean

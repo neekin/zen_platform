@@ -88,10 +88,10 @@ export default function Dashboard() {
             statistic={{
               title: '用户总数',
               value: 1286,
-              prefix: <UserOutlined style={{ color: '#1677FF' }} />,
+              prefix: <UserOutlined style={{ color: 'var(--ant-color-primary)' }} />,
               description: (
                 <Space>
-                  <span style={{ color: '#52c41a' }}>
+                  <span style={{ color: 'var(--ant-color-success)' }}>
                     <ArrowUpOutlined /> 12.5%
                   </span>
                   <span>较昨日</span>
@@ -106,10 +106,10 @@ export default function Dashboard() {
             statistic={{
               title: '订单数量',
               value: 356,
-              prefix: <ShoppingCartOutlined style={{ color: '#1677FF' }} />,
+              prefix: <ShoppingCartOutlined style={{ color: 'var(--ant-color-primary)' }} />,
               description: (
                 <Space>
-                  <span style={{ color: '#52c41a' }}>
+                  <span style={{ color: 'var(--ant-color-success)' }}>
                     <ArrowUpOutlined /> 8.2%
                   </span>
                   <span>较昨日</span>
@@ -124,10 +124,10 @@ export default function Dashboard() {
             statistic={{
               title: '文章数量',
               value: 89,
-              prefix: <FileTextOutlined style={{ color: '#1677FF' }} />,
+              prefix: <FileTextOutlined style={{ color: 'var(--ant-color-primary)' }} />,
               description: (
                 <Space>
-                  <span style={{ color: '#ff4d4f' }}>
+                  <span style={{ color: 'var(--ant-color-error)' }}>
                     <ArrowDownOutlined /> 2.1%
                   </span>
                   <span>较昨日</span>
@@ -142,10 +142,10 @@ export default function Dashboard() {
             statistic={{
               title: '总收入',
               value: 128956,
-              prefix: <MoneyCollectOutlined style={{ color: '#1677FF' }} />,
+              prefix: <MoneyCollectOutlined style={{ color: 'var(--ant-color-primary)' }} />,
               description: (
                 <Space>
-                  <span style={{ color: '#52c41a' }}>
+                  <span style={{ color: 'var(--ant-color-success)' }}>
                     <ArrowUpOutlined /> 15.3%
                   </span>
                   <span>较昨日</span>
@@ -158,7 +158,7 @@ export default function Dashboard() {
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={16}>
-          <Card title="最近活动" bordered={false} className="glass-card">
+          <Card title="最近活动" variant="borderless" className="glass-card">
             <Table
               columns={columns}
               dataSource={recentActivity}
@@ -168,16 +168,16 @@ export default function Dashboard() {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="快速操作" bordered={false} className="glass-card">
-            <Space direction="vertical" style={{ width: '100%' }}>
+          <Card title="快速操作" variant="borderless" className="glass-card">
+            <Space orientation="vertical" style={{ width: '100%' }}>
               <div style={{ padding: '12px 0', borderBottom: '1px solid rgba(100, 140, 200, 0.1)' }}>
-                <a href="/admin/users" style={{ color: '#1677FF' }}>管理用户</a>
+                <a href="/admin/users" style={{ color: 'var(--ant-color-primary)' }}>管理用户</a>
               </div>
               <div style={{ padding: '12px 0', borderBottom: '1px solid rgba(100, 140, 200, 0.1)' }}>
-                <a href="/admin/settings" style={{ color: '#1677FF' }}>系统设置</a>
+                <a href="/admin/settings" style={{ color: 'var(--ant-color-primary)' }}>系统设置</a>
               </div>
               <div style={{ padding: '12px 0' }}>
-                <a href="/admin/logs" style={{ color: '#1677FF' }}>查看日志</a>
+                <a href="/admin/logs" style={{ color: 'var(--ant-color-primary)' }}>查看日志</a>
               </div>
             </Space>
           </Card>

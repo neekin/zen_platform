@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_01_224249) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_044426) do
   create_table "api_keys", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at"
@@ -20,6 +20,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_01_224249) do
     t.integer "user_id", null: false
     t.index ["key"], name: "index_api_keys_on_key", unique: true
     t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
+
+  create_table "articles", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "status"
+    t.string "title"
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

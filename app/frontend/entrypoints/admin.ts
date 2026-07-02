@@ -1,4 +1,5 @@
 import 'antd/dist/reset.css'
+import '../styles/rich-text.css'
 
 console.log('Vite ⚡️ Rails')
 

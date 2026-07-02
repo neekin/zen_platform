@@ -1,12 +1,12 @@
 /**
- * <%= class_name %> 详情页
- * 路由: /admin/<%= plural_name %>/:id
+ * Article 详情页
+ * 路由: /admin/articles/:id
  *
  * Props (从控制器传入):
- * - <%= singular_name %>: <%= class_name %> - 单条 <%= class_name %> 数据
+ * - article: Article - 单条 Article 数据
  *
  * 功能:
- * - 显示 <%= class_name %> 详细信息（使用 Descriptions 组件）
+ * - 显示 Article 详细信息（使用 Descriptions 组件）
  * - 支持编辑、删除操作
  * - 返回列表按钮
  */
@@ -17,27 +17,29 @@ import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/ico
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
-// <%= class_name %> 数据类型定义
-interface <%= class_name %> {
+// Article 数据类型定义
+interface Article {
   id: number
-<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  title: string
+  body: string
+  status: string
   created_at: string
   updated_at: string
 }
 
 // 设置页面布局
-<%= plural_name.camelize %>.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+Articles.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
 
-export default function Show<%= class_name %>({ <%= singular_name %> }: { <%= singular_name %>: <%= class_name %> }) {
+export default function ShowArticle({ article }: { article: Article }) {
   return (
     <PageContainer
-      title="<%= class_name %>详情"
+      title="Article详情"
       extra={[
         // 返回列表按钮
         <Button
           key="back"
           icon={<ArrowLeftOutlined />}
-          onClick={() => router.visit('/admin/<%= plural_name %>')}
+          onClick={() => router.visit('/admin/articles')}
         >
           返回列表
         </Button>,
@@ -46,7 +48,7 @@ export default function Show<%= class_name %>({ <%= singular_name %> }: { <%= si
           key="edit"
           type="primary"
           icon={<EditOutlined />}
-          onClick={() => router.visit(`/admin/<%= plural_name %>/${<%= singular_name %>.id}/edit`)}
+          onClick={() => router.visit(`/admin/articles/${article.id}/edit`)}
         >
           编辑
         </Button>,
@@ -55,10 +57,10 @@ export default function Show<%= class_name %>({ <%= singular_name %> }: { <%= si
           key="delete"
           title="确定删除这条记录？"
           onConfirm={() => {
-            router.delete(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, {
+            router.delete(`/admin/articles/${article.id}`, {
               onSuccess: () => {
                 message.success('删除成功')
-                router.visit('/admin/<%= plural_name %>')
+                router.visit('/admin/articles')
               },
             })
           }}
@@ -73,12 +75,16 @@ export default function Show<%= class_name %>({ <%= singular_name %> }: { <%= si
         {/* 详情展示区域 */}
         {/* TODO: 根据需求调整字段显示顺序和格式 */}
         <Descriptions bordered column={1}>
-          <Descriptions.Item label="ID">{<%= singular_name %>.id}</Descriptions.Item>
-<% attributes.each do |a| %>
-          <Descriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %>}</Descriptions.Item>
-<% end %>
-          <Descriptions.Item label="创建时间">{<%= singular_name %>.created_at}</Descriptions.Item>
-          <Descriptions.Item label="更新时间">{<%= singular_name %>.updated_at}</Descriptions.Item>
+          <Descriptions.Item label="ID">{article.id}</Descriptions.Item>
+
+          <Descriptions.Item label="title">{article.title}</Descriptions.Item>
+
+          <Descriptions.Item label="body">{article.body}</Descriptions.Item>
+
+          <Descriptions.Item label="status">{article.status}</Descriptions.Item>
+
+          <Descriptions.Item label="创建时间">{article.created_at}</Descriptions.Item>
+          <Descriptions.Item label="更新时间">{article.updated_at}</Descriptions.Item>
         </Descriptions>
       </Card>
     </PageContainer>

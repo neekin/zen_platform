@@ -1,9 +1,9 @@
 /**
- * <%= class_name %> 编辑页
- * 路由: /admin/<%= plural_name %>/:id/edit
+ * Article 编辑页
+ * 路由: /admin/articles/:id/edit
  *
  * Props (从控制器传入):
- * - <%= singular_name %>: <%= class_name %> - 当前编辑的 <%= class_name %> 数据
+ * - article: Article - 当前编辑的 Article 数据
  * - errors?: string[] - 错误信息列表（表单验证失败时）
  *
  * 功能:
@@ -19,40 +19,44 @@ import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
-// <%= class_name %> 数据类型定义
-interface <%= class_name %> {
+// Article 数据类型定义
+interface Article {
   id: number
-<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  title: string
+  body: string
+  status: string
   created_at: string
   updated_at: string
 }
 
 // 设置页面布局
-<%= plural_name.camelize %>.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+Articles.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
 
-export default function Edit<%= class_name %>({ <%= singular_name %>, errors }: { <%= singular_name %>: <%= class_name %>; errors?: string[] }) {
+export default function EditArticle({ article, errors }: { article: Article; errors?: string[] }) {
   // 表单状态管理，初始值从 props 中加载
   const { data, setData, put, processing } = useForm({
-<% attrs = attributes.map { |a| "    #{a.name}: #{singular_name}.#{a.name}" }.join(",\n") %>
-<%= attrs %>,
+
+    title: article.title,
+    body: article.body,
+    status: article.status,
   })
 
   // 表单提交处理
   const handleSubmit = () => {
-    put(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, {
+    put(`/admin/articles/${article.id}`, {
       onSuccess: () => message.success('更新成功'),
     })
   }
 
   return (
     <PageContainer
-      title="编辑<%= class_name %>"
+      title="编辑Article"
       extra={[
         // 返回列表按钮
         <Button
           key="back"
           icon={<ArrowLeftOutlined />}
-          onClick={() => router.visit('/admin/<%= plural_name %>')}
+          onClick={() => router.visit('/admin/articles')}
         >
           返回列表
         </Button>,
@@ -76,21 +80,37 @@ export default function Edit<%= class_name %>({ <%= singular_name %>, errors }: 
             submitButtonProps: { loading: processing },
             submitterRender: (_, dom) => (
               <Space>
-                <Button onClick={() => router.visit('/admin/<%= plural_name %>')}>取消</Button>
+                <Button onClick={() => router.visit('/admin/articles')}>取消</Button>
                 {dom}
               </Space>
             ),
           }}
         >
-<% attributes.each do |a| %>
+
           <ProFormText
-            name="<%= a.name %>"
-            label="<%= a.name %>"
-            value={data.<%= a.name %>}
-            onChange={(e) => setData('<%= a.name %>', e.target.value)}
-            rules={[{ required: true, message: '请输入<%= a.name %>' }]}
+            name="title"
+            label="title"
+            value={data.title}
+            onChange={(e) => setData('title', e.target.value)}
+            rules={[{ required: true, message: '请输入title' }]}
           />
-<% end %>
+
+          <ProFormText
+            name="body"
+            label="body"
+            value={data.body}
+            onChange={(e) => setData('body', e.target.value)}
+            rules={[{ required: true, message: '请输入body' }]}
+          />
+
+          <ProFormText
+            name="status"
+            label="status"
+            value={data.status}
+            onChange={(e) => setData('status', e.target.value)}
+            rules={[{ required: true, message: '请输入status' }]}
+          />
+
         </ProForm>
       </Card>
     </PageContainer>

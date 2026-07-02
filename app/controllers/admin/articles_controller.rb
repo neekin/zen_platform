@@ -18,7 +18,7 @@ module Admin
     # Props: { articles: Array }
     def index
       @articles = Article.all
-      render inertia: "admin/Articles/Index",
+      render inertia: "admin/articles/Index",
         props: { articles: @articles.as_json }
     end
 
@@ -26,7 +26,7 @@ module Admin
     # 详情页，显示单条记录
     # Props: { article: Object }
     def show
-      render inertia: "admin/Articles/Show",
+      render inertia: "admin/articles/Show",
         props: { article: @article.as_json }
     end
 
@@ -34,7 +34,7 @@ module Admin
     # 新建页面
     def new
       @article = Article.new
-      render inertia: "admin/Articles/New"
+      render inertia: "admin/articles/New"
     end
 
     # POST /admin/articles
@@ -45,7 +45,7 @@ module Admin
       if @article.save
         redirect_to admin_articles_path(@article), notice: "创建成功"
       else
-        render inertia: "admin/Articles/New",
+        render inertia: "admin/articles/New",
           props: { errors: @article.errors.full_messages }
       end
     end
@@ -54,7 +54,7 @@ module Admin
     # 编辑页面
     # Props: { article: Object }
     def edit
-      render inertia: "admin/Articles/Edit",
+      render inertia: "admin/articles/Edit",
         props: { article: @article.as_json }
     end
 
@@ -65,7 +65,7 @@ module Admin
       if @article.update(article_params)
         redirect_to admin_articles_path(@article), notice: "更新成功"
       else
-        render inertia: "admin/Articles/Edit",
+        render inertia: "admin/articles/Edit",
           props: { article: @article.as_json, errors: @article.errors.full_messages }
       end
     end

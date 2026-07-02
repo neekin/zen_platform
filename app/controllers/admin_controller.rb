@@ -8,11 +8,11 @@ class AdminController < InertiaController
   # 自动从顶层命名空间查找模型类
   # 例如在 Admin::ArticlesController 中可以直接使用 Article 而不需要 ::Article
   def self.const_missing(name)
-    if name.to_s.classify.safe_constantize
-      name.to_s.classify.constantize
-    else
-      super
-    end
+    # 尝试从顶层命名空间查找
+    top_level = "::#{name}".safe_constantize
+    return top_level if top_level
+
+    super
   end
 
   private

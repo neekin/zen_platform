@@ -1,0 +1,143 @@
+/**
+ * <%= class_name %> 管理页
+ * 路由: /admin/<%= plural_name %>
+ *
+ * 包含：列表 + 新增/编辑浮层表单 + 详情抽屉
+ */
+import { useState } from 'react'
+import { router } from '@inertiajs/react'
+import { PageContainer, ProTable, ProForm, ProFormText, DrawerForm } from '@ant-design/pro-components'
+import { Button, Space, Popconfirm, message, Modal } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import AdminLayout from '../../../layouts/AdminLayout'
+import type { ReactNode } from 'react'
+import type { ActionType, ProColumns } from '@ant-design/pro-components'
+
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  created_at: string
+  updated_at: string
+}
+
+function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<<%= class_name %> | null>(null)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [viewing, setViewing] = useState<<%= class_name %> | null>(null)
+
+  const openCreate = () => {
+    setEditing(null)
+    setModalOpen(true)
+  }
+
+  const openEdit = (record: <%= class_name %>) => {
+    setEditing(record)
+    setModalOpen(true)
+  }
+
+  const openView = (record: <%= class_name %>) => {
+    setViewing(record)
+    setDrawerOpen(true)
+  }
+
+  const handleDelete = (id: number) => {
+    router.delete(`/admin/<%= plural_name %>/${id}`, {
+      onSuccess: () => message.success('删除成功'),
+    })
+  }
+
+  const handleFinish = async (values: Record<string, any>) => {
+    if (editing) {
+      router.put(`/admin/<%= plural_name %>/${editing.id}`, values, {
+        onSuccess: () => {
+          message.success('更新成功')
+          setModalOpen(false)
+        },
+      })
+    } else {
+      router.post('/admin/<%= plural_name %>', values, {
+        onSuccess: () => {
+          message.success('创建成功')
+          setModalOpen(false)
+        },
+      })
+    }
+    return true
+  }
+
+  const columns: ProColumns<<%= class_name %>>[] = [
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+<%= attributes.map { |a| "    { title: '#{a.name}', dataIndex: '#{a.name}', key: '#{a.name}' }" }.join(",\n") %>,
+    { title: '创建时间', dataIndex: 'created_at', key: 'created_at', valueType: 'dateTime' },
+    {
+      title: '操作',
+      key: 'action',
+      width: 200,
+      render: (_: any, record: <%= class_name %>) => (
+        <Space>
+          <Button type="link" icon={<EyeOutlined />} onClick={() => openView(record)}>查看</Button>
+          <Button type="link" icon={<EditOutlined />} onClick={() => openEdit(record)}>编辑</Button>
+          <Popconfirm title="确定删除？" onConfirm={() => handleDelete(record.id)}>
+            <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <PageContainer title="<%= class_name %>管理">
+      <ProTable
+        columns={columns}
+        dataSource={<%= plural_name %>}
+        rowKey="id"
+        search={false}
+        toolBarRender={() => [
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openCreate}>新建<%= class_name %></Button>,
+        ]}
+      />
+
+      {/* 新增/编辑浮层表单 */}
+      <Modal
+        title={editing ? '编辑<%= class_name %>' : '新建<%= class_name %>'}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+        destroyOnClose
+      >
+        <ProForm
+          initialValues={editing || {}}
+          onFinish={handleFinish}
+          submitter={{
+            searchConfig: { submitText: editing ? '更新' : '创建' },
+            resetButtonProps: { onClick: () => setModalOpen(false) },
+          }}
+        >
+<% attributes.each do |a| %>
+          <ProFormText name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% end %>
+        </ProForm>
+      </Modal>
+
+      {/* 详情抽屉 */}
+      <DrawerForm
+        title="<%= class_name %>详情"
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        submitter={false}
+      >
+        {viewing && (
+          <>
+<% attributes.each do |a| %>
+            <ProFormText name="<%= a.name %>" label="<%= a.name %>" initialValue={viewing.<%= a.name %>} disabled />
+<% end %>
+          </>
+        )}
+      </DrawerForm>
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Index.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Index

@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-# Article 管理控制器
-# 用于 Admin 后台的 CRUD 操作
-# 对应的 React 页面位于: app/frontend/pages/admin/articles/
-#
-# 注意：AdminController 已配置自动从顶层命名空间查找模型
-# 所以可以直接使用 Article 而不需要 ::Article
+# Article 管理控制器（页面模式）
+# 新增和编辑使用单独页面
 module Admin
   class ArticlesController < AdminController
     before_action :require_login
-    before_action :set_article, only: [:show, :update, :destroy]
+    before_action :set_article, only: [:show, :edit, :update, :destroy]
 
     # GET /admin/articles
     def index
@@ -24,14 +20,27 @@ module Admin
         props: { article: @article.as_json }
     end
 
+    # GET /admin/articles/new
+    def new
+      @article = Article.new
+      render inertia: "admin/articles/New"
+    end
+
     # POST /admin/articles
     def create
       @article = Article.new(article_params)
       if @article.save
         redirect_to admin_articles_path(@article), notice: "创建成功"
       else
-        redirect_to admin_articles_path, alert: @article.errors.full_messages.join(", ")
+        render inertia: "admin/articles/New",
+          props: { errors: @article.errors.full_messages }
       end
+    end
+
+    # GET /admin/articles/:id/edit
+    def edit
+      render inertia: "admin/articles/Edit",
+        props: { article: @article.as_json }
     end
 
     # PATCH/PUT /admin/articles/:id
@@ -39,7 +48,8 @@ module Admin
       if @article.update(article_params)
         redirect_to admin_articles_path(@article), notice: "更新成功"
       else
-        redirect_to admin_articles_path, alert: @article.errors.full_messages.join(", ")
+        render inertia: "admin/articles/Edit",
+          props: { article: @article.as_json, errors: @article.errors.full_messages }
       end
     end
 

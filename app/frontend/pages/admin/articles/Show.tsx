@@ -1,14 +1,6 @@
 /**
  * Article 详情页
  * 路由: /admin/articles/:id
- *
- * Props (从控制器传入):
- * - article: Article - 单条 Article 数据
- *
- * 功能:
- * - 显示 Article 详细信息（使用 Descriptions 组件）
- * - 支持编辑、删除操作
- * - 返回列表按钮
  */
 import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
@@ -17,7 +9,6 @@ import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/ico
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
-// Article 数据类型定义
 interface Article {
   id: number
   title: string
@@ -27,53 +18,19 @@ interface Article {
   updated_at: string
 }
 
-// 设置页面布局
-Articles.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
-
-export default function ShowArticle({ article }: { article: Article }) {
+function ArticleShow({ article }: { article: Article }) {
   return (
     <PageContainer
       title="Article详情"
       extra={[
-        // 返回列表按钮
-        <Button
-          key="back"
-          icon={<ArrowLeftOutlined />}
-          onClick={() => router.visit('/admin/articles')}
-        >
-          返回列表
-        </Button>,
-        // 编辑按钮
-        <Button
-          key="edit"
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => router.visit(`/admin/articles/${article.id}/edit`)}
-        >
-          编辑
-        </Button>,
-        // 删除按钮（带确认弹窗）
-        <Popconfirm
-          key="delete"
-          title="确定删除这条记录？"
-          onConfirm={() => {
-            router.delete(`/admin/articles/${article.id}`, {
-              onSuccess: () => {
-                message.success('删除成功')
-                router.visit('/admin/articles')
-              },
-            })
-          }}
-        >
-          <Button danger icon={<DeleteOutlined />}>
-            删除
-          </Button>
+        <Button key="back" icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/articles')}>返回列表</Button>,
+        <Button key="edit" type="primary" icon={<EditOutlined />} onClick={() => router.visit(`/admin/articles/${article.id}/edit`)}>编辑</Button>,
+        <Popconfirm key="delete" title="确定删除？" onConfirm={() => { router.delete(`/admin/articles/${article.id}`, { onSuccess: () => { message.success('删除成功'); router.visit('/admin/articles') } }) }}>
+          <Button danger icon={<DeleteOutlined />}>删除</Button>
         </Popconfirm>,
       ]}
     >
       <Card>
-        {/* 详情展示区域 */}
-        {/* TODO: 根据需求调整字段显示顺序和格式 */}
         <Descriptions bordered column={1}>
           <Descriptions.Item label="ID">{article.id}</Descriptions.Item>
 
@@ -90,3 +47,6 @@ export default function ShowArticle({ article }: { article: Article }) {
     </PageContainer>
   )
 }
+
+ArticleShow.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default ArticleShow

@@ -1,6 +1,6 @@
 /**
- * <%= class_name %> 新建页
- * 路由: /admin/<%= plural_name %>/new
+ * Article 新建页
+ * 路由: /admin/articles/new
  *
  * Props (从控制器传入):
  * - errors?: string[] - 错误信息列表（表单验证失败时）
@@ -18,31 +18,33 @@ import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
 // 设置页面布局
-<%= plural_name.camelize %>.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+Articles.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
 
-export default function New<%= class_name %>({ errors }: { errors?: string[] }) {
+export default function NewArticle({ errors }: { errors?: string[] }) {
   // 表单状态管理
   // TODO: 根据实际字段调整默认值
   const { data, setData, post, processing } = useForm({
-<%= attributes.map { |a| "    #{a.name}: #{a.default || (a.type == 'integer' ? '0' : "''")}" }.join(",\n") %>,
+    title: MyString,
+    body: MyText,
+    status: 1,
   })
 
   // 表单提交处理
   const handleSubmit = () => {
-    post('/admin/<%= plural_name %>', {
+    post('/admin/articles', {
       onSuccess: () => message.success('创建成功'),
     })
   }
 
   return (
     <PageContainer
-      title="新建<%= class_name %>"
+      title="新建Article"
       extra={[
         // 返回列表按钮
         <Button
           key="back"
           icon={<ArrowLeftOutlined />}
-          onClick={() => router.visit('/admin/<%= plural_name %>')}
+          onClick={() => router.visit('/admin/articles')}
         >
           返回列表
         </Button>,
@@ -66,21 +68,37 @@ export default function New<%= class_name %>({ errors }: { errors?: string[] }) 
             submitButtonProps: { loading: processing },
             submitterRender: (_, dom) => (
               <Space>
-                <Button onClick={() => router.visit('/admin/<%= plural_name %>')}>取消</Button>
+                <Button onClick={() => router.visit('/admin/articles')}>取消</Button>
                 {dom}
               </Space>
             ),
           }}
         >
-<% attributes.each do |a| %>
+
           <ProFormText
-            name="<%= a.name %>"
-            label="<%= a.name %>"
-            value={data.<%= a.name %>}
-            onChange={(e) => setData('<%= a.name %>', e.target.value)}
-            rules={[{ required: true, message: '请输入<%= a.name %>' }]}
+            name="title"
+            label="title"
+            value={data.title}
+            onChange={(e) => setData('title', e.target.value)}
+            rules={[{ required: true, message: '请输入title' }]}
           />
-<% end %>
+
+          <ProFormText
+            name="body"
+            label="body"
+            value={data.body}
+            onChange={(e) => setData('body', e.target.value)}
+            rules={[{ required: true, message: '请输入body' }]}
+          />
+
+          <ProFormText
+            name="status"
+            label="status"
+            value={data.status}
+            onChange={(e) => setData('status', e.target.value)}
+            rules={[{ required: true, message: '请输入status' }]}
+          />
+
         </ProForm>
       </Card>
     </PageContainer>

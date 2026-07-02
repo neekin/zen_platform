@@ -7,7 +7,7 @@
  * - 可配置项
  */
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { Button, Space, Tooltip, Divider } from 'antd'
+import { Button, Space, Tooltip } from 'antd'
 import {
   UndoOutlined,
   RedoOutlined,
@@ -32,9 +32,10 @@ import { $createHeadingNode } from '@lexical/rich-text'
 import { $createQuoteNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import type { ToolbarItemId, ToolbarGroup } from '../../types'
 import { parseToolbarConfig, TOOLBAR_ITEM_META } from '../../toolbar/ToolbarPlugin'
+import { INSERT_IMAGE_COMMAND } from '../plugins/image'
 
 /** 工具栏图标映射 */
 const TOOLBAR_ICONS: Record<ToolbarItemId, React.ReactNode> = {
@@ -69,6 +70,7 @@ interface ToolbarProps {
 export default function Toolbar({ config, disabled }: ToolbarProps) {
   const [editor] = useLexicalComposerContext()
   const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set())
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 监听格式变化
   useEffect(() => {
@@ -132,12 +134,39 @@ export default function Toolbar({ config, disabled }: ToolbarProps) {
           console.log('Link command')
           break
         case 'image':
-          // TODO: 打开图片上传对话框
-          console.log('Image command')
+          // 打开文件选择器
+          fileInputRef.current?.click()
           break
         default:
           console.warn(`Command not implemented: ${id}`)
       }
+    },
+    [editor],
+  )
+
+  // 处理文件选择
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (!files || files.length === 0) return
+
+      const file = files[0]
+      if (!file.type.startsWith('image/')) return
+
+      // 读取文件并转为 base64 临时显示
+      // 实际应该通过 uploader 上传
+      const reader = new FileReader()
+      reader.onload = () => {
+        const src = reader.result as string
+        editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+          src,
+          alt: file.name,
+        })
+      }
+      reader.readAsDataURL(file)
+
+      // 重置 input
+      e.target.value = ''
     },
     [editor],
   )
@@ -166,24 +195,45 @@ export default function Toolbar({ config, disabled }: ToolbarProps) {
   const groups = parseToolbarConfig(config)
 
   return (
-    <div
-      style={{
-        borderBottom: '1px solid var(--ant-color-border)',
-        padding: '4px 8px',
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 2,
-      }}
-    >
-      {groups.map((group, index) => (
-        <span key={group.id}>
-          {index > 0 && <Divider type="vertical" />}
-          <Space size={2}>
-            {group.items.map((id) => renderItem(id))}
-          </Space>
-        </span>
-      ))}
-    </div>
+    <>
+      <div
+        style={{
+          borderBottom: '1px solid var(--ant-color-border)',
+          padding: '4px 8px',
+          display: 'flex',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 2,
+        }}
+      >
+        {groups.map((group, index) => (
+          <span key={group.id}>
+            {index > 0 && (
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 1,
+                  height: 20,
+                  margin: '0 4px',
+                  background: 'var(--ant-color-border)',
+                }}
+              />
+            )}
+            <Space size={2}>
+              {group.items.map((id) => renderItem(id))}
+            </Space>
+          </span>
+        ))}
+      </div>
+
+      {/* 隐藏的文件输入 */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
+    </>
   )
 }

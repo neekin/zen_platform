@@ -24,8 +24,20 @@ interface DirectUploadResponse {
 
 /** Rails CSRF Token */
 function getCSRFToken(): string {
+  // 从 meta 标签获取（Rails 默认方式）
   const meta = document.querySelector('meta[name="csrf-token"]')
-  return meta?.getAttribute('content') || ''
+  if (meta) return meta.getAttribute('content') || ''
+
+  // 从 cookie 获取（备用方式）
+  const cookies = document.cookie.split(';')
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=')
+    if (name === 'csrf_token' || name === '_csrf_token') {
+      return decodeURIComponent(value)
+    }
+  }
+
+  return ''
 }
 
 /** Active Storage 上传器 */

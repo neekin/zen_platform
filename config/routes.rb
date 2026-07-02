@@ -9,6 +9,10 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Swagger UI
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
+
   namespace :admin do
     root "dashboard#index"
     get  "login", to: "sessions#new"
@@ -19,6 +23,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "health", to: "health#check"
+      post "auth/login", to: "auth#login"
+      get "auth/me", to: "auth#me"
       resources :users, only: %i[index show]
       resources :payment, only: %i[create]
     end

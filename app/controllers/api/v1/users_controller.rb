@@ -6,6 +6,9 @@ module Api
       include Api::ApiKeyAuthenticatable
       include Api::JwtAuthenticatable
       include Api::BearerTokenAuthenticatable
+      include Api::SwaggerDocControllable
+
+      swagger_tag "用户管理"
 
       before_action { authenticate_with :api_key, :jwt, :bearer_token }
 

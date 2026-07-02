@@ -1,0 +1,21 @@
+Usage:
+  rails generate zen:admin ModelName [field:type field:type]
+
+Description:
+    Generates an Admin CRUD controller with Inertia/React pages.
+
+    This generates:
+        - Admin controller with CRUD actions
+        - React pages (Index, Show, New, Edit) using Ant Design Pro
+        - Routes for the resource
+
+Example:
+    rails generate zen:admin Article title:string body:text status:integer
+
+    This will create:
+        - app/controllers/admin/articles_controller.rb
+        - app/frontend/pages/admin/articles/Index.tsx
+        - app/frontend/pages/admin/articles/Show.tsx
+        - app/frontend/pages/admin/articles/New.tsx
+        - app/frontend/pages/admin/articles/Edit.tsx
+        - Adds routes to config/routes.rb

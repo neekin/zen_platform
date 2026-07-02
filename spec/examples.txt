@@ -1,0 +1,12 @@
+example_id                                        | status | run_time        |
+------------------------------------------------- | ------ | --------------- |
+./spec/requests/api/v1/auth_spec.rb[1:1:1:1:1]    | passed | 0.00417 seconds |
+./spec/requests/api/v1/auth_spec.rb[1:1:1:2:1]    | passed | 0.00088 seconds |
+./spec/requests/api/v1/auth_spec.rb[1:2:1:1:1]    | passed | 0.00313 seconds |
+./spec/requests/api/v1/auth_spec.rb[1:2:1:2:1]    | passed | 0.0009 seconds  |
+./spec/requests/api/v1/payment_spec.rb[1:1:1:1:1] | passed | 0.00406 seconds |
+./spec/requests/api/v1/payment_spec.rb[1:1:1:2:1] | passed | 0.00152 seconds |
+./spec/requests/api/v1/users_spec.rb[1:1:1:1:1]   | passed | 0.00356 seconds |
+./spec/requests/api/v1/users_spec.rb[1:1:1:2:1]   | passed | 0.00137 seconds |
+./spec/requests/api/v1/users_spec.rb[1:2:1:1:1]   | passed | 0.05126 seconds |
+./spec/requests/api/v1/users_spec.rb[1:2:1:2:1]   | passed | 0.0043 seconds  |

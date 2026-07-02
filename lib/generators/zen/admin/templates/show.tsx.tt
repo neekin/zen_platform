@@ -4,7 +4,7 @@
  */
 import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
-import { Card, Descriptions, Button, Space, Popconfirm, message } from 'antd'
+import { App, Card, Descriptions, Button, Space, Popconfirm } from 'antd'
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
@@ -17,6 +17,8 @@ interface <%= class_name %> {
 }
 
 function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>: <%= class_name %> }) {
+  const { message } = App.useApp()
+
   return (
     <PageContainer
       title="<%= class_name %>详情"

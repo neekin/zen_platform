@@ -14,7 +14,7 @@ import {
   ProFormText,
 } from '@ant-design/pro-components'
 import { router, usePage } from '@inertiajs/react'
-import { Button, Divider, Space, Tabs, notification, theme } from 'antd'
+import { App, Button, Divider, Space, Tabs, theme } from 'antd'
 import { useEffect, useState } from 'react'
 import type { SharedProps } from '../../types'
 
@@ -28,6 +28,7 @@ type LoginType = 'phone' | 'account'
 // }
 
 const Page = () => {
+  const { notification } = App.useApp()
   const [loginType, _setLoginType] = useState<LoginType>('account')
   const [loading, setLoading] = useState(false)
   const { token } = theme.useToken()

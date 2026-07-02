@@ -51,6 +51,9 @@ rails generate zen:api Article title:string body:text
 app/frontend/modules/content/
 ├── index.ts                    # 模块入口
 ├── types/index.ts              # 核心类型定义
+├── toolbar/
+│   ├── ToolbarPlugin.ts        # 工具栏配置解析
+│   └── ToolbarRegistry.ts      # 工具栏注册表（插件自注册）
 ├── editor/
 │   ├── RichTextEditor.tsx      # 编辑器主组件
 │   ├── toolbar/Toolbar.tsx     # 工具栏组件
@@ -64,8 +67,17 @@ app/frontend/modules/content/
 │       ├── heading/
 │       ├── quote/
 │       ├── list/
-│       ├── link/
-│       └── image/              # 图片插件（支持上传/拖拽/缩放）
+│       ├── link/               # 链接插件（支持对话框输入）
+│       ├── image/              # 图片插件（支持上传/拖拽/缩放）
+│       ├── table/              # 表格插件（支持行列选择）
+│       ├── code-block/         # 代码块插件（支持语言选择）
+│       ├── slash-commands/     # 斜杠命令（支持键盘导航）
+│       ├── mermaid/            # Mermaid 图表（流程图、序列图等）
+│       ├── math/               # 数学公式（KaTeX 渲染）
+│       ├── video/              # 视频嵌入（YouTube、Bilibili 等）
+│       ├── attachment/         # 附件上传（拖拽、下载）
+│       ├── mention/            # @提及（用户搜索）
+│       └── emoji/              # 表情符号（分类、搜索）
 ├── renderer/
 │   └── RichTextViewer.tsx      # 只读查看器
 ├── upload/
@@ -108,29 +120,105 @@ const uploader = new ActiveStorageUploader({
 - 支持图片上传
 - Modal 浮层表单编辑
 
+### 7. Toolbar 重构 (插件自注册) ✅
+- 创建 ToolbarRegistry 注册表
+- 插件自注册工具栏项，无需修改核心文件
+- ToolbarItemId 改为 string 类型，支持扩展
+- 所有内置插件已迁移到自注册模式
+
+### 8. Table Plugin ✅
+- 使用 @lexical/table 官方包
+- 支持 8x8 尺格选择器
+- 支持行列插入
+
+### 9. Code Block Plugin ✅
+- 使用 @lexical/code 官方包
+- 支持 20+ 编程语言选择
+- 搜索过滤功能
+
+### 10. Slash Commands ✅
+- 输入 / 触发命令菜单
+- 支持键盘导航（上下箭头、回车、Esc）
+- 支持搜索过滤
+- 包含标题、列表、引用、代码块、表格等命令
+
+### 11. Mermaid Chart Plugin ✅
+- 使用 mermaid 库渲染图表
+- 支持实时预览和编辑
+- 支持多种图表类型（流程图、序列图、甘特图等）
+
+### 12. Math Formula Plugin ✅
+- 使用 KaTeX 渲染数学公式
+- 支持行内和块级公式
+- 实时预览功能
+
+### 13. Video Plugin ✅
+- 支持 YouTube, Bilibili, Vimeo 等平台
+- 响应式 iframe 嵌入
+- URL 自动检测和转换
+
+### 14. Attachment Plugin ✅
+- 支持文件上传和拖拽
+- 文件图标和大小显示
+- 下载链接功能
+
+### 15. Mention @提及 Plugin ✅
+- 输入 @ 触发用户搜索
+- 支持键盘导航
+- 可配置用户搜索函数
+
+### 16. Emoji Plugin ✅
+- 内置表情分类和搜索
+- 支持 : 触发
+- 8 个表情分类（常用、手势、人物、动物等）
+
+### 17. Model DSL 系统 ✅
+- 声明式定义模型字段、关联、展示方式
+- 支持 field、display、product 配置
+- 自动推断字段组件类型
+- 语法: `field :title, :string, required: true`
+
+### 18. 增强脚手架生成器 ✅
+- 支持 `--rich-text` 富文本字段
+- 支持 `--enums` 枚举字段
+- 支持 `--image` 图片上传字段
+- 支持 `--file` 文件上传字段
+- 支持 `--tags` 标签字段
+- 自动生成对应组件
+
+### 19. Admin 组件库 ✅
+- ImageUpload: 图片上传组件（预览、拖拽、裁剪）
+- FileUpload: 文件上传组件（多文件、进度、列表）
+- TagInput: 标签输入组件（建议、远程搜索）
+- StatusBadge: 状态标签组件（颜色映射）
+- RelativeTime: 相对时间组件（3分钟前）
+
 ---
 
 ## 待完成的任务
 
 ### 高优先级
-- [ ] 修复 Active Storage CSRF token 问题（图片上传 500 错误）
-- [ ] 完善 Image Plugin 的上传流程（当前使用 base64 临时方案）
-- [ ] 添加 Link Plugin 对话框（输入 URL）
+- [x] 修复 Active Storage CSRF token 问题（图片上传 500 错误）✅ 2026-07-02
+- [x] 完善 Image Plugin 的上传流程（当前使用 base64 临时方案）✅ 2026-07-02
+- [x] 添加 Link Plugin 对话框（输入 URL）✅ 2026-07-02
 
 ### 中优先级
-- [ ] Table Plugin 实现
-- [ ] Code Block Plugin 实现
-- [ ] Markdown 快捷输入支持
-- [ ] Slash Commands（斜杠命令）
+- [x] Table Plugin 实现 ✅ 2026-07-02
+- [x] Code Block Plugin 实现 ✅ 2026-07-02
+- [x] Markdown 快捷输入支持 ✅ 2026-07-02
+- [x] Slash Commands（斜杠命令）✅ 2026-07-02
+- [x] Model DSL 系统 ✅ 2026-07-02
+- [x] 增强脚手架生成器 ✅ 2026-07-02
+- [x] Admin 组件库 ✅ 2026-07-02
 
 ### 低优先级
-- [ ] AI Assistant Plugin
-- [ ] Mermaid 图表 Plugin
-- [ ] Math 公式 Plugin
-- [ ] Video Plugin
-- [ ] Attachment Plugin
-- [ ] Mention @提及
-- [ ] Emoji Plugin
+- [ ] AI Assistant Plugin（需要后端 AI 端点）
+- [x] Mermaid 图表 Plugin ✅ 2026-07-02
+- [x] Math 公式 Plugin ✅ 2026-07-02
+- [x] Video Plugin ✅ 2026-07-02
+- [x] Attachment Plugin ✅ 2026-07-02
+- [x] Mention @提及 ✅ 2026-07-02
+- [x] Emoji Plugin ✅ 2026-07-02
 
 ---
 
@@ -139,7 +227,7 @@ const uploader = new ActiveStorageUploader({
 1. **Active Storage CSRF 问题**
    - 症状：图片上传返回 500 错误
    - 原因：CSRF token 验证失败
-   - 状态：已修复 meta 标签获取方式，待验证
+   - 状态：✅ 已修复 cookie 解析 bug（split('=') 截断 base64 token）
 
 2. **Divider 废弃警告**
    - 症状：Ant Design 6 控制台警告

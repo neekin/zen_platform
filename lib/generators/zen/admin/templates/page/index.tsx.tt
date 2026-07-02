@@ -4,7 +4,7 @@
  */
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable } from '@ant-design/pro-components'
-import { Button, Space, Popconfirm, message } from 'antd'
+import { App, Button, Space, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
@@ -18,6 +18,8 @@ interface <%= class_name %> {
 }
 
 function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
+  const { message } = App.useApp()
+
   const columns: ProColumns<<%= class_name %>>[] = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
 <%= attributes.map { |a| "    { title: '#{a.name}', dataIndex: '#{a.name}', key: '#{a.name}' }" }.join(",\n") %>,

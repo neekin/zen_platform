@@ -14,6 +14,7 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { LinkNode } from '@lexical/link'
+import { ImageNode } from '../editor/plugins/image/ImageNode'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect, useRef } from 'react'
 import type { EditorContent, EditorTheme } from '../types'
@@ -91,7 +92,7 @@ export default function RichTextViewer({
         code: 'zen-text-code',
       },
     },
-    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode],
+    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode],
     editable: false,
     onError: (error: Error) => {
       console.error('Lexical viewer error:', error)

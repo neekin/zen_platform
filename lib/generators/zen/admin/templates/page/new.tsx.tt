@@ -4,12 +4,13 @@
  */
 import { router, useForm } from '@inertiajs/react'
 import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components'
-import { Card, Button, Space, message } from 'antd'
+import { App, Card, Button, Space } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
 function <%= class_name %>New({ errors }: { errors?: string[] }) {
+  const { message } = App.useApp()
   const { data, setData, post, processing } = useForm({
 <%= attributes.map { |a| "    #{a.name}: #{js_default_value(a.type)}" }.join(",\n") %>,
   })
@@ -27,7 +28,7 @@ function <%= class_name %>New({ errors }: { errors?: string[] }) {
     >
       <Card>
         {errors && errors.length > 0 && (
-          <div style={{ marginBottom: 16, color: '#ff4d4f' }}>
+          <div style={{ marginBottom: 16, color: 'var(--ant-color-error)' }}>
             {errors.map((err, i) => <div key={i}>{err}</div>)}
           </div>
         )}

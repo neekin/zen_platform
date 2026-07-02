@@ -19,10 +19,26 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin'
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
+import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin'
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { LinkNode } from '@lexical/link'
+import { TableNode, TableRowNode, TableCellNode } from '@lexical/table'
+import { CodeNode } from '@lexical/code'
+import {
+  HEADING,
+  QUOTE,
+  CODE,
+  UNORDERED_LIST,
+  ORDERED_LIST,
+  BOLD_ITALIC_STAR,
+  BOLD_STAR,
+  ITALIC_STAR,
+  STRIKETHROUGH,
+  INLINE_CODE,
+  LINK,
+} from '@lexical/markdown'
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect, useRef, useState } from 'react'
@@ -40,6 +56,21 @@ import { parseToolbarConfig } from '../toolbar/ToolbarPlugin'
 import { serializeEditorState, deserializeEditorState, EMPTY_STATE } from '../serializer/lexical'
 import { ImageNode } from './plugins/image/ImageNode'
 import { ImagePluginComponent } from './plugins/image'
+import { LinkPluginComponent } from './plugins/link'
+import { TablePluginComponent } from './plugins/table'
+import { CodeBlockPluginComponent } from './plugins/code-block'
+import { SlashCommandsPluginComponent } from './plugins/slash-commands'
+import { MermaidNode } from './plugins/mermaid'
+import { MermaidPluginComponent } from './plugins/mermaid'
+import { MathNode } from './plugins/math'
+import { MathPluginComponent } from './plugins/math'
+import { VideoNode } from './plugins/video'
+import { VideoPluginComponent } from './plugins/video'
+import { AttachmentNode } from './plugins/attachment'
+import { AttachmentPluginComponent } from './plugins/attachment'
+import { MentionNode } from './plugins/mention'
+import { MentionPluginComponent } from './plugins/mention'
+import { EmojiPluginComponent } from './plugins/emoji'
 
 // ==================== 内部插件 ====================
 
@@ -162,7 +193,11 @@ export default function RichTextEditor({
         code: 'zen-text-code',
       },
     },
-    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode],
+    nodes: [
+      HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode,
+      TableNode, TableRowNode, TableCellNode, CodeNode,
+      MermaidNode, MathNode, VideoNode, AttachmentNode, MentionNode,
+    ],
     editable: !readOnly,
     editorState: value ? undefined : EMPTY_STATE,
     onError: (error: Error) => {
@@ -226,12 +261,55 @@ export default function RichTextEditor({
           <HistoryPlugin />
           <ListPlugin />
           <LinkPlugin />
+          <MarkdownShortcutPlugin transformers={[
+            HEADING,
+            QUOTE,
+            CODE,
+            UNORDERED_LIST,
+            ORDERED_LIST,
+            BOLD_ITALIC_STAR,
+            BOLD_STAR,
+            ITALIC_STAR,
+            STRIKETHROUGH,
+            INLINE_CODE,
+            LINK,
+          ]} />
           <InitialValuePlugin value={value} />
           <ChangePlugin onChange={onChange} />
           <MaxLengthPlugin maxLength={maxLength} />
 
           {/* 图片插件 */}
           <ImagePluginComponent config={{ uploader, maxWidth: 800 }} />
+
+          {/* 链接插件 */}
+          <LinkPluginComponent />
+
+          {/* 表格插件 */}
+          <TablePluginComponent />
+
+          {/* 代码块插件 */}
+          <CodeBlockPluginComponent />
+
+          {/* 斜杠命令插件 */}
+          <SlashCommandsPluginComponent />
+
+          {/* Mermaid 图表插件 */}
+          <MermaidPluginComponent />
+
+          {/* 数学公式插件 */}
+          <MathPluginComponent />
+
+          {/* 视频插件 */}
+          <VideoPluginComponent />
+
+          {/* 附件插件 */}
+          <AttachmentPluginComponent config={{ uploader }} />
+
+          {/* @提及插件 */}
+          <MentionPluginComponent />
+
+          {/* 表情插件 */}
+          <EmojiPluginComponent />
 
           {/* 业务插件 */}
           {plugins.map((plugin) => plugin.renderUI?.())}

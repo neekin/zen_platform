@@ -27,6 +27,34 @@ module Zen
       RUBY
     end
 
+    def show_readme
+      say ""
+      say "=" * 60
+      if behavior == :invoke
+        say "生成完成！"
+        say "=" * 60
+        say ""
+        say "已生成以下文件："
+        say "  - app/controllers/api/v1/#{plural_name}_controller.rb"
+        say "  - spec/requests/api/v1/#{plural_name}_spec.rb"
+        say ""
+        say "生成 Swagger 文档："
+        say "  bundle exec rspec spec/requests/api/v1/#{plural_name}_spec.rb --format Rswag::Specs::SwaggerFormatter"
+      else
+        say "销毁完成！"
+        say "=" * 60
+        say ""
+        say "已删除以下文件："
+        say "  - app/controllers/api/v1/#{plural_name}_controller.rb"
+        say "  - spec/requests/api/v1/#{plural_name}_spec.rb"
+        say ""
+        say "如需更新 Swagger 文档，请重新生成："
+        say "  bundle exec rspec spec/requests/api/v1/ --format Rswag::Specs::SwaggerFormatter"
+      end
+      say ""
+      say "=" * 60
+    end
+
     private
 
     def attributes_names

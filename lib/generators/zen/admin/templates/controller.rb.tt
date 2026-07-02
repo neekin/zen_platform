@@ -8,14 +8,10 @@
 # 所以可以直接使用 <%= class_name %> 而不需要 ::<%= class_name %>
 module Admin
   class <%= class_name.pluralize %>Controller < AdminController
-    # 需要登录才能访问
     before_action :require_login
-    # 需要加载记录的操作
-    before_action :set_<%= singular_name %>, only: [:show, :edit, :update, :destroy]
+    before_action :set_<%= singular_name %>, only: [:show, :update, :destroy]
 
     # GET /admin/<%= plural_name %>
-    # 列表页，显示所有 <%= class_name %> 记录
-    # Props: { <%= plural_name %>: Array }
     def index
       @<%= plural_name %> = <%= class_name %>.all
       render inertia: "admin/<%= plural_name %>/Index",
@@ -23,56 +19,31 @@ module Admin
     end
 
     # GET /admin/<%= plural_name %>/:id
-    # 详情页，显示单条记录
-    # Props: { <%= singular_name %>: Object }
     def show
       render inertia: "admin/<%= plural_name %>/Show",
         props: { <%= singular_name %>: @<%= singular_name %>.as_json }
     end
 
-    # GET /admin/<%= plural_name %>/new
-    # 新建页面
-    def new
-      @<%= singular_name %> = <%= class_name %>.new
-      render inertia: "admin/<%= plural_name %>/New"
-    end
-
     # POST /admin/<%= plural_name %>
-    # 创建新记录
-    # 成功后跳转到详情页，失败则重新显示表单
     def create
       @<%= singular_name %> = <%= class_name %>.new(<%= singular_name %>_params)
       if @<%= singular_name %>.save
         redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "创建成功"
       else
-        render inertia: "admin/<%= plural_name %>/New",
-          props: { errors: @<%= singular_name %>.errors.full_messages }
+        redirect_to admin_<%= plural_name %>_path, alert: @<%= singular_name %>.errors.full_messages.join(", ")
       end
     end
 
-    # GET /admin/<%= plural_name %>/:id/edit
-    # 编辑页面
-    # Props: { <%= singular_name %>: Object }
-    def edit
-      render inertia: "admin/<%= plural_name %>/Edit",
-        props: { <%= singular_name %>: @<%= singular_name %>.as_json }
-    end
-
     # PATCH/PUT /admin/<%= plural_name %>/:id
-    # 更新记录
-    # 成功后跳转到详情页，失败则重新显示表单
     def update
       if @<%= singular_name %>.update(<%= singular_name %>_params)
         redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "更新成功"
       else
-        render inertia: "admin/<%= plural_name %>/Edit",
-          props: { <%= singular_name %>: @<%= singular_name %>.as_json, errors: @<%= singular_name %>.errors.full_messages }
+        redirect_to admin_<%= plural_name %>_path, alert: @<%= singular_name %>.errors.full_messages.join(", ")
       end
     end
 
     # DELETE /admin/<%= plural_name %>/:id
-    # 删除记录
-    # 成功后跳转到列表页
     def destroy
       @<%= singular_name %>.destroy
       redirect_to admin_<%= plural_name %>_path, notice: "删除成功"
@@ -80,13 +51,10 @@ module Admin
 
     private
 
-    # 加载单条记录，用于 show/edit/update/destroy 操作
     def set_<%= singular_name %>
       @<%= singular_name %> = <%= class_name %>.find(params[:id])
     end
 
-    # 强参数配置
-    # TODO: 根据实际需求调整允许的字段
     def <%= singular_name %>_params
       params.require(:<%= singular_name %>).permit(<%= permitted_params %>)
     end

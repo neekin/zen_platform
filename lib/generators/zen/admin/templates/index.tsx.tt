@@ -4,11 +4,6 @@
  *
  * Props (从控制器传入):
  * - <%= plural_name %>: <%= class_name %>[] - <%= class_name %> 列表数据
- *
- * 功能:
- * - 显示 <%= class_name %> 列表（使用 ProTable 组件）
- * - 支持查看、编辑、删除操作
- * - 新建按钮跳转到新建页面
  */
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable } from '@ant-design/pro-components'
@@ -17,8 +12,6 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-de
 import AdminLayout from '../../../layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
-// <%= class_name %> 数据类型定义
-// TODO: 根据实际字段调整类型
 interface <%= class_name %> {
   id: number
 <%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
@@ -26,12 +19,7 @@ interface <%= class_name %> {
   updated_at: string
 }
 
-// 设置页面布局
-<%= plural_name.camelize %>.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
-
-export default function <%= plural_name.camelize %>({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
-  // 表格列配置
-  // TODO: 根据需求调整列的显示顺序、宽度、格式等
+function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
   const columns = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
 <%= attributes.map { |a| "    { title: '#{a.name}', dataIndex: '#{a.name}', key: '#{a.name}' }" }.join(",\n") %>,
@@ -42,31 +30,10 @@ export default function <%= plural_name.camelize %>({ <%= plural_name %> }: { <%
       width: 200,
       render: (_: any, record: <%= class_name %>) => (
         <Space>
-          <Button
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}`)}
-          >
-            查看
-          </Button>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}/edit`)}
-          >
-            编辑
-          </Button>
-          <Popconfirm
-            title="确定删除这条记录？"
-            onConfirm={() => {
-              router.delete(`/admin/<%= plural_name %>/${record.id}`, {
-                onSuccess: () => message.success('删除成功'),
-              })
-            }}
-          >
-            <Button type="link" danger icon={<DeleteOutlined />}>
-              删除
-            </Button>
+          <Button type="link" icon={<EyeOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}`)}>查看</Button>
+          <Button type="link" icon={<EditOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}/edit`)}>编辑</Button>
+          <Popconfirm title="确定删除？" onConfirm={() => router.delete(`/admin/<%= plural_name %>/${record.id}`, { onSuccess: () => message.success('删除成功') })}>
+            <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
         </Space>
       ),
@@ -81,16 +48,12 @@ export default function <%= plural_name.camelize %>({ <%= plural_name %> }: { <%
         rowKey="id"
         search={false}
         toolBarRender={() => [
-          <Button
-            key="add"
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => router.visit('/admin/<%= plural_name %>/new')}
-          >
-            新建<%= class_name %>
-          </Button>,
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>/new')}>新建<%= class_name %></Button>,
         ]}
       />
     </PageContainer>
   )
 }
+
+<%= class_name %>Index.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Index

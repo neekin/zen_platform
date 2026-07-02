@@ -34,9 +34,11 @@ module Zen
     end
 
     def add_routes
-      route <<~RUBY
-        resources :#{plural_name}, only: [:index, :show, :new, :create, :edit, :update, :destroy]
-      RUBY
+      # 将路由添加到 admin 命名空间中
+      # 在 delete "logout" 行之后插入，需要先添加换行符
+      route_config = "\n    resources :#{plural_name}, only: [:index, :show, :new, :create, :edit, :update, :destroy]"
+      
+      insert_into_file "config/routes.rb", route_config, after: 'delete "logout", to: "sessions#destroy"'
     end
 
     def show_readme

@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :articles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
   get "home/index"
 
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
@@ -19,6 +18,7 @@ Rails.application.routes.draw do
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
+    resources :articles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
   end
 
   namespace :api do

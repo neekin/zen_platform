@@ -1,0 +1,214 @@
+# frozen_string_literal: true
+
+# <%= class_name %> API 测试
+# 使用 rswag 自动生成 Swagger 文档
+# 运行测试: bundle exec rspec spec/requests/api/v1/<%= plural_name %>_spec.rb
+# 生成文档: bundle exec rspec spec/requests/api/v1/<%= plural_name %>_spec.rb --format Rswag::Specs::SwaggerFormatter
+
+require "swagger_helper"
+
+RSpec.describe "Api::V1::<%= class_name.pluralize %>", type: :request do
+  # GET /api/v1/<%= plural_name %>
+  # 获取 <%= class_name %> 列表
+  path "/api/v1/<%= plural_name %>" do
+    get "获取<%= class_name %>列表" do
+      # Swagger 文档配置
+      tags "<%= class_name %>管理"  # 分组标签
+      produces "application/json"    # 响应格式
+      security [bearer_auth: []]     # 认证方式
+
+      # 请求参数
+      parameter name: :Authorization, in: :header, type: :string, required: true
+
+      response "200", "成功" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string },
+            data: {
+              type: :array,
+              items: {
+                type: :object,
+                properties: {
+                  id: { type: :integer },
+<%= attributes.map { |a| "                  #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>,
+                  created_at: { type: :string },
+                  updated_at: { type: :string }
+                }
+              }
+            }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+
+        run_test!
+      end
+
+      response "401", "未授权" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string }
+          }
+
+        let(:Authorization) { "Bearer invalid_token" }
+
+        run_test!
+      end
+    end
+
+    post "创建<%= class_name %>" do
+      tags "<%= class_name %>管理"
+      consumes "application/json"
+      produces "application/json"
+      security [bearer_auth: []]
+
+      parameter name: :Authorization, in: :header, type: :string, required: true
+      parameter name: :<%= singular_name %>, in: :body, schema: {
+        type: :object,
+        properties: {
+<%= attributes.map { |a| "          #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>
+        },
+        required: [<%= attributes.map { |a| "\"#{a.name}\"" }.join(", ") %>]
+      }
+
+      response "200", "成功" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string },
+            data: {
+              type: :object,
+              properties: {
+                id: { type: :integer },
+<%= attributes.map { |a| "                #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>,
+                created_at: { type: :string },
+                updated_at: { type: :string }
+              }
+            }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:<%= singular_name %>) { { <%= attributes.map { |a| "#{a.name}: #{a.type == 'integer' ? '1' : "'test_#{a.name}'"}" }.join(", ") %> } }
+
+        run_test!
+      end
+    end
+  end
+
+  path "/api/v1/<%= plural_name %>/{id}" do
+    get "获取<%= class_name %>详情" do
+      tags "<%= class_name %>管理"
+      produces "application/json"
+      security [bearer_auth: []]
+
+      parameter name: :id, in: :path, type: :integer, description: "<%= class_name %>ID"
+      parameter name: :Authorization, in: :header, type: :string, required: true
+
+      response "200", "成功" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string },
+            data: {
+              type: :object,
+              properties: {
+                id: { type: :integer },
+<%= attributes.map { |a| "                #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>,
+                created_at: { type: :string },
+                updated_at: { type: :string }
+              }
+            }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:<%= singular_name %>) { <%= class_name %>.create!(<%= attributes.map { |a| "#{a.name}: #{a.type == 'integer' ? '1' : "'test_#{a.name}'"}" }.join(", ") %>) }
+        let(:id) { <%= singular_name %>.id }
+
+        run_test!
+      end
+
+      response "404", "记录不存在" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:id) { 0 }
+
+        run_test!
+      end
+    end
+
+    put "更新<%= class_name %>" do
+      tags "<%= class_name %>管理"
+      consumes "application/json"
+      produces "application/json"
+      security [bearer_auth: []]
+
+      parameter name: :id, in: :path, type: :integer, description: "<%= class_name %>ID"
+      parameter name: :Authorization, in: :header, type: :string, required: true
+      parameter name: :<%= singular_name %>, in: :body, schema: {
+        type: :object,
+        properties: {
+<%= attributes.map { |a| "          #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>
+        }
+      }
+
+      response "200", "成功" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string },
+            data: {
+              type: :object,
+              properties: {
+                id: { type: :integer },
+<%= attributes.map { |a| "                #{a.name}: { type: :#{openapi_type(a.type)} }" }.join(",\n") %>,
+                created_at: { type: :string },
+                updated_at: { type: :string }
+              }
+            }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:<%= singular_name %>) { <%= class_name %>.create!(<%= attributes.map { |a| "#{a.name}: #{a.type == 'integer' ? '1' : "'test_#{a.name}'"}" }.join(", ") %>) }
+        let(:id) { <%= singular_name %>.id }
+        let(:<%= singular_name %>) { { <%= attributes.map { |a| "#{a.name}: #{a.type == 'integer' ? '2' : "'updated_#{a.name}'"}" }.join(", ") %> } }
+
+        run_test!
+      end
+    end
+
+    delete "删除<%= class_name %>" do
+      tags "<%= class_name %>管理"
+      produces "application/json"
+      security [bearer_auth: []]
+
+      parameter name: :id, in: :path, type: :integer, description: "<%= class_name %>ID"
+      parameter name: :Authorization, in: :header, type: :string, required: true
+
+      response "200", "成功" do
+        schema type: :object,
+          properties: {
+            code: { type: :integer },
+            message: { type: :string }
+          }
+
+        let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:<%= singular_name %>) { <%= class_name %>.create!(<%= attributes.map { |a| "#{a.name}: #{a.type == 'integer' ? '1' : "'test_#{a.name}'"}" }.join(", ") %>) }
+        let(:id) { <%= singular_name %>.id }
+
+        run_test!
+      end
+    end
+  end
+end

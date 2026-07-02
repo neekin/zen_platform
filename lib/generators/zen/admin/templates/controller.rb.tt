@@ -1,0 +1,91 @@
+# frozen_string_literal: true
+
+# <%= class_name %> 管理控制器
+# 用于 Admin 后台的 CRUD 操作
+# 对应的 React 页面位于: app/frontend/pages/admin/<%= plural_name %>/
+module Admin
+  class <%= class_name.pluralize %>Controller < AdminController
+    # 需要登录才能访问
+    before_action :require_login
+    # 需要加载记录的操作
+    before_action :set_<%= singular_name %>, only: [:show, :edit, :update, :destroy]
+
+    # GET /admin/<%= plural_name %>
+    # 列表页，显示所有 <%= class_name %> 记录
+    # Props: { <%= plural_name %>: Array }
+    def index
+      @<%= plural_name %> = <%= class_name %>.all
+      render inertia: "admin/<%= plural_name.camelize %>/Index",
+        props: { <%= plural_name %>: @<%= plural_name %>.as_json }
+    end
+
+    # GET /admin/<%= plural_name %>/:id
+    # 详情页，显示单条记录
+    # Props: { <%= singular_name %>: Object }
+    def show
+      render inertia: "admin/<%= plural_name.camelize %>/Show",
+        props: { <%= singular_name %>: @<%= singular_name %>.as_json }
+    end
+
+    # GET /admin/<%= plural_name %>/new
+    # 新建页面
+    def new
+      @<%= singular_name %> = <%= class_name %>.new
+      render inertia: "admin/<%= plural_name.camelize %>/New"
+    end
+
+    # POST /admin/<%= plural_name %>
+    # 创建新记录
+    # 成功后跳转到详情页，失败则重新显示表单
+    def create
+      @<%= singular_name %> = <%= class_name %>.new(<%= singular_name %>_params)
+      if @<%= singular_name %>.save
+        redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "创建成功"
+      else
+        render inertia: "admin/<%= plural_name.camelize %>/New",
+          props: { errors: @<%= singular_name %>.errors.full_messages }
+      end
+    end
+
+    # GET /admin/<%= plural_name %>/:id/edit
+    # 编辑页面
+    # Props: { <%= singular_name %>: Object }
+    def edit
+      render inertia: "admin/<%= plural_name.camelize %>/Edit",
+        props: { <%= singular_name %>: @<%= singular_name %>.as_json }
+    end
+
+    # PATCH/PUT /admin/<%= plural_name %>/:id
+    # 更新记录
+    # 成功后跳转到详情页，失败则重新显示表单
+    def update
+      if @<%= singular_name %>.update(<%= singular_name %>_params)
+        redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "更新成功"
+      else
+        render inertia: "admin/<%= plural_name.camelize %>/Edit",
+          props: { <%= singular_name %>: @<%= singular_name %>.as_json, errors: @<%= singular_name %>.errors.full_messages }
+      end
+    end
+
+    # DELETE /admin/<%= plural_name %>/:id
+    # 删除记录
+    # 成功后跳转到列表页
+    def destroy
+      @<%= singular_name %>.destroy
+      redirect_to admin_<%= plural_name %>_path, notice: "删除成功"
+    end
+
+    private
+
+    # 加载单条记录，用于 show/edit/update/destroy 操作
+    def set_<%= singular_name %>
+      @<%= singular_name %> = <%= class_name %>.find(params[:id])
+    end
+
+    # 强参数配置
+    # TODO: 根据实际需求调整允许的字段
+    def <%= singular_name %>_params
+      params.require(:<%= singular_name %>).permit(<%= permitted_params %>)
+    end
+  end
+end

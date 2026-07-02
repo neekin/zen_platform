@@ -1,0 +1,95 @@
+# frozen_string_literal: true
+
+# <%= class_name %> API 控制器
+# 提供 RESTful JSON API 接口
+# Swagger 文档会自动生成，访问: /api-docs
+module Api
+  module V1
+    class <%= class_name.pluralize %>Controller < ApiController
+      # JWT 认证模块
+      include Api::JwtAuthenticatable
+      # Swagger 文档控制模块
+      include Api::SwaggerDocControllable
+
+      # 在 Swagger UI 中的分组标签
+      swagger_tag "<%= class_name %>管理"
+
+      # 认证配置：使用 JWT 认证
+      # 可选: :api_key, :jwt, :bearer_token
+      before_action { authenticate_with :jwt }
+
+      # GET /api/v1/<%= plural_name %>
+      # 获取所有记录
+      # 响应: { code: 0, message: "成功", data: [...] }
+      def index
+        @<%= plural_name %> = <%= class_name %>.all
+        render_success @<%= plural_name %>.as_json
+      end
+
+      # GET /api/v1/<%= plural_name %>/:id
+      # 获取单条记录
+      # 响应: { code: 0, message: "成功", data: {...} }
+      # 404: { code: 1, message: "记录不存在" }
+      def show
+        @<%= singular_name %> = <%= class_name %>.find_by(id: params[:id])
+        if @<%= singular_name %>
+          render_success @<%= singular_name %>.as_json
+        else
+          render_error(message: "记录不存在", status: :not_found)
+        end
+      end
+
+      # POST /api/v1/<%= plural_name %>
+      # 创建新记录
+      # 请求体: { <%= singular_name %>: { <%= attributes.map { |a| "#{a.name}: ..." }.join(", ") %> } }
+      # 响应: { code: 0, message: "成功", data: {...} }
+      # 错误: { code: 1, message: "错误信息" }
+      def create
+        @<%= singular_name %> = <%= class_name %>.new(<%= singular_name %>_params)
+        if @<%= singular_name %>.save
+          render_success @<%= singular_name %>.as_json
+        else
+          render_error(message: @<%= singular_name %>.errors.full_messages.join(", "))
+        end
+      end
+
+      # PATCH/PUT /api/v1/<%= plural_name %>/:id
+      # 更新记录
+      # 请求体: { <%= singular_name %>: { <%= attributes.map { |a| "#{a.name}: ..." }.join(", ") %> } }
+      # 响应: { code: 0, message: "成功", data: {...} }
+      # 404: { code: 1, message: "记录不存在" }
+      def update
+        @<%= singular_name %> = <%= class_name %>.find_by(id: params[:id])
+        if @<%= singular_name %>.nil?
+          render_error(message: "记录不存在", status: :not_found)
+        elsif @<%= singular_name %>.update(<%= singular_name %>_params)
+          render_success @<%= singular_name %>.as_json
+        else
+          render_error(message: @<%= singular_name %>.errors.full_messages.join(", "))
+        end
+      end
+
+      # DELETE /api/v1/<%= plural_name %>/:id
+      # 删除记录
+      # 响应: { code: 0, message: "成功" }
+      # 404: { code: 1, message: "记录不存在" }
+      def destroy
+        @<%= singular_name %> = <%= class_name %>.find_by(id: params[:id])
+        if @<%= singular_name %>
+          @<%= singular_name %>.destroy
+          render_success
+        else
+          render_error(message: "记录不存在", status: :not_found)
+        end
+      end
+
+      private
+
+      # 强参数配置
+      # TODO: 根据实际需求调整允许的字段
+      def <%= singular_name %>_params
+        params.require(:<%= singular_name %>).permit(<%= permitted_params %>)
+      end
+    end
+  end
+end

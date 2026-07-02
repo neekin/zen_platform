@@ -1,0 +1,21 @@
+Usage:
+  rails generate zen:api ModelName [field:type field:type]
+
+Description:
+    Generates an API CRUD controller with rswag tests.
+
+    This generates:
+        - API controller with CRUD actions (index, show, create, update, destroy)
+        - rswag test specs for Swagger documentation
+        - Routes for the resource
+
+Example:
+    rails generate zen:api Article title:string body:text status:integer
+
+    This will create:
+        - app/controllers/api/v1/articles_controller.rb
+        - spec/requests/api/v1/articles_spec.rb
+        - Adds routes to config/routes.rb
+
+    To generate Swagger documentation:
+        bundle exec rspec spec/requests/api/v1/articles_spec.rb --format Rswag::Specs::SwaggerFormatter

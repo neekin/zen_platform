@@ -1,0 +1,84 @@
+/**
+ * <%= class_name %> 详情页
+ * 路由: /admin/<%= plural_name %>/:id
+ *
+ * Props (从控制器传入):
+ * - <%= singular_name %>: <%= class_name %> - 单条 <%= class_name %> 数据
+ *
+ * 功能:
+ * - 显示 <%= class_name %> 详细信息（使用 Descriptions 组件）
+ * - 支持编辑、删除操作
+ * - 返回列表按钮
+ */
+import { router } from '@inertiajs/react'
+import { PageContainer } from '@ant-design/pro-components'
+import { Card, Descriptions, Button, Space, Popconfirm, message } from 'antd'
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import AdminLayout from '../../../layouts/AdminLayout'
+import type { ReactNode } from 'react'
+
+// <%= class_name %> 数据类型定义
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  created_at: string
+  updated_at: string
+}
+
+// 设置页面布局
+<%= plural_name.camelize %>.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+
+export default function Show<%= class_name %>({ <%= singular_name %> }: { <%= singular_name %>: <%= class_name %> }) {
+  return (
+    <PageContainer
+      title="<%= class_name %>详情"
+      extra={[
+        // 返回列表按钮
+        <Button
+          key="back"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => router.visit('/admin/<%= plural_name %>')}
+        >
+          返回列表
+        </Button>,
+        // 编辑按钮
+        <Button
+          key="edit"
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() => router.visit(`/admin/<%= plural_name %>/${<%= singular_name %>.id}/edit`)}
+        >
+          编辑
+        </Button>,
+        // 删除按钮（带确认弹窗）
+        <Popconfirm
+          key="delete"
+          title="确定删除这条记录？"
+          onConfirm={() => {
+            router.delete(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, {
+              onSuccess: () => {
+                message.success('删除成功')
+                router.visit('/admin/<%= plural_name %>')
+              },
+            })
+          }}
+        >
+          <Button danger icon={<DeleteOutlined />}>
+            删除
+          </Button>
+        </Popconfirm>,
+      ]}
+    >
+      <Card>
+        {/* 详情展示区域 */}
+        {/* TODO: 根据需求调整字段显示顺序和格式 */}
+        <Descriptions bordered column={1}>
+          <Descriptions.Item label="ID">{<%= singular_name %>.id}</Descriptions.Item>
+<%= attributes.map { |a| "          <Descriptions.Item label=\"#{a.name}\">{<%= singular_name %>.#{a.name}}</Descriptions.Item>" }.join("\n") %>
+          <Descriptions.Item label="创建时间">{<%= singular_name %>.created_at}</Descriptions.Item>
+          <Descriptions.Item label="更新时间">{<%= singular_name %>.updated_at}</Descriptions.Item>
+        </Descriptions>
+      </Card>
+    </PageContainer>
+  )
+}

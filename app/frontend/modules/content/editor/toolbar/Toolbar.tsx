@@ -34,7 +34,7 @@ import { $setBlocksType } from '@lexical/selection'
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
 import { useCallback, useEffect, useState } from 'react'
 import type { ToolbarItemId, ToolbarGroup } from '../../types'
-import { parseToolbarConfig, TOOLBAR_ITEM_META } from './ToolbarPlugin'
+import { parseToolbarConfig, TOOLBAR_ITEM_META } from '../../toolbar/ToolbarPlugin'
 
 /** 工具栏图标映射 */
 const TOOLBAR_ICONS: Record<ToolbarItemId, React.ReactNode> = {

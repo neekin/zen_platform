@@ -47,11 +47,11 @@ export const menuRoutes = {
     // ===========================================
     // 以下是示例菜单项，请根据实际需求修改
     // ===========================================
-    // {
-    //   path: '/admin/articles',
-    //   name: '文章管理',
-    //   icon: <FileTextOutlined />,
-    // },
+    {
+      path: '/admin/articles',
+      name: '文章管理',
+      icon: <FileTextOutlined />,
+    },
     // {
     //   path: '/admin/products',
     //   name: '商品管理',

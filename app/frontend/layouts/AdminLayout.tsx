@@ -2,9 +2,6 @@ import { ConfigProvider, theme } from 'antd'
 import { ProLayout } from '@ant-design/pro-components'
 import { router, usePage } from '@inertiajs/react'
 import {
-  DashboardOutlined,
-  UserOutlined,
-  SettingOutlined,
   LogoutOutlined,
   BellOutlined,
   QuestionCircleOutlined,
@@ -12,27 +9,7 @@ import {
 import { Dropdown, Badge, Tooltip } from 'antd'
 import type { ReactNode } from 'react'
 import '../styles/admin.css'
-
-const menuRoutes = {
-  route: '/admin',
-  routes: [
-    {
-      path: '/admin',
-      name: '仪表盘',
-      icon: <DashboardOutlined />,
-    },
-    {
-      path: '/admin/users',
-      name: '用户管理',
-      icon: <UserOutlined />,
-    },
-    {
-      path: '/admin/settings',
-      name: '系统设置',
-      icon: <SettingOutlined />,
-    },
-  ],
-}
+import { menuRoutes } from '../config/adminMenus'
 
 const darkTheme = {
   algorithm: theme.darkAlgorithm,

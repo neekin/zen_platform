@@ -39,6 +39,30 @@ module Zen
       RUBY
     end
 
+    def show_readme
+      say ""
+      say "=" * 60
+      say "生成完成！"
+      say "=" * 60
+      say ""
+      say "请手动添加侧边栏菜单："
+      say ""
+      say "1. 打开配置文件: app/frontend/config/adminMenus.tsx"
+      say ""
+      say "2. 在 routes 数组中添加以下内容："
+      say ""
+      say "  {"
+      say "    path: '/admin/#{plural_name}',"
+      say "    name: '#{class_name}管理',"
+      say "    icon: <FileTextOutlined />,"
+      say "  },"
+      say ""
+      say "3. 在文件顶部导入图标："
+      say "   import { FileTextOutlined } from '@ant-design/icons'"
+      say ""
+      say "=" * 60
+    end
+
     private
 
     def attributes_names

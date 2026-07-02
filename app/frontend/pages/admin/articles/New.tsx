@@ -11,9 +11,9 @@ import type { ReactNode } from 'react'
 
 function ArticleNew({ errors }: { errors?: string[] }) {
   const { data, setData, post, processing } = useForm({
-    title: MyString,
-    body: MyText,
-    status: 1,
+    title: '',
+    body: '',
+    status: 0,
   })
 
   const handleSubmit = () => {

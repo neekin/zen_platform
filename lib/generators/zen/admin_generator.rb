@@ -97,5 +97,13 @@ module Zen
     def columns_for_table
       attributes.map { |a| { name: a.name, type: a.type } }
     end
+
+    def js_default_value(type)
+      case type
+      when "integer", "decimal", "float" then "0"
+      when "boolean" then "false"
+      else "''"
+      end
+    end
   end
 end

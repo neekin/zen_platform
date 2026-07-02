@@ -11,7 +11,7 @@ import type { ReactNode } from 'react'
 
 function <%= class_name %>New({ errors }: { errors?: string[] }) {
   const { data, setData, post, processing } = useForm({
-<%= attributes.map { |a| "    #{a.name}: #{a.default || (a.type == 'integer' ? '0' : "''")}" }.join(",\n") %>,
+<%= attributes.map { |a| "    #{a.name}: #{js_default_value(a.type)}" }.join(",\n") %>,
   })
 
   const handleSubmit = () => {

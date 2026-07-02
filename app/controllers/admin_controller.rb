@@ -5,6 +5,16 @@ class AdminController < InertiaController
 
   before_action :recover_session_from_cookie
 
+  # 自动从顶层命名空间查找模型类
+  # 例如在 Admin::ArticlesController 中可以直接使用 Article 而不需要 ::Article
+  def self.const_missing(name)
+    if name.to_s.classify.safe_constantize
+      name.to_s.classify.constantize
+    else
+      super
+    end
+  end
+
   private
 
   def require_login

@@ -12,8 +12,7 @@ RSpec.describe Task, type: :model do
     end
 
     it "validates status inclusion" do
-      task.status = "invalid"
-      expect(task).not_to be_valid
+      expect { task.status = "invalid" }.to raise_error(ArgumentError)
     end
 
     it "accepts valid statuses" do

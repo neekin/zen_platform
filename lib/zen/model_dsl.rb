@@ -45,6 +45,12 @@ module Zen
       # field :category_id, :reference, target: Category
       def field(name, type, **options)
         self.zen_fields = zen_fields.merge(name.to_sym => Zen::FieldDefinition.new(name, type, options))
+
+        # 自动集成 ActiveRecord enum
+        if type == :enum && options[:values].is_a?(Array) && !options[:values].empty?
+          values_map = options[:values].each_with_index.to_h { |v, i| [v.to_sym, i] }
+          enum name, values_map
+        end
       end
 
       # 定义 belongs_to 关联
@@ -97,6 +103,17 @@ module Zen
       # 产品形态配置
       def product(type, **options)
         self.zen_product_configs = zen_product_configs + [{ type: type.to_sym, options: options }]
+      end
+
+      # 获取完整元数据（用于前端动态渲染）
+      def zen_meta
+        {
+          model_name: name,
+          fields: zen_fields.transform_values(&:to_h),
+          associations: zen_associations.transform_values(&:to_h),
+          display: zen_display_config,
+          products: zen_product_configs,
+        }
       end
     end
 

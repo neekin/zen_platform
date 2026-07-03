@@ -1,13 +1,53 @@
-/* Zen Platform - Dark Tech Theme */
+/* Zen Platform - Theme System */
 
-:root {
+/* ===== Dark Theme (default) ===== */
+[data-theme="dark"] {
   --zen-bg-primary: #0a0f1e;
   --zen-bg-card: rgba(20, 27, 45, 0.7);
   --zen-bg-glass: rgba(20, 27, 45, 0.6);
+  --zen-bg-sider: rgba(12, 18, 35, 0.9);
+  --zen-bg-header: rgba(10, 15, 30, 0.8);
   --zen-border-glass: rgba(100, 140, 200, 0.15);
+  --zen-border-glass-subtle: rgba(100, 140, 200, 0.08);
   --zen-glow-blue: rgba(22, 119, 255, 0.3);
   --zen-text-primary: rgba(255, 255, 255, 0.85);
   --zen-text-secondary: rgba(255, 255, 255, 0.65);
+  --zen-table-header-bg: rgba(22, 119, 255, 0.08);
+  --zen-table-row-hover: rgba(22, 119, 255, 0.05);
+  --zen-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
+  --zen-shadow-card-hover: 0 8px 32px rgba(22, 119, 255, 0.15);
+  --zen-scrollbar-track: rgba(0, 0, 0, 0.1);
+  --zen-scrollbar-thumb: rgba(100, 140, 200, 0.3);
+  --zen-scrollbar-thumb-hover: rgba(100, 140, 200, 0.5);
+  --zen-header-icon-color: rgba(255, 255, 255, 0.65);
+  --zen-menu-selected-bg: rgba(22, 119, 255, 0.15);
+  --zen-menu-hover-bg: rgba(22, 119, 255, 0.1);
+  --zen-menu-selected-border: #1677FF;
+}
+
+/* ===== Light Theme ===== */
+[data-theme="light"] {
+  --zen-bg-primary: #f5f7fa;
+  --zen-bg-card: #ffffff;
+  --zen-bg-glass: rgba(255, 255, 255, 0.85);
+  --zen-bg-sider: #ffffff;
+  --zen-bg-header: #ffffff;
+  --zen-border-glass: #e8ecf0;
+  --zen-border-glass-subtle: #f0f2f5;
+  --zen-glow-blue: rgba(22, 119, 255, 0.15);
+  --zen-text-primary: rgba(0, 0, 0, 0.88);
+  --zen-text-secondary: rgba(0, 0, 0, 0.55);
+  --zen-table-header-bg: rgba(22, 119, 255, 0.04);
+  --zen-table-row-hover: rgba(22, 119, 255, 0.03);
+  --zen-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --zen-shadow-card-hover: 0 4px 20px rgba(22, 119, 255, 0.12);
+  --zen-scrollbar-track: rgba(0, 0, 0, 0.04);
+  --zen-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --zen-scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --zen-header-icon-color: rgba(0, 0, 0, 0.55);
+  --zen-menu-selected-bg: rgba(22, 119, 255, 0.08);
+  --zen-menu-hover-bg: rgba(22, 119, 255, 0.05);
+  --zen-menu-selected-border: #1677FF;
 }
 
 * {
@@ -19,9 +59,9 @@
 body {
   background: var(--zen-bg-primary);
   background-image:
-    radial-gradient(ellipse at 20% 50%, rgba(22, 119, 255, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 50%, rgba(22, 119, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
   min-height: 100vh;
 }
 
@@ -32,9 +72,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--zen-border-glass) !important;
   border-radius: 12px !important;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--zen-shadow-card);
 }
 
 /* Admin layout */
@@ -48,14 +86,14 @@ body {
 }
 
 .ant-pro-layout .ant-layout-sider {
-  background: rgba(12, 18, 35, 0.95) !important;
+  background: var(--zen-bg-sider) !important;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid var(--zen-border-glass) !important;
 }
 
 .ant-pro-layout .ant-layout-header {
-  background: rgba(10, 15, 30, 0.85) !important;
+  background: var(--zen-bg-header) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--zen-border-glass) !important;
@@ -67,12 +105,25 @@ body {
 }
 
 .ant-menu-dark .ant-menu-item-selected {
-  background: rgba(22, 119, 255, 0.15) !important;
-  border-right: 3px solid #1677FF;
+  background: var(--zen-menu-selected-bg) !important;
+  border-right: 3px solid var(--zen-menu-selected-border);
 }
 
 .ant-menu-dark .ant-menu-item:hover {
-  background: rgba(22, 119, 255, 0.1) !important;
+  background: var(--zen-menu-hover-bg) !important;
+}
+
+/* Light mode menu overrides */
+.ant-menu-light {
+  background: transparent !important;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  background: var(--zen-menu-selected-bg) !important;
+}
+
+.ant-menu-light .ant-menu-item:hover {
+  background: var(--zen-menu-hover-bg) !important;
 }
 
 /* Card styling */
@@ -82,17 +133,13 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--zen-border-glass) !important;
   border-radius: 12px !important;
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: var(--zen-shadow-card);
   transition: all 0.3s ease;
 }
 
 .ant-card:hover {
   border-color: rgba(22, 119, 255, 0.3) !important;
-  box-shadow:
-    0 8px 32px rgba(22, 119, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--zen-shadow-card-hover);
 }
 
 /* Statistic cards */
@@ -114,16 +161,16 @@ body {
 }
 
 .ant-table-thead > tr > th {
-  background: rgba(22, 119, 255, 0.08) !important;
+  background: var(--zen-table-header-bg) !important;
   border-bottom: 1px solid var(--zen-border-glass) !important;
 }
 
 .ant-table-tbody > tr > td {
-  border-bottom: 1px solid rgba(100, 140, 200, 0.08) !important;
+  border-bottom: 1px solid var(--zen-border-glass-subtle) !important;
 }
 
 .ant-table-tbody > tr:hover > td {
-  background: rgba(22, 119, 255, 0.05) !important;
+  background: var(--zen-table-row-hover) !important;
 }
 
 /* Tag styling */
@@ -133,11 +180,11 @@ body {
 
 /* Button glow effect */
 .ant-btn-primary {
-  box-shadow: 0 0 20px rgba(22, 119, 255, 0.3);
+  box-shadow: 0 0 20px rgba(22, 119, 255, 0.2);
 }
 
 .ant-btn-primary:hover {
-  box-shadow: 0 0 30px rgba(22, 119, 255, 0.5);
+  box-shadow: 0 0 30px rgba(22, 119, 255, 0.35);
 }
 
 /* Scrollbar */
@@ -147,16 +194,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--zen-scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(100, 140, 200, 0.3);
+  background: var(--zen-scrollbar-thumb);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 140, 200, 0.5);
+  background: var(--zen-scrollbar-thumb-hover);
 }
 
 /* Animations */
@@ -183,4 +230,15 @@ body {
 /* Avatar dropdown */
 .ant-dropdown-trigger {
   cursor: pointer;
+}
+
+/* Theme transition */
+.ant-config-provider,
+.ant-layout,
+.ant-card,
+.ant-statistic-card,
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td,
+.ant-menu {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }

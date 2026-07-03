@@ -61,6 +61,13 @@ module Admin
       redirect_to admin_articles_path, notice: "删除成功"
     end
 
+    # POST /admin/articles/bulk_destroy
+    def bulk_destroy
+      authorize Article, :destroy?
+      Article.where(id: params[:ids]).destroy_all
+      redirect_to admin_articles_path, notice: "批量删除成功"
+    end
+
     private
 
     def set_article

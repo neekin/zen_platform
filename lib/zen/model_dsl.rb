@@ -103,6 +103,17 @@ module Zen
       # 产品形态配置
       def product(type, **options)
         self.zen_product_configs = zen_product_configs + [{ type: type.to_sym, options: options }]
+
+        if type.to_sym == :soft_delete
+          column = options[:column] || :deleted_at
+
+          scope :active, -> { where(column => nil) }
+          default_scope { where(column => nil) }
+
+          define_method(:archive!) { update!(column => Time.current) }
+          define_method(:restore!) { update!(column => nil) }
+          define_method(:archived?) { !!self[column] }
+        end
       end
 
       # 获取完整元数据（用于前端动态渲染）

@@ -71,14 +71,15 @@ module Zen
       # has_many :comments
       # has_many :comments, dependent: :destroy
       def has_many(name, *args, **options)
-        # 保存 DSL 配置（仅对 DSL 声明的关联）
-        if options.key?(:dependent) || options.key?(:class_name) || args.empty?
-          assoc = Zen::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
-          self.zen_associations = zen_associations.merge(name.to_sym => assoc)
-        end
-
         # 调用 ActiveRecord 的 has_many 创建实际关联
         super(name, *args, **options)
+
+        # 只保存 DSL 声明的关联，排除 PaperTrail 等内部关联
+        return if name == :versions
+        return unless options.key?(:dependent) || options.key?(:class_name) || args.empty?
+
+        assoc = Zen::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
+        self.zen_associations = zen_associations.merge(name.to_sym => assoc)
       end
 
       # 定义 has_many through 关联

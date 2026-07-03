@@ -61,6 +61,8 @@ function ArticleIndex({ meta, articles, categories, pagination }: ArticleIndexPr
         data={articles}
         basePath="/admin/articles"
         createText="新建文章"
+        onCreate={() => { setEditing(null); setModalOpen(true) }}
+        onEdit={(record) => { setEditing(record); setModalOpen(true) }}
         serverSide
         pagination={{
           current: pagination.current_page,

@@ -9,11 +9,11 @@ import CalendarView from '../../../../modules/admin/components/products/Calendar
 import { router } from '@inertiajs/react'
 import type { ReactNode } from 'react'
 
-interface <%= class_name %>KanbanProps {
+interface <%= class_name %>CalendarProps {
   <%= plural_name %>: Record<string, any>[]
 }
 
-function <%= class_name %>Calendar({ <%= plural_name %> }: <%= class_name %>KanbanProps) {
+function <%= class_name %>Calendar({ <%= plural_name %> }: <%= class_name %>CalendarProps) {
   return (
     <CalendarView
       data={<%= plural_name %>}

@@ -1,19 +1,13 @@
 import {
   ProForm, ProFormText, ProFormTextArea, ProFormDigit, ProFormSwitch,
-  ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard,
+  ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard, Form,
 } from '@ant-design/pro-components'
-import { useState } from 'react'
+import { lazy, Suspense } from 'react'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '../../types/dsl'
 
-// Lazy load heavy components
-let _RichTextEditor: any = null
-function RichTextEditor(props: any) {
-  if (!_RichTextEditor) {
-    const mod = require('../../modules/content')
-    _RichTextEditor = mod.RichTextEditor
-  }
-  return _RichTextEditor ? <_RichTextEditor {...props} /> : null
-}
+const LazyRichTextEditor = lazy(() =>
+  import('../../modules/content').then(m => ({ default: m.RichTextEditor }))
+)
 
 export interface DslFormProps {
   meta: DslMeta
@@ -138,16 +132,7 @@ function DslFormField({
   // 按 as: 映射
   switch (fieldConfig.as) {
     case 'rich_text':
-      return (
-        <ProForm.Item name={name} label={label} rules={rules}>
-          <RichTextEditor
-            value={'{}'}
-            onChange={() => {}}
-            disabled={disabled}
-            toolbar={['bold', 'italic', 'underline', 'heading', 'quote', 'bullet-list', 'numbered-list', 'link', 'image']}
-          />
-        </ProForm.Item>
-      )
+      return <RichTextFormField name={name} label={label} rules={rules} disabled={disabled} />
     case 'switch':
       return <ProFormSwitch name={name} label={label} disabled={disabled} />
     case 'textarea':
@@ -174,4 +159,23 @@ function DslFormField({
     default:
       return <ProFormText name={name} label={label} rules={rules} disabled={disabled} />
   }
+}
+
+function RichTextFormField({ name, label, rules, disabled }: {
+  name: string; label: string; rules: any[]; disabled: boolean
+}) {
+  const form = ProForm.useFormInstance()
+  const content = Form.useWatch(name, form) || '{}'
+  return (
+    <ProForm.Item name={name} label={label} rules={rules}>
+      <Suspense fallback={<div style={{ padding: 16, color: 'var(--ant-color-text-tertiary)' }}>加载编辑器...</div>}>
+        <LazyRichTextEditor
+          value={content}
+          onChange={(val: string) => form.setFieldValue(name, val)}
+          disabled={disabled}
+          toolbar={['bold', 'italic', 'underline', 'heading', 'quote', 'bullet-list', 'numbered-list', 'link', 'image']}
+        />
+      </Suspense>
+    </ProForm.Item>
+  )
 }

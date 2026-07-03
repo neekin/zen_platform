@@ -42,6 +42,8 @@ function ProductIndex({ meta, products }: ProductIndexProps) {
         data={products}
         basePath="/admin/products"
         createText="新建商品"
+        onCreate={() => { setEditing(null); setModalOpen(true) }}
+        onEdit={(record) => { setEditing(record); setModalOpen(true) }}
       />
 
       <Modal

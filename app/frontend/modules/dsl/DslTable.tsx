@@ -1,6 +1,6 @@
 import { PageContainer, ProTable } from '@ant-design/pro-components'
 import { Button, Space, Popconfirm, App, Input } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { router } from '@inertiajs/react'
 import { useState, useCallback } from 'react'
 import type { ProColumns } from '@ant-design/pro-components'
@@ -25,9 +25,13 @@ export interface DslTableProps {
     onChange: (keys: React.Key[]) => void
   }
   onBulkDelete?: (ids: React.Key[]) => void
+  /** 创建按钮回调（modal 模式下使用） */
+  onCreate?: () => void
+  /** 编辑按钮回调（modal 模式下使用） */
+  onEdit?: (record: Record<string, any>) => void
   /** 服务端分页配置 */
   pagination?: PaginationConfig
-  /** 开启服务端模式 (分页 + 搜索 + 筛选) */
+  /** 开启服务端模式 */
   serverSide?: boolean
   /** 服务端请求回调 */
   onServerChange?: (params: { page: number; perPage: number; q?: string; filters?: Record<string, any> }) => void
@@ -42,6 +46,8 @@ export default function DslTable({
   extraColumns = [],
   rowSelection,
   onBulkDelete,
+  onCreate,
+  onEdit,
   pagination,
   serverSide = false,
   onServerChange,
@@ -68,7 +74,7 @@ export default function DslTable({
       render: (_: any, record: any) => (
         <Space>
           <Button type="link" icon={<EyeOutlined />} onClick={() => router.visit(`${basePath}/${record.id}`)}>查看</Button>
-          <Button type="link" icon={<EditOutlined />} onClick={() => router.visit(`${basePath}/${record.id}/edit`)}>编辑</Button>
+          <Button type="link" icon={<EditOutlined />} onClick={() => onEdit ? onEdit(record) : router.visit(`${basePath}/${record.id}/edit`)}>编辑</Button>
           <Popconfirm title="确定删除？" onConfirm={() => {
             router.delete(`${basePath}/${record.id}`, {
               onSuccess: () => message.success('删除成功'),
@@ -127,7 +133,12 @@ export default function DslTable({
             )
           }
           if (createText) {
-            items.push(<Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => router.visit(`${basePath}/new`)}>{createText}</Button>)
+            items.push(
+              <Button key="add" type="primary" icon={<PlusOutlined />}
+                onClick={() => onCreate ? onCreate() : router.visit(`${basePath}/new`)}>
+                {createText}
+              </Button>
+            )
           }
           return items
         }}

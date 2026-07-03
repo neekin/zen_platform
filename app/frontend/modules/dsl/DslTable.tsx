@@ -17,6 +17,8 @@ export interface DslTableProps {
     selectedRowKeys: React.Key[]
     onChange: (keys: React.Key[]) => void
   }
+  /** 批量删除回调 */
+  onBulkDelete?: (ids: React.Key[]) => void
 }
 
 export default function DslTable({
@@ -27,6 +29,7 @@ export default function DslTable({
   showActions = true,
   extraColumns = [],
   rowSelection,
+  onBulkDelete,
 }: DslTableProps) {
   const { message } = App.useApp()
   const columns: ProColumns[] = [
@@ -63,11 +66,20 @@ export default function DslTable({
         rowKey="id"
         search={false}
         rowSelection={rowSelection}
-        toolBarRender={() =>
-          createText
-            ? [<Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => router.visit(`${basePath}/new`)}>{createText}</Button>]
-            : []
-        }
+        toolBarRender={() => {
+          const items: React.ReactNode[] = []
+          if (rowSelection && rowSelection.selectedRowKeys.length > 0 && onBulkDelete) {
+            items.push(
+              <Popconfirm key="bulk" title={`确定删除 ${rowSelection.selectedRowKeys.length} 项？`} onConfirm={() => onBulkDelete(rowSelection.selectedRowKeys)}>
+                <Button danger>批量删除 ({rowSelection.selectedRowKeys.length})</Button>
+              </Popconfirm>
+            )
+          }
+          if (createText) {
+            items.push(<Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => router.visit(`${basePath}/new`)}>{createText}</Button>)
+          }
+          return items
+        }}
       />
     </PageContainer>
   )

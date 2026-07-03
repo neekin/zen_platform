@@ -1,7 +1,20 @@
 import { createInertiaApp } from '@inertiajs/react'
+import { createRoot } from 'react-dom/client'
+
+const pages = import.meta.glob('../pages/**/*.tsx', { eager: true })
 
 void createInertiaApp({
-  pages: "../pages",
+  resolve: (name) => {
+    const page = (pages as Record<string, any>)[`../pages/${name}.tsx`]
+    if (!page) {
+      throw new Error(`Page not found: ../pages/${name}.tsx`)
+    }
+    return page
+  },
+
+  setup({ el, App, props }) {
+    createRoot(el).render(<App {...props} />)
+  },
 
   strictMode: true,
 
@@ -15,9 +28,6 @@ void createInertiaApp({
     },
   },
 }).catch((error) => {
-  // This ensures this entrypoint is only loaded on Inertia pages
-  // by checking for the presence of the root element (#app by default).
-  // Feel free to remove this `catch` if you don't need it.
   if (document.getElementById("app")) {
     throw error
   } else {

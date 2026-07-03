@@ -1,19 +1,17 @@
 # frozen_string_literal: true
 
 class AdminController < InertiaController
+  include Pundit::Authorization
+
   layout "admin"
 
   before_action :recover_session_from_cookie
+  before_action :require_login
+  before_action :set_request_context
+  after_action :verify_authorized, except: [:index]
+  after_action :verify_policy_scoped, only: [:index]
 
-  # 自动从顶层命名空间查找模型类
-  # 例如在 Admin::ArticlesController 中可以直接使用 Article 而不需要 ::Article
-  def self.const_missing(name)
-    # 尝试从顶层命名空间查找
-    top_level = "::#{name}".safe_constantize
-    return top_level if top_level
-
-    super
-  end
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
@@ -37,5 +35,17 @@ class AdminController < InertiaController
     else
       cookies.delete(:remember_token)
     end
+  end
+
+  def set_request_context
+    Current.user = current_user
+    Current.request_id = request.request_id
+    Current.ip = request.remote_ip
+    Current.user_agent = request.user_agent
+  end
+
+  def user_not_authorized
+    flash[:alert] = "没有权限执行此操作"
+    redirect_back(fallback_location: admin_root_path)
   end
 end

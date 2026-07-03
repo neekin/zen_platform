@@ -66,6 +66,16 @@ group :development do
   gem "web-console"
 end
 
+gem "rack-cors"
+gem "pundit", "~> 2.4"
+gem "rolify", "~> 6.0"
+gem "paper_trail", "~> 16.0"
+gem "caxlsx", "~> 4.2"
+gem "caxlsx_rails", "~> 0.7"
+gem "prawn", "~> 2.5"
+gem "csv"
+gem "rack-attack", "~> 6.7"
+
 gem "inertia_rails", "~> 3.21"
 
 gem "vite_rails", "~> 3.11"

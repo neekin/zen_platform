@@ -2,11 +2,13 @@
 
 module Admin
   class SessionsController < AdminController
+    skip_before_action :require_login, only: [:new, :create]
+    skip_after_action :verify_authorized
+    skip_after_action :verify_policy_scoped
     layout "admin"
 
     def new
       redirect_to admin_root_path if current_user
-
       render inertia: "admin/Login"
     end
 
@@ -15,7 +17,7 @@ module Admin
 
       if user&.authenticate(params[:password])
         session[:user_id] = user.id
-        cookies.signed.permanent[:remember_token] = user.id if params[:autoLogin] == "true"
+        cookies.signed.permanent[:remember_token] = user.id if params[:auto_login].to_s == "true"
         redirect_to admin_root_path, notice: "登录成功"
       else
         redirect_to admin_login_path, alert: "账号或密码错误"

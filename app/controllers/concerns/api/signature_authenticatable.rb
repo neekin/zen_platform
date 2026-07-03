@@ -31,7 +31,7 @@ module Api
     private
 
     def valid_signature?(signature, timestamp, api_secret)
-      expected = OpenSSL::HMAC.hexdigest("SHA256", api_secret, "#{timestamp}\n#{request.body.string}")
+      expected = OpenSSL::HMAC.hexdigest("SHA256", api_secret, "#{timestamp}\n#{request.raw_post}")
       ActiveSupport::SecurityUtils.secure_compare(signature, expected)
     end
   end

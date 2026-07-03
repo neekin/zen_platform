@@ -8,6 +8,7 @@ export type UserData = {
   id: number
   name: string
   email: string
+  roles: string[]
 }
 
 export type SharedProps = {

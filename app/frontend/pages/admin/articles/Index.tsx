@@ -6,16 +6,16 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { PageContainer, ProTable, ProForm, ProFormText, ProFormTextArea, ProFormDigit, ProFormSwitch, ProFormSelect, ProFormDatePicker, ProFormDateTimePicker, DrawerForm } from '@ant-design/pro-components'
-import { App, Button, Space, Popconfirm, Modal, Tag, Badge, Upload, Image, Table, Descriptions } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import { PageContainer, ProTable, ProForm, ProFormText, ProFormSelect, DrawerForm } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Modal, Descriptions } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 
 import { RichTextEditor, RichTextViewer, ActiveStorageUploader, getContentSummary } from '../../../modules/content'
 import type { EditorContent } from '../../../modules/content'
 
 import type { ReactNode } from 'react'
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 
 interface Article {
   id: number
@@ -41,7 +41,7 @@ const uploader = new ActiveStorageUploader({
 interface ArticleIndexProps {
   articles: Article[]
 
-  categorys: { id: number; name: string }[]
+  categories: { id: number; name: string }[]
 
 
 }
@@ -156,20 +156,20 @@ function ArticleIndex({ articles, ...props }: ArticleIndexProps) {
   ]
 
   return (
-    <PageContainer title="Article管理">
+    <PageContainer title="文章管理">
       <ProTable
         columns={columns}
         dataSource={articles}
         rowKey="id"
         search={false}
         toolBarRender={() => [
-          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openCreate}>新建Article</Button>,
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openCreate}>新建文章</Button>,
         ]}
       />
 
       {/* 新增/编辑浮层表单 */}
       <Modal
-        title={editing ? '编辑Article' : '新建Article'}
+        title={editing ? '编辑文章' : '新建文章'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -186,14 +186,14 @@ function ArticleIndex({ articles, ...props }: ArticleIndexProps) {
         >
 
 
-          <ProFormText name="title" label="title" rules={[{ required: true, message: '请输入title' }]} />
+          <ProFormText name="title" label="标题" rules={[{ required: true, message: '请输入标题' }]} />
 
 
 
           <ProFormSelect
             name="category_id"
-            label="category"
-            options={(props.categorys || []).map((item: any) => ({
+            label="分类"
+            options={(props.categories || []).map((item: any) => ({
               label: item.name,
               value: item.id,
             }))}

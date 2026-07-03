@@ -109,11 +109,12 @@ export default function KanbanBoard({
       e.preventDefault()
       setDragOverColumn(null)
 
-      if (!draggedCard || draggedCard.columnId === columnId) {
+      if (!draggedCard) {
         setDraggedCard(null)
         return
       }
 
+      // Allow same-column reorder (newIndex = 0 for simplicity)
       onCardMove?.(draggedCard.id, draggedCard.columnId, columnId, 0)
       setDraggedCard(null)
     },

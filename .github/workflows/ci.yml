@@ -1,67 +1,98 @@
 name: CI
 
 on:
-  pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  scan_ruby:
+  backend:
     runs-on: ubuntu-latest
+    services:
+      sqlite3:
+        image: sqlite3:latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Scan for common Rails security vulnerabilities using static analysis
-        run: bin/brakeman --no-pager
-      
-      - name: Scan for known security vulnerabilities in gems used
-        run: bin/bundler-audit
-      
-  scan_js:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
-
-  lint:
-    runs-on: ubuntu-latest
-    env:
-      RUBOCOP_CACHE_ROOT: tmp/rubocop
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-
-      - name: Prepare RuboCop cache
-        uses: actions/cache@v4
+      - name: Set up database
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
         env:
-          DEPENDENCIES_HASH: ${{ hashFiles('.ruby-version', '**/.rubocop.yml', '**/.rubocop_todo.yml', 'Gemfile.lock') }}
+          RAILS_ENV: test
+
+      - name: Security audit
+        run: |
+          bundle exec bundler-audit --update
+          bundle exec brakeman --no-pager
+
+      - name: Lint
+        run: bundle exec rubocop --parallel
+
+      - name: RSpec tests
+        run: bundle exec rspec
+        env:
+          RAILS_ENV: test
+
+      - name: Minitest tests
+        run: bin/rails test
+        env:
+          RAILS_ENV: test
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          path: ${{ env.RUBOCOP_CACHE_ROOT }}
-          key: rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-${{ github.ref_name == github.event.repository.default_branch && github.run_id || 'default' }}
-          restore-keys: |
-            rubocop-${{ runner.os }}-${{ env.DEPENDENCIES_HASH }}-
+          node-version: 20
+          cache: npm
 
-      - name: Lint code for consistent style
-        run: bin/rubocop -f github
+      - name: Install dependencies
+        run: npm ci
 
+      - name: TypeScript check
+        run: npm run check
+
+  swagger:
+    runs-on: ubuntu-latest
+    needs: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Set up database
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
+        env:
+          RAILS_ENV: test
+
+      - name: Generate Swagger docs
+        run: bundle exec rspec spec/requests --format progress
+        env:
+          RAILS_ENV: test
+
+      - name: Verify Swagger is up to date
+        run: |
+          if ! git diff --exit-code swagger/; then
+            echo "Swagger docs out of date. Run: bundle exec rspec spec/requests"
+            exit 1
+          fi

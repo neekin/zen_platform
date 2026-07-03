@@ -1,11 +1,15 @@
 class Article < ApplicationRecord
   include Zen::ModelDsl
+  track_changes
 
   # 字段定义
   field :title, :string, required: true, placeholder: "请输入文章标题"
   field :body, :rich_text, required: true
   field :status, :enum, values: %w[draft published archived], default: "draft"
   field :is_featured, :boolean, default: false
+
+  # ActiveRecord enum
+  enum :status, { draft: 0, published: 1, archived: 2 }
 
   # 关联
   belongs_to :category, optional: true

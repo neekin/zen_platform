@@ -8,10 +8,10 @@ class ApiKey < ApplicationRecord
 
   before_validation :generate_key, on: :create
 
-  scope :active, -> { where("expires_at IS NULL OR expires_at > ?", Time.current) }
+  scope :active, -> { where("expires_at IS NULL OR expires_at >= ?", Time.current) }
 
   def expired?
-    expires_at.present? && expires_at <= Time.current
+    expires_at.present? && expires_at < Time.current
   end
 
   private

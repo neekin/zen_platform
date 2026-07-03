@@ -6,13 +6,13 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { PageContainer, ProTable, ProForm, ProFormText, ProFormTextArea, ProFormDigit, ProFormSwitch, ProFormSelect, ProFormDatePicker, ProFormDateTimePicker, DrawerForm } from '@ant-design/pro-components'
-import { App, Button, Space, Popconfirm, Modal, Tag, Badge, Upload, Image } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, UploadOutlined } from '@ant-design/icons'
+import { PageContainer, ProTable, ProForm, ProFormText, ProFormDigit, ProFormSelect, DrawerForm } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Modal, Descriptions } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 
 import type { ReactNode } from 'react'
-import type { ActionType, ProColumns } from '@ant-design/pro-components'
+import type { ProColumns } from '@ant-design/pro-components'
 
 interface Product {
   id: number

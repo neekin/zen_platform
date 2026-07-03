@@ -41,6 +41,7 @@ import {
 } from '@lexical/markdown'
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { $getRoot, $getSelection, $isRangeSelection } from 'lexical'
 import { useEffect, useRef, useState } from 'react'
 import type { EditorState, LexicalEditor } from 'lexical'
 import type {
@@ -112,7 +113,28 @@ function MaxLengthPlugin({ maxLength }: { maxLength?: number }) {
 
   useEffect(() => {
     if (!maxLength) return
-    // TODO: 实现字数限制逻辑
+
+    const removeListener = editor.registerTextContentListener((textContent) => {
+      if (textContent.length > maxLength) {
+        editor.update(() => {
+          const root = $getRoot()
+          const text = root.getTextContent()
+          if (text.length > maxLength) {
+            root.selectStart()
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              // Truncate by deleting excess characters from end
+              const excess = text.length - maxLength
+              for (let i = 0; i < excess; i++) {
+                selection.deleteForward(true)
+              }
+            }
+          }
+        })
+      }
+    })
+
+    return () => removeListener()
   }, [editor, maxLength])
 
   return null
@@ -157,16 +179,12 @@ export default function RichTextEditor({
   uploader,
   placeholder = '请输入内容...',
   readOnly = false,
-  autoFocus = false,
   maxLength,
-  theme,
   plugins = [],
   style,
   className,
   onError,
 }: RichTextEditorProps) {
-  const [isReady, setIsReady] = useState(false)
-
   // Lexical 初始配置
   const initialConfig = {
     namespace: 'ZenContentEditor',

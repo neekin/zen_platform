@@ -50,7 +50,7 @@ app/frontend/modules/content/
 ├── editor/
 │   ├── RichTextEditor.tsx      # 编辑器主组件
 │   ├── toolbar/Toolbar.tsx     # 工具栏组件
-│   └── plugins/                # 16 个插件
+│   └── plugins/                # 20 个插件
 ├── renderer/
 │   └── RichTextViewer.tsx      # 只读查看器
 ├── upload/
@@ -63,7 +63,7 @@ app/frontend/modules/content/
     └── editor.css              # 编辑器样式
 ```
 
-#### 已实现的 16 个插件
+#### 已实现的 20 个插件
 
 | 插件 | 功能 | 快捷键 |
 |------|------|--------|
@@ -86,6 +86,7 @@ app/frontend/modules/content/
 | **Attachment** | 附件上传 | - |
 | **Mention** | @提及 | @ |
 | **Emoji** | 表情符号 | : |
+| **History** | 撤销/重做 | Ctrl+Z / Ctrl+Y |
 
 #### 使用方式
 ```tsx
@@ -327,7 +328,7 @@ app/frontend/modules/admin/components/
 ## 版本历史
 
 ### v0.2.0 (2026-07-03)
-- 完善 Content Engine 16 个插件
+- 完善 Content Engine 20 个插件
 - 实现 Model DSL 系统
 - 增强脚手架生成器（关联、枚举、看板）
 - 添加 Admin 组件库

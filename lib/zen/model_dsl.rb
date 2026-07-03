@@ -55,7 +55,7 @@ module Zen
         # 保存 DSL 配置
         assoc = Zen::AssociationDefinition.new(name, :belongs_to, options.except(:optional, :foreign_key, :class_name))
         self.zen_associations = zen_associations.merge(name.to_sym => assoc)
-        
+
         # 调用 ActiveRecord 的 belongs_to 创建实际关联
         super(name, **options)
       end
@@ -64,13 +64,15 @@ module Zen
       #
       # has_many :comments
       # has_many :comments, dependent: :destroy
-      def has_many(name, **options)
-        # 保存 DSL 配置
-        assoc = Zen::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
-        self.zen_associations = zen_associations.merge(name.to_sym => assoc)
-        
+      def has_many(name, *args, **options)
+        # 保存 DSL 配置（仅对 DSL 声明的关联）
+        if options.key?(:dependent) || options.key?(:class_name) || args.empty?
+          assoc = Zen::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
+          self.zen_associations = zen_associations.merge(name.to_sym => assoc)
+        end
+
         # 调用 ActiveRecord 的 has_many 创建实际关联
-        super(name, **options)
+        super(name, *args, **options)
       end
 
       # 定义 has_many through 关联

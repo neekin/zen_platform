@@ -3,10 +3,10 @@ import { ProLayout } from '@ant-design/pro-components'
 import { router, usePage } from '@inertiajs/react'
 import {
   LogoutOutlined,
-  BellOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons'
-import { Dropdown, Badge, Tooltip } from 'antd'
+import { Dropdown, Tooltip } from 'antd'
+import NotificationBell from '../components/admin/NotificationBell'
 import type { ReactNode } from 'react'
 import '../styles/admin.css'
 import { menuRoutes } from '../config/adminMenus'
@@ -49,7 +49,9 @@ const darkTheme = {
 }
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const { user } = usePage().props
+  const page = usePage()
+  const { user } = page.props
+  const currentUrl = page.url
 
   return (
     <ConfigProvider theme={darkTheme}>
@@ -60,7 +62,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           layout="mix"
           fixSiderbar
           route={menuRoutes}
-          location={{ pathname: window.location.pathname }}
+          location={{ pathname: currentUrl }}
           menuItemRender={(item, dom) => (
             <a onClick={() => item.path && router.visit(item.path)}>{dom}</a>
           )}
@@ -89,9 +91,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Tooltip key="help" title="帮助文档">
               <QuestionCircleOutlined style={{ fontSize: 16, color: 'rgba(255,255,255,0.65)' }} />
             </Tooltip>,
-            <Badge key="notification" count={5} size="small">
-              <BellOutlined style={{ fontSize: 16, cursor: 'pointer', color: 'rgba(255,255,255,0.65)' }} />
-            </Badge>,
+            <NotificationBell key="notification" />,
           ]}
           contentStyle={{ padding: 24 }}
         >

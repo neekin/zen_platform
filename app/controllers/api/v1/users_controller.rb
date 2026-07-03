@@ -18,7 +18,7 @@ module Api
 
       def show
         user = User.find_by(id: params[:id])
-        user ? render_success(user) : render_error(message: "用户不存在", status: :not_found)
+        user ? render_success(user.as_json(only: %i[id username email name])) : render_error(message: "用户不存在", status: :not_found)
       end
     end
   end

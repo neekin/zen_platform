@@ -3,7 +3,12 @@
 class InertiaController < ApplicationController
   inertia_share do
     {
-      user: current_user&.as_json(only: %i[id name email]),
+      user: current_user ? {
+        id: current_user.id,
+        name: current_user.name,
+        email: current_user.email,
+        roles: current_user.roles.pluck(:name),
+      } : nil,
       flash: flash.to_hash.slice("notice", "alert").merge(ts: Time.current.to_f),
     }
   end

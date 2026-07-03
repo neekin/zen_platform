@@ -21,7 +21,16 @@ Rails.application.routes.draw do
     resources :tasks, only: [:index, :show, :create, :update, :destroy]
     resources :articles, only: [:index, :show, :create, :update, :destroy]
     resources :products, only: [:index, :show, :create, :update, :destroy]
-    resources :articles, only: [:index, :show, :new, :create, :edit, :update, :destroy]
+    resources :audit_logs, only: [:index, :show]
+    resources :exports, only: [:create, :show]
+    resources :notifications, only: [:index] do
+      member do
+        post :mark_as_read
+      end
+      collection do
+        post :mark_all_as_read
+      end
+    end
   end
 
   namespace :api do

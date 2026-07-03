@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       get "health", to: "health#check"
       post "auth/login", to: "auth#login"
       get "auth/me", to: "auth#me"
+      get "meta/:model_name", to: "meta#show"
       resources :users, only: %i[index show]
       resources :payment, only: %i[create]
     end

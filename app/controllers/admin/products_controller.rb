@@ -8,7 +8,7 @@ module Admin
     def index
       @products = policy_scope(Product)
       render inertia: "admin/products/Index",
-        props: { products: @products.as_json }
+        props: zen_props(Product, products: @products.as_json)
     end
 
     # GET /admin/products/:id

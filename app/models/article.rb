@@ -8,9 +8,6 @@ class Article < ApplicationRecord
   field :status, :enum, values: %w[draft published archived], default: "draft"
   field :is_featured, :boolean, default: false
 
-  # ActiveRecord enum
-  enum :status, { draft: 0, published: 1, archived: 2 }
-
   # 关联
   belongs_to :category, optional: true
 

@@ -57,7 +57,7 @@ module Admin
     def create
       @<%= singular_name %> = <%= class_name %>.new(<%= singular_name %>_params)
       if @<%= singular_name %>.save
-        redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "创建成功"
+        redirect_to admin_<%= singular_name %>_path(@<%= singular_name %>), notice: "创建成功"
       else
         redirect_to admin_<%= plural_name %>_path, alert: @<%= singular_name %>.errors.full_messages.join(", ")
       end
@@ -66,7 +66,7 @@ module Admin
     # PATCH/PUT /admin/<%= plural_name %>/:id
     def update
       if @<%= singular_name %>.update(<%= singular_name %>_params)
-        redirect_to admin_<%= plural_name %>_path(@<%= singular_name %>), notice: "更新成功"
+        redirect_to admin_<%= singular_name %>_path(@<%= singular_name %>), notice: "更新成功"
       else
         redirect_to admin_<%= plural_name %>_path, alert: @<%= singular_name %>.errors.full_messages.join(", ")
       end

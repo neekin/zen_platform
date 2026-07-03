@@ -10,14 +10,14 @@ module Admin
       @categories = Category.all
 
       render inertia: "admin/articles/Index",
-        props: {
+        props: zen_props(Article,
           articles: @articles.as_json(
             include: {
               category: { only: [:id, :name] },
             }
           ),
           categories: @categories.as_json(only: [:id, :name]),
-        }
+        )
     end
 
     # GET /admin/articles/:id

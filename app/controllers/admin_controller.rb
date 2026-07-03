@@ -2,6 +2,7 @@
 
 class AdminController < InertiaController
   include Pundit::Authorization
+  include Zen::MetaSerializable
 
   layout "admin"
 

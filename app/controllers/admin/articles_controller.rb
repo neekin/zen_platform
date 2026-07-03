@@ -9,6 +9,21 @@ module Admin
       @articles = policy_scope(Article)
       @categories = Category.all
 
+      # 搜索
+      if params[:q].present?
+        @articles = @articles.where("title LIKE ?", "%#{params[:q]}%")
+      end
+
+      # 筛选
+      @articles = @articles.where(status: params[:status]) if params[:status].present?
+      @articles = @articles.where(category_id: params[:category_id]) if params[:category_id].present?
+
+      # 分页
+      page = (params[:page] || 1).to_i
+      per_page = (params[:per_page] || 20).to_i.clamp(1, 100)
+      total = @articles.count
+      @articles = @articles.offset((page - 1) * per_page).limit(per_page)
+
       render inertia: "admin/articles/Index",
         props: zen_props(Article,
           articles: @articles.as_json(
@@ -17,6 +32,7 @@ module Admin
             }
           ),
           categories: @categories.as_json(only: [:id, :name]),
+          pagination: { current_page: page, per_page: per_page, total: total },
         )
     end
 

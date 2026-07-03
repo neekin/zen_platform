@@ -1,0 +1,28 @@
+/**
+ * <%= class_name %> 日历视图
+ * 路由: /admin/<%= plural_name %>
+ *
+ * 由 Zen 脚手架生成 — 使用 CalendarView 组件
+ */
+import AdminLayout from '../../../../layouts/AdminLayout'
+import CalendarView from '../../../../modules/admin/components/products/CalendarView'
+import { router } from '@inertiajs/react'
+import type { ReactNode } from 'react'
+
+interface <%= class_name %>KanbanProps {
+  <%= plural_name %>: Record<string, any>[]
+}
+
+function <%= class_name %>Calendar({ <%= plural_name %> }: <%= class_name %>KanbanProps) {
+  return (
+    <CalendarView
+      data={<%= plural_name %>}
+      dateField="<%= date_field || 'created_at' %>"
+      titleField="<%= title_field || 'name' %>"
+      onItemClick={(item) => router.visit(`/admin/<%= plural_name %>/${item.id}`)}
+    />
+  )
+}
+
+<%= class_name %>Calendar.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Calendar

@@ -1,10 +1,17 @@
 import { PageContainer, ProTable } from '@ant-design/pro-components'
-import { Button, Space, Popconfirm, App } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { Button, Space, Popconfirm, App, Input } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons'
 import { router } from '@inertiajs/react'
+import { useState, useCallback } from 'react'
 import type { ProColumns } from '@ant-design/pro-components'
 import type { DslMeta } from '../../types/dsl'
 import { buildColumns } from './columnRenderer'
+
+export interface PaginationConfig {
+  current: number
+  pageSize: number
+  total: number
+}
 
 export interface DslTableProps {
   meta: DslMeta
@@ -17,8 +24,13 @@ export interface DslTableProps {
     selectedRowKeys: React.Key[]
     onChange: (keys: React.Key[]) => void
   }
-  /** 批量删除回调 */
   onBulkDelete?: (ids: React.Key[]) => void
+  /** 服务端分页配置 */
+  pagination?: PaginationConfig
+  /** 开启服务端模式 (分页 + 搜索 + 筛选) */
+  serverSide?: boolean
+  /** 服务端请求回调 */
+  onServerChange?: (params: { page: number; perPage: number; q?: string; filters?: Record<string, any> }) => void
 }
 
 export default function DslTable({
@@ -30,8 +42,19 @@ export default function DslTable({
   extraColumns = [],
   rowSelection,
   onBulkDelete,
+  pagination,
+  serverSide = false,
+  onServerChange,
 }: DslTableProps) {
   const { message } = App.useApp()
+  const [searchText, setSearchText] = useState('')
+
+  const handleSearch = useCallback((value: string) => {
+    if (serverSide && onServerChange) {
+      onServerChange({ page: 1, perPage: pagination?.pageSize || 20, q: value })
+    }
+  }, [serverSide, onServerChange, pagination])
+
   const columns: ProColumns[] = [
     ...buildColumns(meta, basePath),
     ...extraColumns,
@@ -58,6 +81,19 @@ export default function DslTable({
     })
   }
 
+  const tablePagination = serverSide && pagination
+    ? {
+        current: pagination.current,
+        pageSize: pagination.pageSize,
+        total: pagination.total,
+        showSizeChanger: true,
+        showTotal: (total: number) => `共 ${total} 条`,
+        onChange: (page: number, pageSize: number) => {
+          onServerChange?.({ page, perPage: pageSize, q: searchText })
+        },
+      }
+    : { defaultPageSize: 20, showSizeChanger: true }
+
   return (
     <PageContainer>
       <ProTable
@@ -66,8 +102,23 @@ export default function DslTable({
         rowKey="id"
         search={false}
         rowSelection={rowSelection}
+        pagination={tablePagination}
         toolBarRender={() => {
           const items: React.ReactNode[] = []
+
+          if (serverSide) {
+            items.push(
+              <Input.Search
+                key="search"
+                placeholder="搜索..."
+                allowClear
+                onSearch={handleSearch}
+                onChange={(e) => setSearchText(e.target.value)}
+                style={{ width: 250 }}
+              />
+            )
+          }
+
           if (rowSelection && rowSelection.selectedRowKeys.length > 0 && onBulkDelete) {
             items.push(
               <Popconfirm key="bulk" title={`确定删除 ${rowSelection.selectedRowKeys.length} 项？`} onConfirm={() => onBulkDelete(rowSelection.selectedRowKeys)}>

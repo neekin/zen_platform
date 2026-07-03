@@ -2,36 +2,28 @@
  * Article 管理页
  * 路由: /admin/articles
  *
- * 使用 DslTable + DslForm 动态渲染
+ * 使用 DslTable + DslForm 动态渲染，支持服务端分页
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { Modal, App } from 'antd'
 import AdminLayout from '../../../layouts/AdminLayout'
 import { DslTable, DslForm } from '../../../modules/dsl'
-import type { DslMeta } from '../../../types/dsl'
+import type { DslMeta, PaginationConfig } from '../../../modules/dsl'
 import type { ReactNode } from 'react'
 
 interface ArticleIndexProps {
   meta: DslMeta
   articles: Record<string, any>[]
   categories: { id: number; name: string }[]
+  pagination: { current_page: number; per_page: number; total: number }
 }
 
-function ArticleIndex({ meta, articles, categories }: ArticleIndexProps) {
+function ArticleIndex({ meta, articles, categories, pagination }: ArticleIndexProps) {
   const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Record<string, any> | null>(null)
-
-  const openCreate = () => {
-    setEditing(null)
-    setModalOpen(true)
-  }
-
-  const openEdit = (record: Record<string, any>) => {
-    setEditing(record)
-    setModalOpen(true)
-  }
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
 
   const handleFinish = async (values: Record<string, any>) => {
     if (editing) {
@@ -46,6 +38,22 @@ function ArticleIndex({ meta, articles, categories }: ArticleIndexProps) {
     return true
   }
 
+  const handleBulkDelete = (ids: React.Key[]) => {
+    router.delete('/admin/articles/bulk_destroy', {
+      data: { ids },
+      onSuccess: () => {
+        message.success('批量删除成功')
+        setSelectedRowKeys([])
+      },
+    })
+  }
+
+  const handleServerChange = (params: { page: number; perPage: number; q?: string }) => {
+    const query: Record<string, any> = { page: params.page, per_page: params.perPage }
+    if (params.q) query.q = params.q
+    router.get('/admin/articles', query, { preserveState: true })
+  }
+
   return (
     <>
       <DslTable
@@ -53,6 +61,18 @@ function ArticleIndex({ meta, articles, categories }: ArticleIndexProps) {
         data={articles}
         basePath="/admin/articles"
         createText="新建文章"
+        serverSide
+        pagination={{
+          current: pagination.current_page,
+          pageSize: pagination.per_page,
+          total: pagination.total,
+        }}
+        onServerChange={handleServerChange}
+        rowSelection={{
+          selectedRowKeys,
+          onChange: setSelectedRowKeys,
+        }}
+        onBulkDelete={handleBulkDelete}
       />
 
       <Modal

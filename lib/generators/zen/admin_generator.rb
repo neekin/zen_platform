@@ -43,6 +43,10 @@ module Zen
     def create_index_page
       if kanban?
         template "products/kanban/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Kanban.tsx"
+      elsif calendar?
+        template "products/calendar/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Calendar.tsx"
+      elsif gallery?
+        template "products/gallery/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Gallery.tsx"
       else
         template "#{template_prefix}/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Index.tsx"
       end
@@ -128,6 +132,10 @@ module Zen
 
     def calendar?
       options[:product] == 'calendar'
+    end
+
+    def gallery?
+      options[:product] == 'gallery'
     end
 
     def crud?

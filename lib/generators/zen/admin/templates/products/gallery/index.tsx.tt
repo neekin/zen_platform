@@ -1,0 +1,32 @@
+/**
+ * <%= class_name %> 画廊视图
+ * 路由: /admin/<%= plural_name %>
+ *
+ * 由 Zen 脚手架生成 — 使用 GalleryView 组件
+ */
+import AdminLayout from '../../../../layouts/AdminLayout'
+import GalleryView from '../../../../modules/admin/components/products/GalleryView'
+import { router } from '@inertiajs/react'
+import { PageContainer } from '@ant-design/pro-components'
+import type { ReactNode } from 'react'
+
+interface <%= class_name %>GalleryProps {
+  <%= plural_name %>: Record<string, any>[]
+}
+
+function <%= class_name %>Gallery({ <%= plural_name %> }: <%= class_name %>GalleryProps) {
+  return (
+    <PageContainer title="<%= class_name %>画廊">
+      <GalleryView
+        data={<%= plural_name %>}
+        imageField="<%= image_field || 'cover' %>"
+        titleField="<%= title_field || 'name' %>"
+        descriptionField="<%= description_field || 'description' %>"
+        onItemClick={(item) => router.visit(`/admin/<%= plural_name %>/${item.id}`)}
+      />
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Gallery.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Gallery

@@ -76,21 +76,34 @@ module Admin
         end
 
       when "update"
-        # 更新事件 → 还原到该版本
-        reified = version.reify
-        if reified.save
-          render json: { code: 0, message: "已还原到该版本" }
+        # 更新事件 → 手动还原到该版本
+        object = YAML.unsafe_load(version.object)
+        record = version.item_type.constantize.find_by(id: version.item_id)
+        if record
+          # 移除不能更新的字段
+          object.delete("id")
+          object.delete("created_at")
+          object.delete("updated_at")
+          
+          if record.update(object)
+            render json: { code: 0, message: "已还原到该版本" }
+          else
+            render json: { code: 1, message: record.errors.full_messages.join(", ") }, status: :unprocessable_entity
+          end
         else
-          render json: { code: 1, message: reified.errors.full_messages.join(", ") }, status: :unprocessable_entity
+          render json: { code: 1, message: "记录已不存在" }, status: :unprocessable_entity
         end
 
       when "destroy"
-        # 删除事件 → 重新创建
-        reified = version.reify
-        if reified.save
+        # 删除事件 → 手动重新创建
+        object = YAML.unsafe_load(version.object)
+        record = version.item_type.constantize.new(object)
+        record.id = version.item_id  # 恢复原始 ID
+        
+        if record.save
           render json: { code: 0, message: "已重新创建该记录" }
         else
-          render json: { code: 1, message: reified.errors.full_messages.join(", ") }, status: :unprocessable_entity
+          render json: { code: 1, message: record.errors.full_messages.join(", ") }, status: :unprocessable_entity
         end
 
       else
@@ -107,6 +120,7 @@ module Admin
     def authorize_restore
       unless current_user.has_role?(:super_admin) || current_user.has_role?(:admin)
         render json: { code: 1, message: "没有权限执行还原操作" }, status: :forbidden
+        return  # 重要：阻止后续代码执行
       end
     end
 
@@ -116,7 +130,7 @@ module Admin
 
       if data.is_a?(String)
         if data.start_with?("---")
-          YAML.safe_load(data, permitted_classes: [Time, Date, Symbol])
+          YAML.unsafe_load(data)
         else
           JSON.parse(data)
         end

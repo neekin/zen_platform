@@ -6,9 +6,9 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { Modal, App } from 'antd'
+import { App } from 'antd'
 import AdminLayout from '../../../layouts/AdminLayout'
-import { DslTable, DslForm } from '../../../modules/dsl'
+import { DslTable, DslForm, DslModal } from '../../../modules/dsl'
 import type { DslMeta, PaginationConfig } from '../../../modules/dsl'
 import type { ReactNode } from 'react'
 
@@ -77,7 +77,7 @@ function ArticleIndex({ meta, articles, categories, pagination }: ArticleIndexPr
         onBulkDelete={handleBulkDelete}
       />
 
-      <Modal
+      <DslModal
         title={editing ? '编辑文章' : '新建文章'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
@@ -94,7 +94,7 @@ function ArticleIndex({ meta, articles, categories, pagination }: ArticleIndexPr
           }}
           submitText={editing ? '更新' : '创建'}
         />
-      </Modal>
+      </DslModal>
     </>
   )
 }

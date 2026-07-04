@@ -42,3 +42,17 @@ node_modules
 # https://vitejs.dev/guide/env-and-mode.html#env-files
 *.local
 
+# VitePress build output
+docs/.vitepress/dist
+
+# Planning and audit files
+.mimocode/
+.workbuddy/
+*.md
+!README.md
+!README_CN.md
+!CONTRIBUTING.md
+!SECURITY.md
+!CODE_OF_CONDUCT.md
+!CHANGELOG.md
+

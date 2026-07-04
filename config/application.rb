@@ -1,5 +1,8 @@
 require_relative "boot"
 
+# 禁用 PaperTrail 兼容性警告（PaperTrail 15.x 不支持 AR 8.1，但能工作）
+ENV["PAPER_TRAIL_SKIP_COMPATIBILITY_CHECK"] = "true"
+
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"

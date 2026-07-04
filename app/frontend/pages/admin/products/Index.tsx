@@ -6,9 +6,9 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { Modal, App } from 'antd'
+import { App } from 'antd'
 import AdminLayout from '../../../layouts/AdminLayout'
-import { DslTable, DslForm } from '../../../modules/dsl'
+import { DslTable, DslForm, DslModal } from '../../../modules/dsl'
 import type { DslMeta } from '../../../types/dsl'
 import type { ReactNode } from 'react'
 
@@ -46,7 +46,7 @@ function ProductIndex({ meta, products }: ProductIndexProps) {
         onEdit={(record) => { setEditing(record); setModalOpen(true) }}
       />
 
-      <Modal
+      <DslModal
         title={editing ? '编辑商品' : '新建商品'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
@@ -60,7 +60,7 @@ function ProductIndex({ meta, products }: ProductIndexProps) {
           onFinish={handleFinish}
           submitText={editing ? '更新' : '创建'}
         />
-      </Modal>
+      </DslModal>
     </>
   )
 }

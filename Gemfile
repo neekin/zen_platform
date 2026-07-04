@@ -69,7 +69,7 @@ end
 gem "rack-cors"
 gem "pundit", "~> 2.4"
 gem "rolify", "~> 6.0"
-gem "paper_trail", "~> 16.0"
+gem "paper_trail", "~> 15.1"
 gem "caxlsx", "~> 4.2"
 gem "caxlsx_rails", "~> 0.7"
 gem "prawn", "~> 2.5"

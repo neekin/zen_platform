@@ -1,43 +1,110 @@
 <div class="landing">
-  <!-- Hero -->
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+    <div class="gradient-orb orb-3"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav-glass">
+    <div class="nav-content">
+      <div class="nav-logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">Zen Platform</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">特性</a>
+        <a href="#dsl">DSL</a>
+        <a href="#stack">技术栈</a>
+        <a href="/api-docs" class="nav-link-external">API 文档</a>
+      </div>
+      <div class="nav-actions">
+        <a href="/admin" class="btn-nav">进入后台</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
   <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="container hero-content">
-      <div class="hero-badge">⚡ v0.3.0 — Open Source</div>
-      <h1>Zen Platform</h1>
-      <p class="hero-subtitle">声明式全栈应用生成平台</p>
-      <p class="hero-desc">在 Model 中用 DSL 声明字段、关联、展示方式，自动生成完整的管理后台 + API。一行代码，一个页面。</p>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        v<%= File.read(Rails.root.join("VERSION")).strip rescue "0.0.0" %> — 开源免费
+      </div>
+      <h1 class="hero-title">
+        <span class="gradient-text">声明式</span>全栈应用<br>生成平台
+      </h1>
+      <p class="hero-desc">
+        在 Model 中用 DSL 声明字段、关联、展示方式<br>
+        <span class="highlight">自动生成完整的管理后台 + API</span>
+      </p>
       <div class="hero-actions">
-        <a href="/admin" class="btn btn-primary">进入后台</a>
-        <a href="/api-docs" class="btn btn-outline">API 文档</a>
+        <a href="/admin" class="btn btn-primary magnetic">
+          <span>🚀</span> 立即开始
+        </a>
+        <a href="#demo" class="btn btn-glass magnetic">
+          <span>▶️</span> 观看演示
+        </a>
       </div>
       <div class="hero-stats">
-        <div class="stat"><span class="stat-value">20+</span><span class="stat-label">富文本插件</span></div>
-        <div class="stat"><span class="stat-value">5</span><span class="stat-label">产品形态</span></div>
-        <div class="stat"><span class="stat-value">4</span><span class="stat-label">认证方式</span></div>
-        <div class="stat"><span class="stat-value">0</span><span class="stat-label">前端配置</span></div>
+        <div class="stat-item" data-target="20">
+          <span class="stat-number">20+</span>
+          <span class="stat-label">富文本插件</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item" data-target="5">
+          <span class="stat-number">5</span>
+          <span class="stat-label">产品形态</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item" data-target="4">
+          <span class="stat-number">4</span>
+          <span class="stat-label">认证方式</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item" data-target="98">
+          <span class="stat-number">98%</span>
+          <span class="stat-label">代码自动生成</span>
+        </div>
       </div>
+    </div>
+    <div class="hero-scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>向下滚动</span>
     </div>
   </section>
 
-  <!-- Code Example -->
-  <section class="section">
+  <!-- DSL Demo Section -->
+  <section class="section" id="demo">
     <div class="container">
-      <h2 class="section-title">声明即所得</h2>
-      <p class="section-desc">在 Model 中声明一次，前端自动渲染</p>
-      <div class="code-block">
-        <div class="code-header">
-          <span class="code-dot red"></span>
-          <span class="code-dot yellow"></span>
-          <span class="code-dot green"></span>
-          <span class="code-filename">app/models/article.rb</span>
+      <div class="section-header">
+        <span class="section-tag">声明即所得</span>
+        <h2 class="section-title">一行 DSL，生成整个后台</h2>
+        <p class="section-desc">在 Model 中声明一次，前端自动渲染。无需手写 CRUD。</p>
+      </div>
+      <div class="code-showcase">
+        <div class="code-tabs">
+          <button class="code-tab active" data-tab="model">Model DSL</button>
+          <button class="code-tab" data-tab="controller">Controller</button>
+          <button class="code-tab" data-tab="result">生成结果</button>
         </div>
-        <pre><code><span class="kw">class</span> <span class="cls">Article</span> &lt; <span class="cls">ApplicationRecord</span>
+        <div class="code-panel" id="panel-model">
+          <div class="code-header">
+            <div class="code-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="code-filename">app/models/article.rb</span>
+            <span class="code-language">Ruby</span>
+          </div>
+          <pre><code><span class="kw">class</span> <span class="cls">Article</span> &lt; <span class="cls">ApplicationRecord</span>
   <span class="kw">include</span> <span class="mod">Zen::ModelDsl</span>
 
   <span class="fn">field</span> <span class="sym">:title</span>, <span class="sym">:string</span>, <span class="key">required:</span> <span class="bool">true</span>
-  <span class="fn">field</span> <span class="sym">:body</span>,  <span class="sym">:rich_text</span>
-  <span class="fn">field</span> <span class="sym">:status</span>, <span class="sym">:enum</span>, <span class="key">values:</span> <span class="val">%w[draft published archived]</span>
+  <span class="fn">field</span> <span class="sym">:body</span>, <span class="sym">:rich_text</span>
+  <span class="fn">field</span> <span class="sym">:status</span>, <span class="sym">:enum</span>, <span class="key">values:</span> <span class="val">%w[draft published]</span>
 
   <span class="fn">belongs_to</span> <span class="sym">:category</span>
 
@@ -47,92 +114,223 @@
       <span class="fn">column</span> <span class="sym">:status</span>, <span class="key">badge:</span> <span class="bool">true</span>
     <span class="kw">end</span>
     <span class="fn">form</span> <span class="kw">do</span>
-      <span class="fn">field</span> <span class="sym">:title</span>, <span class="key">required:</span> <span class="bool">true</span>
+      <span class="fn">field</span> <span class="sym">:title</span>
       <span class="fn">field</span> <span class="sym">:body</span>, <span class="key">as:</span> <span class="sym">:rich_text</span>
     <span class="kw">end</span>
   <span class="kw">end</span>
 <span class="kw">end</span></code></pre>
+        </div>
+        <div class="code-panel hidden" id="panel-controller">
+          <div class="code-header">
+            <div class="code-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="code-filename">app/controllers/admin/articles_controller.rb</span>
+            <span class="code-language">Ruby</span>
+          </div>
+          <pre><code><span class="cmt"># 自动生成，无需手写</span>
+<span class="kw">class</span> <span class="cls">Admin::ArticlesController</span> &lt; <span class="cls">AdminController</span>
+  <span class="kw">include</span> <span class="mod">Pagy::Method</span>
+
+  <span class="fn">def</span> <span class="fn">index</span>
+    q = <span class="cls">Article</span>.<span class="fn">ransack</span>(search_params)
+    <span class="var">@pagy</span>, articles = <span class="fn">pagy</span>(<span class="sym">:offset</span>, q.<span class="fn">result</span>, <span class="var">**</span><span class="fn">pagy_params</span>)
+    <span class="fn">render</span> <span class="key">inertia:</span> <span class="str">"admin/articles/Index"</span>,
+      <span class="key">props:</span> <span class="fn">zen_props</span>(<span class="cls">Article</span>, articles: articles)
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+        </div>
+        <div class="code-panel hidden" id="panel-result">
+          <div class="code-header">
+            <div class="code-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <span class="code-filename">生成的内容</span>
+            <span class="code-language">✨</span>
+          </div>
+          <div class="result-grid">
+            <div class="result-card glass-card">
+              <div class="result-icon">📋</div>
+              <div class="result-title">CRUD 表格</div>
+              <div class="result-desc">自动生成列表、搜索、分页、过滤</div>
+            </div>
+            <div class="result-card glass-card">
+              <div class="result-icon">📝</div>
+              <div class="result-title">表单页面</div>
+              <div class="result-desc">Modal 或独立页面，支持富文本</div>
+            </div>
+            <div class="result-card glass-card">
+              <div class="result-icon">🔐</div>
+              <div class="result-title">权限控制</div>
+              <div class="result-desc">Pundit Policy + Rolify 角色</div>
+            </div>
+            <div class="result-card glass-card">
+              <div class="result-icon">📊</div>
+              <div class="result-title">API 端点</div>
+              <div class="result-desc">RESTful API + Swagger 文档</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
-  <section class="section section-dark">
+  <!-- Features Section -->
+  <section class="section section-dark" id="features">
     <div class="container">
-      <h2 class="section-title">核心特性</h2>
+      <div class="section-header">
+        <span class="section-tag">核心特性</span>
+        <h2 class="section-title">为什么选择 Zen Platform？</h2>
+        <p class="section-desc">我们重新定义了管理后台的开发方式</p>
+      </div>
       <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">📝</div>
+        <div class="feature-card glass-card" data-aos="fade-up">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">📝</span>
+          </div>
           <h3>Model DSL</h3>
-          <p>声明字段、关联、展示配置，自动生成 JSON Schema 驱动前端渲染</p>
+          <p>声明字段、关联、展示配置，自动生成 JSON Schema 驱动前端渲染。一次声明，多处使用。</p>
+          <div class="feature-tag">声明式</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">✏️</div>
+        <div class="feature-card glass-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">✏️</span>
+          </div>
           <h3>富文本引擎</h3>
-          <p>Lexical 驱动，20 个插件：Mermaid 图表、KaTeX 公式、代码高亮、视频嵌入</p>
+          <p>Lexical 驱动，20 个插件：Mermaid 图表、KaTeX 公式、代码高亮、视频嵌入、@提及。</p>
+          <div class="feature-tag">20+ 插件</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🎨</div>
+        <div class="feature-card glass-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">🎨</span>
+          </div>
           <h3>多产品形态</h3>
-          <p>CRUD 表格、看板拖拽、日历视图、画廊网格 — 一行 DSL 切换</p>
+          <p>CRUD 表格、看板拖拽、日历视图、画廊网格 — 一行 DSL 切换产品形态。</p>
+          <div class="feature-tag">5 种形态</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔐</div>
+        <div class="feature-card glass-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">🔐</span>
+          </div>
           <h3>企业级权限</h3>
-          <p>Pundit + Rolify RBAC，动态权限矩阵，资源级授权控制</p>
+          <p>Pundit + Rolify RBAC，动态权限矩阵，资源级授权控制，支持多角色。</p>
+          <div class="feature-tag">RBAC</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
+        <div class="feature-card glass-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">📊</span>
+          </div>
           <h3>审计日志</h3>
-          <p>PaperTrail 全量追踪，支持一键还原，操作历史可追溯</p>
+          <p>PaperTrail 全量追踪，支持一键还原，操作历史可追溯，包含 request context。</p>
+          <div class="feature-tag">全量追踪</div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">🚀</div>
+        <div class="feature-card glass-card" data-aos="fade-up" data-aos-delay="500">
+          <div class="feature-icon-wrap">
+            <span class="feature-icon">🚀</span>
+          </div>
           <h3>一键生成</h3>
-          <p>rails generate zen:admin 自动生成 Controller + 页面 + 路由 + Policy</p>
+          <p>rails generate zen:admin 自动生成 Controller + 页面 + 路由 + Policy + Spec。3 分钟上线。</p>
+          <div class="feature-tag">脚手架</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Tech Stack -->
-  <section class="section">
+  <!-- Tech Stack Section -->
+  <section class="section" id="stack">
     <div class="container">
-      <h2 class="section-title">技术栈</h2>
+      <div class="section-header">
+        <span class="section-tag">技术栈</span>
+        <h2 class="section-title">现代化技术栈</h2>
+        <p class="section-desc">选择成熟、稳定、高性能的技术</p>
+      </div>
       <div class="stack-grid">
-        <div class="stack-item">
+        <div class="stack-card glass-card">
+          <div class="stack-icon">🔧</div>
           <div class="stack-label">Backend</div>
-          <div class="stack-tech">Rails 8.1 · Ruby 3.4 · SQLite3 · Solid Queue</div>
+          <div class="stack-items">
+            <span class="stack-item-tag">Rails 8.1</span>
+            <span class="stack-item-tag">Ruby 3.4</span>
+            <span class="stack-item-tag">SQLite3</span>
+            <span class="stack-item-tag">Solid Queue</span>
+          </div>
         </div>
-        <div class="stack-item">
+        <div class="stack-card glass-card">
+          <div class="stack-icon">🎨</div>
           <div class="stack-label">Frontend</div>
-          <div class="stack-tech">React 19 · TypeScript · Ant Design 6 · Pro Components · Vite 8</div>
+          <div class="stack-items">
+            <span class="stack-item-tag">React 19</span>
+            <span class="stack-item-tag">TypeScript</span>
+            <span class="stack-item-tag">Ant Design 6</span>
+            <span class="stack-item-tag">Vite 8</span>
+          </div>
         </div>
-        <div class="stack-item">
+        <div class="stack-card glass-card">
+          <div class="stack-icon">📝</div>
           <div class="stack-label">Rich Text</div>
-          <div class="stack-tech">Lexical 0.46 · 20 Plugins · Mermaid · KaTeX</div>
+          <div class="stack-items">
+            <span class="stack-item-tag">Lexical 0.46</span>
+            <span class="stack-item-tag">20 Plugins</span>
+            <span class="stack-item-tag">Mermaid</span>
+            <span class="stack-item-tag">KaTeX</span>
+          </div>
         </div>
-        <div class="stack-item">
+        <div class="stack-card glass-card">
+          <div class="stack-icon">🔑</div>
           <div class="stack-label">Auth</div>
-          <div class="stack-tech">Session · JWT · API Key · HMAC Signature</div>
+          <div class="stack-items">
+            <span class="stack-item-tag">Session</span>
+            <span class="stack-item-tag">JWT</span>
+            <span class="stack-item-tag">API Key</span>
+            <span class="stack-item-tag">HMAC</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA -->
+  <!-- CTA Section -->
   <section class="section section-cta">
-    <div class="container cta-content">
-      <h2>开始构建</h2>
-      <p>3 条命令，30 秒上手</p>
-      <div class="code-terminal">
-        <span class="terminal-prompt">$</span> git clone https://github.com/neekin/zen_platform.git<br>
-        <span class="terminal-prompt">$</span> bin/setup<br>
-        <span class="terminal-prompt">$</span> bin/dev
-      </div>
-      <div class="hero-actions" style="margin-top: 2rem;">
-        <a href="/admin" class="btn btn-primary">进入后台</a>
-        <a href="/api-docs" class="btn btn-outline">API 文档</a>
+    <div class="container">
+      <div class="cta-glass">
+        <div class="cta-content">
+          <h2>准备好开始了吗？</h2>
+          <p>3 条命令，30 秒上手。开源、免费、可商用。</p>
+          <div class="cta-terminal">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <span class="terminal-title">Terminal — Zen Platform</span>
+            </div>
+            <div class="terminal-body">
+              <div class="terminal-line">
+                <span class="terminal-prompt">$</span>
+                <span class="terminal-cmd">git clone https://github.com/neekin/zen_platform.git</span>
+              </div>
+              <div class="terminal-line">
+                <span class="terminal-prompt">$</span>
+                <span class="terminal-cmd">cd zen_platform && bin/setup</span>
+              </div>
+              <div class="terminal-line">
+                <span class="terminal-prompt">$</span>
+                <span class="terminal-cmd">bin/dev</span>
+              </div>
+              <div class="terminal-line terminal-success">
+                <span class="terminal-check">✓</span>
+                <span>服务器启动成功 → </span><span class="terminal-link">http://localhost:3000</span>
+              </div>
+            </div>
+          </div>
+          <div class="cta-actions">
+            <a href="https://github.com/neekin/zen_platform" class="btn btn-primary magnetic">
+              <span>⭐</span> GitHub
+            </a>
+            <a href="/admin" class="btn btn-glass magnetic">
+              <span>🚀</span> 在线演示
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -140,196 +338,884 @@
   <!-- Footer -->
   <footer class="footer">
     <div class="container footer-content">
-      <span>Zen Platform &copy; 2026</span>
-      <span>Built with Rails + React + Inertia.js</span>
+      <div class="footer-left">
+        <span class="footer-logo">⚡ Zen Platform</span>
+        <span class="footer-copy">&copy; 2026</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/neekin/zen_platform">GitHub</a>
+        <a href="/api-docs">API 文档</a>
+        <a href="https://github.com/neekin/zen_platform/issues">问题反馈</a>
+      </div>
+      <div class="footer-right">
+        <span>Built with</span>
+        <span class="footer-heart">❤️</span>
+        <span>Rails + React + Inertia.js</span>
+      </div>
     </div>
   </footer>
 </div>
 
 <style>
-  :root {
-    --bg: #0a0f1e;
-    --bg-card: rgba(20, 27, 45, 0.7);
-    --bg-glass: rgba(20, 27, 45, 0.6);
-    --border: rgba(100, 140, 200, 0.15);
-    --text: rgba(255, 255, 255, 0.85);
-    --text-secondary: rgba(255, 255, 255, 0.55);
-    --primary: #1677FF;
-    --primary-glow: rgba(22, 119, 255, 0.3);
-    --success: #52c41a;
-  }
+:root {
+  --bg: #0a0f1e;
+  --bg-card: rgba(20, 27, 45, 0.7);
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --border: rgba(100, 140, 200, 0.15);
+  --text: rgba(255, 255, 255, 0.85);
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --primary: #1677FF;
+  --primary-glow: rgba(22, 119, 255, 0.3);
+  --success: #52c41a;
+}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  .landing {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+.landing {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
-  /* Hero */
-  .hero {
-    position: relative;
-    padding: 120px 0 80px;
-    text-align: center;
-    overflow: hidden;
-  }
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse at 30% 20%, rgba(22,119,255,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse at 70% 80%, rgba(100,60,255,0.1) 0%, transparent 60%);
-  }
-  .hero-content { position: relative; z-index: 1; }
-  .hero-badge {
-    display: inline-block;
-    padding: 4px 16px;
-    background: rgba(22,119,255,0.15);
-    border: 1px solid rgba(22,119,255,0.3);
-    border-radius: 20px;
-    font-size: 13px;
-    color: var(--primary);
-    margin-bottom: 24px;
-  }
-  .hero h1 {
-    font-size: 56px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    background: linear-gradient(135deg, #fff 0%, #1677FF 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
-  }
-  .hero-subtitle {
-    font-size: 22px;
-    color: var(--text-secondary);
-    margin-bottom: 16px;
-  }
-  .hero-desc {
-    font-size: 16px;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto 32px;
-  }
-  .hero-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 48px; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px; border-radius: 8px; font-size: 15px;
-    font-weight: 500; text-decoration: none; transition: all 0.2s;
-  }
-  .btn-primary {
-    background: var(--primary); color: #fff;
-    box-shadow: 0 0 20px var(--primary-glow);
-  }
-  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-  .btn-outline {
-    background: transparent; color: var(--text);
-    border: 1px solid var(--border);
-  }
-  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+/* ===== Animated Background ===== */
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
 
-  .hero-stats {
-    display: flex; gap: 48px; justify-content: center;
-  }
-  .stat { text-align: center; }
-  .stat-value { display: block; font-size: 28px; font-weight: 700; color: var(--primary); }
-  .stat-label { font-size: 13px; color: var(--text-secondary); }
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  animation: float 20s infinite ease-in-out;
+}
 
-  /* Sections */
-  .section { padding: 80px 0; }
-  .section-dark { background: rgba(15, 20, 35, 0.5); }
-  .section-title {
-    font-size: 32px; font-weight: 600; text-align: center;
-    margin-bottom: 12px;
-  }
-  .section-desc {
-    text-align: center; color: var(--text-secondary);
-    margin-bottom: 48px; font-size: 16px;
-  }
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(22, 119, 255, 0.3), transparent);
+  top: -200px;
+  left: -200px;
+  animation-delay: 0s;
+}
 
-  /* Code Block */
-  .code-block {
-    background: #0d1117; border: 1px solid var(--border);
-    border-radius: 12px; overflow: hidden; max-width: 700px; margin: 0 auto;
-  }
-  .code-header {
-    padding: 12px 16px; background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;
-  }
-  .code-dot { width: 12px; height: 12px; border-radius: 50%; }
-  .code-dot.red { background: #ff5f57; }
-  .code-dot.yellow { background: #febc2e; }
-  .code-dot.green { background: #28c840; }
-  .code-filename { margin-left: 12px; font-size: 13px; color: var(--text-secondary); }
-  .code-block pre { padding: 20px; margin: 0; overflow-x: auto; }
-  .code-block code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; line-height: 1.7; }
-  .kw { color: #ff7b72; }
-  .cls { color: #ffa657; }
-  .fn { color: #d2a8ff; }
-  .sym { color: #79c0ff; }
-  .key { color: #7ee787; }
-  .bool { color: #79c0ff; }
-  .val { color: #a5d6ff; }
-  .mod { color: #ffa657; }
-  .str { color: #a5d6ff; }
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(100, 60, 255, 0.2), transparent);
+  top: 50%;
+  right: -200px;
+  animation-delay: -7s;
+}
 
-  /* Features */
-  .features-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-  }
-  .feature-card {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 28px; transition: all 0.2s;
-  }
-  .feature-card:hover {
-    border-color: rgba(22,119,255,0.3);
-    box-shadow: 0 0 30px rgba(22,119,255,0.08);
-    transform: translateY(-2px);
-  }
-  .feature-icon { font-size: 32px; margin-bottom: 16px; }
-  .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
-  .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 200, 150, 0.15), transparent);
+  bottom: -100px;
+  left: 30%;
+  animation-delay: -14s;
+}
 
-  /* Tech Stack */
-  .stack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .stack-item {
-    background: var(--bg-card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 20px 24px;
-  }
-  .stack-label { font-size: 12px; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-  .stack-tech { font-size: 15px; color: var(--text); }
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(50px, -50px) scale(1.1); }
+  50% { transform: translate(-30px, 30px) scale(0.9); }
+  75% { transform: translate(40px, 50px) scale(1.05); }
+}
 
-  /* CTA */
-  .section-cta { text-align: center; }
-  .cta-content h2 { font-size: 36px; margin-bottom: 8px; }
-  .cta-content p { color: var(--text-secondary); margin-bottom: 24px; }
-  .code-terminal {
-    display: inline-block; background: #0d1117; border: 1px solid var(--border);
-    border-radius: 10px; padding: 20px 28px; text-align: left;
-    font-family: 'SF Mono', monospace; font-size: 14px; line-height: 2;
-    color: var(--success);
-  }
-  .terminal-prompt { color: var(--primary); margin-right: 8px; }
+/* ===== Navigation ===== */
+.nav-glass {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(10, 15, 30, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
 
-  /* Footer */
-  .footer {
-    padding: 24px 0; border-top: 1px solid var(--border);
-  }
-  .footer-content {
-    display: flex; justify-content: space-between;
-    font-size: 13px; color: var(--text-secondary);
-  }
+.nav-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .hero h1 { font-size: 36px; }
-    .hero-stats { gap: 24px; flex-wrap: wrap; }
-    .features-grid { grid-template-columns: 1fr; }
-    .stack-grid { grid-template-columns: 1fr; }
-    .footer-content { flex-direction: column; gap: 8px; text-align: center; }
-  }
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.logo-icon { font-size: 24px; }
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--primary); }
+
+.btn-nav {
+  padding: 8px 20px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-nav:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ===== Hero Section ===== */
+.hero {
+  position: relative;
+  z-index: 1;
+  padding: 180px 0 100px;
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  background: rgba(22, 119, 255, 0.1);
+  border: 1px solid rgba(22, 119, 255, 0.3);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--primary);
+  margin-bottom: 32px;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.hero-title {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #1677FF 0%, #00D4AA 50%, #1677FF 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientMove 3s linear infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.hero-desc {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  line-height: 1.8;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.highlight {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 64px;
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #1677FF, #0095FF);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(22, 119, 255, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(22, 119, 255, 0.6);
+}
+
+.btn-glass {
+  background: var(--bg-glass);
+  color: var(--text);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+}
+
+.btn-glass:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.hero-stats {
+  display: flex;
+  gap: 48px;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.stat-item { text-align: center; }
+
+.stat-number {
+  display: block;
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1677FF, #00D4AA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+}
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  animation: bounce 2s infinite;
+}
+
+.scroll-mouse {
+  width: 24px;
+  height: 38px;
+  border: 2px solid var(--text-secondary);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.scroll-wheel {
+  width: 3px;
+  height: 8px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  animation: scroll 2s infinite;
+}
+
+@keyframes scroll {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-10px); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Sections ===== */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 120px 0;
+}
+
+.section-dark {
+  background: rgba(15, 20, 35, 0.5);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-tag {
+  display: inline-block;
+  padding: 4px 16px;
+  background: rgba(22, 119, 255, 0.1);
+  border: 1px solid rgba(22, 119, 255, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  font-size: 17px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== Code Showcase ===== */
+.code-showcase {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.code-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-tab {
+  flex: 1;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.code-tab:hover { color: var(--text); }
+
+.code-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: rgba(22, 119, 255, 0.05);
+}
+
+.code-panel { display: block; }
+
+.code-panel.hidden { display: none; }
+
+.code-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+
+.code-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.code-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.code-dots span:nth-child(1) { background: #ff5f57; }
+.code-dots span:nth-child(2) { background: #febc2e; }
+.code-dots span:nth-child(3) { background: #28c840; }
+
+.code-filename { font-size: 13px; color: var(--text-secondary); }
+
+.code-language {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(22, 119, 255, 0.1);
+  border-radius: 4px;
+  color: var(--primary);
+}
+
+.code-panel pre {
+  padding: 24px;
+  margin: 0;
+  overflow-x: auto;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.kw { color: #ff7b72; }
+.cls { color: #ffa657; }
+.fn { color: #d2a8ff; }
+.sym { color: #79c0ff; }
+.key { color: #7ee787; }
+.bool { color: #79c0ff; }
+.val { color: #a5d6ff; }
+.mod { color: #ffa657; }
+.str { color: #a5d6ff; }
+.cmt { color: #8b949e; font-style: italic; }
+.var { color: #ffa657; }
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 24px;
+}
+
+.result-card {
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.result-icon { font-size: 32px; margin-bottom: 12px; }
+
+.result-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.result-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===== Features Grid ===== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  padding: 32px;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.feature-icon-wrap {
+  width: 56px;
+  height: 56px;
+  background: rgba(22, 119, 255, 0.1);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.feature-icon { font-size: 28px; }
+
+.feature-card h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.feature-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: rgba(22, 119, 255, 0.1);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* ===== Glass Card ===== */
+.glass-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid var(--border);
+}
+
+/* ===== Tech Stack ===== */
+.stack-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.stack-card {
+  padding: 28px;
+  border-radius: 16px;
+}
+
+.stack-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.stack-label {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.stack-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stack-item-tag {
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* ===== CTA Section ===== */
+.section-cta {
+  padding: 120px 0;
+}
+
+.cta-glass {
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.1), rgba(100, 60, 255, 0.1));
+  border: 1px solid rgba(22, 119, 255, 0.2);
+  border-radius: 24px;
+  padding: 80px 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(22, 119, 255, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+}
+
+.cta-content h2 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.cta-content > p {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 48px;
+}
+
+.cta-terminal {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.terminal-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.terminal-dots span:nth-child(1) { background: #ff5f57; }
+.terminal-dots span:nth-child(2) { background: #febc2e; }
+.terminal-dots span:nth-child(3) { background: #28c840; }
+
+.terminal-title {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.terminal-body {
+  padding: 20px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.terminal-line { margin-bottom: 8px; }
+
+.terminal-prompt {
+  color: var(--primary);
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.terminal-cmd { color: var(--text); }
+
+.terminal-success {
+  color: var(--success);
+}
+
+.terminal-check {
+  margin-right: 8px;
+}
+
+.terminal-link {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+/* ===== Footer ===== */
+.footer {
+  position: relative;
+  z-index: 1;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer-logo {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: var(--primary); }
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-heart {
+  color: #ff4d4f;
+  animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ===== Magnetic Effect ===== */
+.magnetic {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero-title { font-size: 40px; }
+  .hero-stats { flex-wrap: wrap; gap: 24px; }
+  .features-grid { grid-template-columns: 1fr; }
+  .stack-grid { grid-template-columns: 1fr; }
+  .result-grid { grid-template-columns: 1fr; }
+  .footer-content { flex-direction: column; gap: 16px; text-align: center; }
+  .nav-links { display: none; }
+}
 </style>
+
+<script>
+// Smooth scroll for navigation links
+document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Code tabs
+document.querySelectorAll('.code-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+    
+    // Update active tab
+    document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    // Show corresponding panel
+    document.querySelectorAll('.code-panel').forEach(panel => {
+      panel.classList.add('hidden');
+    });
+    document.getElementById(`panel-${target}`).classList.remove('hidden');
+  });
+});
+
+// Magnetic effect
+document.querySelectorAll('.magnetic').forEach(btn => {
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    
+    btn.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px) translateY(-2px)`;
+  });
+  
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// Scroll animations (simple version)
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('[data-aos]').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+  observer.observe(el);
+});
+</script>

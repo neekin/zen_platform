@@ -93,6 +93,25 @@ end
 
 生成器自动集成 `zen_props`（DSL 元数据）、`policy_scope`（Pundit 权限）、`authorize`。
 
+## 添加菜单（必做）
+
+生成器**不会**自动添加菜单项，需要手动配置。
+
+1. 打开 `app/frontend/config/adminMenus.tsx`
+2. 在 `menuRoutes.routes` 数组中添加菜单项：
+
+```tsx
+{
+  path: '/admin/articles',
+  name: '文章管理',
+  icon: <FileTextOutlined />,
+}
+```
+
+3. 在文件顶部 import 对应图标
+
+> **提示**：不添加菜单项也能通过 URL 直接访问，但侧边栏不会显示入口。
+
 ## 自定义
 
 生成后可直接编辑生成的文件。推荐方式：

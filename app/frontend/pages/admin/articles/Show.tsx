@@ -3,9 +3,9 @@
  * 路由: /admin/articles/:id
  */
 import { router } from '@inertiajs/react'
-import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
-import { App, Button, Space, Popconfirm, Tag } from 'antd'
-import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { PageContainer } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Tag, Card, Descriptions, Row, Col, Statistic } from 'antd'
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 
 import { RichTextViewer } from '@/modules/content'
@@ -26,33 +26,64 @@ function ArticleShow({ article }: { article: Article }) {
 
   return (
     <PageContainer
-      title="Article详情"
+      title={article.id || `Article #${article.id}`}
+      subTitle={<Tag color="blue">ID: {article.id}</Tag>}
       extra={
         <Space>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/articles')}>返回</Button>
-          <Button icon={<EditOutlined />} onClick={() => router.visit(`/admin/articles/${article.id}/edit`)}>编辑</Button>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/articles')}>返回列表</Button>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => router.visit(`/admin/articles/${article.id}/edit`)}>编辑</Button>
           <Popconfirm title="确定删除？" onConfirm={() => { router.delete(`/admin/articles/${article.id}`, { onSuccess: () => { message.success('删除成功'); router.visit('/admin/articles') } }) }}>
             <Button danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
         </Space>
       }
     >
-      <ProDescriptions bordered column={2}>
-        <ProDescriptions.Item label="ID">{article.id}</ProDescriptions.Item>
+      <Row gutter={[16, 16]}>
+        <!-- 基本信息卡片 -->
+        <Col span={24}>
+          <Card title="基本信息" variant="borderless">
+            <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered size="middle">
 
 
-        <ProDescriptions.Item label="title">{article.title}</ProDescriptions.Item>
+              <Descriptions.Item label="title">{article.title}</Descriptions.Item>
 
 
 
-        <ProDescriptions.Item label="body" span={2}>
-          {article.body && article.body !== '{}' ? <RichTextViewer content={article.body} /> : '-'}
-        </ProDescriptions.Item>
 
 
-        <ProDescriptions.Item label="创建时间">{article.created_at}</ProDescriptions.Item>
-        <ProDescriptions.Item label="更新时间">{article.updated_at}</ProDescriptions.Item>
-      </ProDescriptions>
+            </Descriptions>
+          </Card>
+        </Col>
+
+
+        <!-- body 富文本内容 -->
+        <Col span={24}>
+          <Card title="body" variant="borderless">
+            {article.body && article.body !== '{}' ? (
+              <RichTextViewer content={article.body} />
+            ) : (
+              <span style={{ color: '#999', fontStyle: 'italic' }}>暂无内容</span>
+            )}
+          </Card>
+        </Col>
+
+
+        <!-- 时间信息 -->
+        <Col span={24}>
+          <Card variant="borderless" size="small">
+            <Space split={<span style={{ color: '#ddd' }}>|</span>}>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>创建于 {article.created_at}</span>
+              </Space>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>更新于 {article.updated_at}</span>
+              </Space>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
     </PageContainer>
   )
 }

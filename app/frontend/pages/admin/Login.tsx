@@ -208,9 +208,6 @@ const Page = () => {
                 }}
                 name="mobile"
                 placeholder={'手机号'}
-                formItemProps={{
-                  validateTrigger: 'onBlur',
-                }}
                 rules={[
                   { required: true, message: '请输入手机号！' },
                   { pattern: /^1\d{10}$/, message: '手机号格式错误！' },

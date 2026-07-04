@@ -3,8 +3,10 @@
 class ExportJob < ApplicationJob
   queue_as :default
 
-  ALLOWED_RESOURCES = %w[Article Task Product].freeze
-  ALLOWED_FILTER_COLUMNS = %w[status category_id created_at].freeze
+  # 可导出的资源列表 — 用户自行添加业务模型名称
+  # 例如: %w[Article Product Task].freeze
+  ALLOWED_RESOURCES = [].freeze
+  ALLOWED_FILTER_COLUMNS = %w[status created_at].freeze
 
   def perform(export_id)
     export = Export.find(export_id)

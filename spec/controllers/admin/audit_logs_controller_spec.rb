@@ -3,13 +3,10 @@
 RSpec.describe Admin::AuditLogsController, type: :controller do
   let(:admin_user) { User.create!(email: "admin@test.com", username: "admin", name: "Admin", password: "password") }
   let(:editor_user) { User.create!(email: "editor@test.com", username: "editor", name: "Editor", password: "password") }
-  let(:article) { Article.create!(title: "测试文章", body: "内容") }
+  let(:test_user) { User.create!(email: "target@test.com", username: "target", name: "测试用户", password: "password") }
 
   before do
-    # 给 admin_user 分配 admin 角色
     admin_user.add_role(:admin)
-    
-    # 模拟登录
     allow(controller).to receive(:current_user).and_return(current_user)
   end
 
@@ -18,8 +15,7 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
       let(:current_user) { admin_user }
 
       before do
-        # 触发一个 update 事件
-        article.update!(title: "修改后的标题")
+        test_user.update!(name: "修改后的名字")
         @version = PaperTrail::Version.last
       end
 
@@ -31,9 +27,8 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
         expect(json["code"]).to eq(0)
         expect(json["message"]).to eq("已还原到该版本")
 
-        # 验证数据已还原
-        article.reload
-        expect(article.title).to eq("测试文章")
+        test_user.reload
+        expect(test_user.name).to eq("测试用户")
       end
 
       it "returns error for non-existent version" do
@@ -45,9 +40,8 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
       end
 
       it "handles destroy event by recreating record" do
-        # 先删除记录（触发 destroy 事件）
-        article_id = article.id
-        article.destroy!
+        user_id = test_user.id
+        test_user.destroy!
         version = PaperTrail::Version.last
 
         post :restore, params: { id: version.id }
@@ -57,13 +51,11 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
         expect(json["code"]).to eq(0)
         expect(json["message"]).to eq("已重新创建该记录")
 
-        # 验证记录已重新创建
-        expect(Article.find_by(id: article_id)).not_to be_nil
+        expect(User.find_by(id: user_id)).not_to be_nil
       end
 
       it "handles create event by deleting record" do
-        # 创建一个新记录（触发 create 事件）
-        new_article = Article.create!(title: "新文章", body: "内容")
+        new_user = User.create!(email: "new@test.com", username: "new_user", name: "新用户", password: "password")
         version = PaperTrail::Version.last
 
         post :restore, params: { id: version.id }
@@ -73,8 +65,7 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
         expect(json["code"]).to eq(0)
         expect(json["message"]).to eq("已删除该记录（还原创建操作）")
 
-        # 验证记录已删除
-        expect(Article.find_by(id: new_article.id)).to be_nil
+        expect(User.find_by(id: new_user.id)).to be_nil
       end
     end
 
@@ -82,7 +73,7 @@ RSpec.describe Admin::AuditLogsController, type: :controller do
       let(:current_user) { editor_user }
 
       it "cannot restore" do
-        article.update!(title: "测试")
+        test_user.update!(name: "测试")
         version = PaperTrail::Version.last
 
         post :restore, params: { id: version.id }

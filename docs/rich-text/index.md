@@ -16,14 +16,14 @@ Zen Platform 内置基于 Lexical 的富文本编辑器，开箱即用 20 个插
 
 ```bash
 # 生成模型 + Admin CRUD 页面
-# --rich-text=body 指定 body 字段使用富文本编辑器
-rails generate zen:admin Article title:string body:text --rich-text=body --modal
+# --rich_text=body 指定 body 字段使用富文本编辑器
+rails generate zen:admin Article title:string body:text --rich_text=body --modal
 
 # 运行迁移
 bin/rails db:migrate
 ```
 
-生成器会自动创建 `app/models/article.rb`，其中 `body` 字段通过 `--rich-text` 选项标记为富文本，前端页面自动渲染为富文本编辑器。
+生成器会自动创建 `app/models/article.rb`，其中 `body` 字段通过 `--rich_text` 选项标记为富文本，前端页面自动渲染为富文本编辑器。
 
 打开 `http://localhost:3100/admin/articles`，点击"新建文章"，你会看到：
 - **标题** — 普通文本输入框

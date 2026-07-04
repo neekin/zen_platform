@@ -253,8 +253,8 @@ sequenceDiagram
 gantt
   title 项目计划
   section 开发
-  设计: 2024-01-01, 7d
-  编码: 2024-01-08, 14d
+  设计: 2026-01-01, 7d
+  编码: 2026-01-08, 14d
 
 # 类图
 classDiagram

@@ -26,7 +26,7 @@ cd zen_platform
 bin/setup
 ```
 
-访问 `http://localhost:3000/admin`，登录 `admin@example.com` / `password123`
+访问 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
 
 ## 📖 DSL 示例
 

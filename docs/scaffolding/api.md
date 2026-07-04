@@ -224,7 +224,7 @@ private
 
 # admin 看全部，其他用户只看自己的
 def scoped_articles
-  if @current_api_user.has_role?(:super_admin, :admin)
+  if @current_api_user.has_any_role?(:super_admin, :admin)
     Article.all
   else
     Article.where(user_id: @current_api_user.id)
@@ -265,7 +265,7 @@ end
 def article_params
   allowed = %i[title body status]
   # 只有管理员能设置内部备注
-  allowed << :internal_notes if @current_api_user.has_role?(:super_admin, :admin)
+  allowed << :internal_notes if @current_api_user.has_any_role?(:super_admin, :admin)
   params.require(:article).permit(allowed)
 end
 ```
@@ -355,7 +355,7 @@ module Api
 
       # 数据隔离：admin 看全部，其他只看自己的
       def scoped_articles
-        @current_api_user.has_role?(:super_admin, :admin) ? Article.all : Article.where(user_id: @current_api_user.id)
+        @current_api_user.has_any_role?(:super_admin, :admin) ? Article.all : Article.where(user_id: @current_api_user.id)
       end
 
       # RBAC 权限检查
@@ -374,7 +374,7 @@ module Api
       # 写入过滤：管理员可设置额外字段
       def article_params
         allowed = %i[title body status]
-        allowed << :internal_notes if @current_api_user.has_role?(:super_admin, :admin)
+        allowed << :internal_notes if @current_api_user.has_any_role?(:super_admin, :admin)
         params.require(:article).permit(allowed)
       end
     end

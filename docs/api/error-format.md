@@ -46,11 +46,20 @@ title: API 错误响应格式
 ```
 
 ### 限流 (429)
+
+限流响应由 rack-attack 直接返回，格式与业务错误略有不同（`error` 字段而非 `code` + `message`）：
+
 ```json
 {
   "error": "Rate limit exceeded. Retry later."
 }
 ```
+
+响应头包含分页信息：
+- `X-RateLimit-Limit` — 窗口内最大请求数
+- `X-RateLimit-Remaining` — 剩余请求数（0）
+- `X-RateLimit-Reset` — 重置时间戳
+- `Retry-After` — 等待秒数
 
 ## 成功响应
 

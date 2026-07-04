@@ -121,7 +121,7 @@ class Api::V1::ArticlesController < ApiController
 
   # 根据角色返回不同字段
   def fields_for_current_user
-    if @current_api_user.has_role?(:super_admin, :admin)
+    if @current_api_user.has_any_role?(:super_admin, :admin)
       %i[id title body status internal_notes admin_notes published_at created_at updated_at]
     else
       %i[id title body status published_at created_at]
@@ -177,7 +177,7 @@ end
 def show
   article = Article.find_by(id: params[:id])
   if article
-    method = @current_api_user.has_role?(:super_admin, :admin) ? :api_admin : :api_detail
+    method = @current_api_user.has_any_role?(:super_admin, :admin) ? :api_admin : :api_detail
     render_success article.public_send(method)
   else
     render_error(message: "记录不存在", status: :not_found)
@@ -233,7 +233,7 @@ end
 def index
   fields = Article.zen_fields.keys.map(&:to_sym)
   # 非管理员看不到内部备注
-  fields -= %i[internal_notes] unless @current_api_user.has_role?(:admin, :super_admin)
+  fields -= %i[internal_notes] unless @current_api_user.has_any_role?(:admin, :super_admin)
   render_success Article.all.as_json(only: fields)
 end
 ```
@@ -254,7 +254,7 @@ end
 ```ruby
 def article_params
   allowed = %i[title body status]
-  allowed << :internal_notes if @current_api_user.has_role?(:super_admin, :admin)
+  allowed << :internal_notes if @current_api_user.has_any_role?(:super_admin, :admin)
   params.require(:article).permit(allowed)
 end
 ```

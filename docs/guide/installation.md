@@ -34,7 +34,7 @@ bin/rails db:setup
 bin/dev
 ```
 
-访问 `http://localhost:3000/admin`，使用以下账号登录：
+访问 `http://localhost:3100/admin`，使用以下账号登录：
 
 | 角色 | 邮箱 | 密码 |
 |------|------|------|
@@ -46,7 +46,7 @@ bin/dev
 docker compose up --build
 ```
 
-访问 `http://localhost:3000/admin`
+访问 `http://localhost:3100/admin`
 
 ## 环境变量
 
@@ -54,7 +54,7 @@ docker compose up --build
 
 ```bash
 # CORS 允许的源
-ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+ALLOWED_ORIGINS=http://localhost:3100,http://localhost:3036
 
 # 日志级别
 RAILS_LOG_LEVEL=info
@@ -72,11 +72,11 @@ RAILS_LOG_LEVEL=info
 
 ### npm install 失败？
 
-确保 Node ≥ 20，并尝试：
+确保 Node ≥ 24，并尝试：
 ```bash
 npm install --legacy-peer-deps
 ```
 
 ### PaperTrail 兼容性警告？
 
-PaperTrail 16.x 与 AR 8.1 有兼容性警告但功能正常，可忽略。
+PaperTrail 17.x 与 AR 8.1 有兼容性警告但功能正常，可忽略。

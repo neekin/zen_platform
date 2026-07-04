@@ -6,7 +6,7 @@ Rails.application.configure do
     policy.font_src    :self, :https, :data
     policy.img_src     :self, :https, :data, :blob
     policy.object_src  :none
-    policy.script_src  :self, :https
+    policy.script_src  :self, :https, :unsafe_inline
     # Allow @vite/client to hot reload javascript changes in development
     policy.script_src *policy.script_src, :unsafe_eval, "http://#{ViteRuby.config.host_with_port}" if Rails.env.development?
 

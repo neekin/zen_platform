@@ -21,9 +21,10 @@ module Admin
         {
           role: role_name,
           permissions: resources.map do |resource|
+            valid_actions = Permission::RESOURCE_ACTIONS[resource] || actions
             {
               resource: resource,
-              actions: actions.map do |action_name|
+              actions: valid_actions.map do |action_name|
                 key = [role_name, resource, action_name]
                 perm = all_permissions[key]&.first
                 {
@@ -42,6 +43,7 @@ module Admin
           matrix: matrix,
           roles: roles,
           resources: resources,
+          resource_actions: Permission::RESOURCE_ACTIONS,
           actions: actions,
         }
     end

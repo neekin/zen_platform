@@ -28,6 +28,7 @@ interface PermissionsIndexProps {
   roles: string[]
   resources: string[]
   actions: string[]
+  resource_actions: Record<string, string[]>
 }
 
 const actionLabels: Record<string, string> = {
@@ -55,7 +56,7 @@ const roleLabels: Record<string, string> = {
   viewer: '查看者',
 }
 
-function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions }: PermissionsIndexProps) {
+function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, resource_actions }: PermissionsIndexProps) {
   const { message, modal } = App.useApp()
   const [matrix, setMatrix] = useState<RolePermissions[]>(initialMatrix)
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
@@ -234,49 +235,56 @@ function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions }: 
         onClose={() => setSelectedRole(null)}
         size="default"
       >
-        {selectedRole && (
-          <ProCard>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
-                    资源
-                  </th>
-                  {actions.map((action) => (
-                    <th key={action} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
-                      {actionLabels[action] || action}
+        {selectedRole && (() => {
+          // 收集当前角色所有资源的有效操作并集（保持顺序）
+          const allActions = Array.from(new Set(
+            selectedRole.permissions.flatMap((p) => p.actions.map((a) => a.action))
+          ))
+
+          return (
+            <ProCard>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
+                      资源
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {selectedRole.permissions.map((resourcePerm) => (
-                  <tr key={resourcePerm.resource}>
-                    <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
-                      <Tag color="geekblue">{resourcePerm.resource}</Tag>
-                    </td>
-                    {actions.map((action) => {
-                      const actionData = resourcePerm.actions.find((a) => a.action === action)
-                      return (
-                        <td key={action} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
-                          {actionData ? (
-                            <Switch
-                              size="small"
-                              checked={actionData.allowed}
-                              onChange={() => handleToggle(selectedRole.role, resourcePerm.resource, action, actionData.allowed)}
-                            />
-                          ) : (
-                            <span style={{ color: '#ccc' }}>-</span>
-                          )}
-                        </td>
-                      )
-                    })}
+                    {allActions.map((action) => (
+                      <th key={action} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
+                        {actionLabels[action] || action}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </ProCard>
-        )}
+                </thead>
+                <tbody>
+                  {selectedRole.permissions.map((resourcePerm) => (
+                    <tr key={resourcePerm.resource}>
+                      <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                        <Tag color="geekblue">{resourcePerm.resource}</Tag>
+                      </td>
+                      {allActions.map((action) => {
+                        const actionData = resourcePerm.actions.find((a) => a.action === action)
+                        return (
+                          <td key={action} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                            {actionData ? (
+                              <Switch
+                                size="small"
+                                checked={actionData.allowed}
+                                onChange={() => handleToggle(selectedRole.role, resourcePerm.resource, action, actionData.allowed)}
+                              />
+                            ) : (
+                              <span style={{ color: 'var(--ant-color-text-quaternary)' }}>—</span>
+                            )}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </ProCard>
+          )
+        })()}
       </Drawer>
     </PageContainer>
   )

@@ -8,7 +8,7 @@ module Admin
     def index
       @tasks = policy_scope(Task).ordered
       render inertia: "admin/tasks/Kanban",
-        props: { tasks: @tasks.as_json }
+        props: zen_props(Task, tasks: @tasks.as_json)
     end
 
     # GET /admin/tasks/:id
@@ -23,7 +23,7 @@ module Admin
       @task = Task.new(task_params)
       authorize @task
       if @task.save
-        redirect_to admin_task_path(@task), notice: "创建成功"
+        redirect_to admin_tasks_path, notice: "创建成功"
       else
         redirect_to admin_tasks_path, alert: @task.errors.full_messages.join(", ")
       end
@@ -33,7 +33,7 @@ module Admin
     def update
       authorize @task
       if @task.update(task_params)
-        redirect_to admin_task_path(@task), notice: "更新成功"
+        redirect_to admin_tasks_path, notice: "更新成功"
       else
         redirect_to admin_tasks_path, alert: @task.errors.full_messages.join(", ")
       end
@@ -50,6 +50,8 @@ module Admin
 
     def set_task
       @task = Task.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      redirect_to admin_tasks_path, alert: "记录不存在"
     end
 
     def task_params

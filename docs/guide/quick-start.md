@@ -10,17 +10,14 @@
 
 ```bash
 # 克隆
-git clone https://github.com/yourusername/zen_platform.git
+git clone https://github.com/neekin/zen_platform.git
 cd zen_platform
 
-# 安装依赖 + 初始化数据库
+# 安装依赖 + 初始化数据库（完成后自动启动服务器）
 bin/setup
-
-# 启动开发服务器
-bin/dev
 ```
 
-打开 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
+打开 `http://localhost:3000/admin`，登录 `admin@example.com` / `password123`
 
 ## 创建你的第一个模型
 

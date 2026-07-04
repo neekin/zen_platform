@@ -29,6 +29,5 @@
       "~/*": ["./app/frontend/*"]
     }
   },
-  "include": ["app/frontend"],
-  "exclude": ["app/frontend/modules/content/editor/plugins"]
+  "include": ["app/frontend"]
 }

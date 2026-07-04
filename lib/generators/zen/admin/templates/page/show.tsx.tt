@@ -3,9 +3,9 @@
  * 路由: /admin/<%= plural_name %>/:id
  */
 import { router } from '@inertiajs/react'
-import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
-import { App, Button, Space, Popconfirm, Tag } from 'antd'
-import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { PageContainer } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Tag, Card, Descriptions, Row, Col } from 'antd'
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 <% if has_rich_text? %>
 import { RichTextViewer } from '@/modules/content'
@@ -27,37 +27,68 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
 
   return (
     <PageContainer
-      title="<%= class_name %>详情"
+      title={<%= singular_name %>.<%= attributes.find { |a| a.type == 'string' && !rich_text?(a) }&.name || 'id' %> || '<%= class_name %>详情'}
+      subTitle={<Tag color="blue">ID: {<%= singular_name %>.id}</Tag>}
       extra={
         <Space>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>')}>返回</Button>
-          <Button icon={<EditOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${<%= singular_name %>.id}/edit`)}>编辑</Button>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>')}>返回列表</Button>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${<%= singular_name %>.id}/edit`)}>编辑</Button>
           <Popconfirm title="确定删除？" onConfirm={() => { router.delete(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, { onSuccess: () => { message.success('删除成功'); router.visit('/admin/<%= plural_name %>') } }) }}>
             <Button danger icon={<DeleteOutlined />}>删除</Button>
           </Popconfirm>
         </Space>
       }
     >
-      <ProDescriptions bordered column={2}>
-        <ProDescriptions.Item label="ID">{<%= singular_name %>.id}</ProDescriptions.Item>
+      <Row gutter={[16, 16]}>
+        <!-- 基本信息卡片 -->
+        <Col span={24}>
+          <Card title="基本信息" variant="borderless">
+            <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered size="middle">
 <% attributes.each do |a| %>
 <% if enum?(a) %>
-        <ProDescriptions.Item label="<%= a.name %>"><Tag>{<%= singular_name %>.<%= a.name %>}</Tag></ProDescriptions.Item>
+              <Descriptions.Item label="<%= a.name %>"><Tag>{<%= singular_name %>.<%= a.name %>}</Tag></Descriptions.Item>
 <% elsif a.type == 'boolean' %>
-        <ProDescriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %> ? '是' : '否'}</ProDescriptions.Item>
+              <Descriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %> ? '是' : '否'}</Descriptions.Item>
 <% elsif association_foreign_key?(a) %>
-        <ProDescriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">{<%= singular_name %>.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}</ProDescriptions.Item>
+              <Descriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">{<%= singular_name %>.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}</Descriptions.Item>
 <% elsif rich_text?(a) %>
-        <ProDescriptions.Item label="<%= a.name %>" span={2}>
-          {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? <RichTextViewer content={<%= singular_name %>.<%= a.name %>} /> : '-'}
-        </ProDescriptions.Item>
 <% else %>
-        <ProDescriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %>}</ProDescriptions.Item>
+              <Descriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %>}</Descriptions.Item>
 <% end %>
 <% end %>
-        <ProDescriptions.Item label="创建时间">{<%= singular_name %>.created_at}</ProDescriptions.Item>
-        <ProDescriptions.Item label="更新时间">{<%= singular_name %>.updated_at}</ProDescriptions.Item>
-      </ProDescriptions>
+            </Descriptions>
+          </Card>
+        </Col>
+
+<% rich_text_attributes.each do |a| %>
+        <!-- <%= a.name %> 富文本内容 -->
+        <Col span={24}>
+          <Card title="<%= a.name %>" variant="borderless">
+            {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? (
+              <RichTextViewer content={<%= singular_name %>.<%= a.name %>} />
+            ) : (
+              <span style={{ color: '#999', fontStyle: 'italic' }}>暂无内容</span>
+            )}
+          </Card>
+        </Col>
+<% end %>
+
+        <!-- 时间信息 -->
+        <Col span={24}>
+          <Card variant="borderless" size="small">
+            <Space split={<span style={{ color: '#ddd' }}>|</span>}>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>创建于 {<%= singular_name %>.created_at}</span>
+              </Space>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>更新于 {<%= singular_name %>.updated_at}</span>
+              </Space>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
     </PageContainer>
   )
 }

@@ -1,5 +1,5 @@
 class Export < ApplicationRecord
-  ALLOWED_RESOURCES = %w[Article Comment User Role ApiKey Notification].freeze
+  ALLOWED_RESOURCES = %w[User Role ApiKey Notification].freeze
 
   belongs_to :user
 

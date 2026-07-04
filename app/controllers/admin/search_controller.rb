@@ -56,15 +56,11 @@ module Admin
         { title: "权限管理", url: "/admin/permissions", icon: "safety" },
         { title: "API Key", url: "/admin/api_keys", icon: "key" },
         { title: "审计日志", url: "/admin/audit_logs", icon: "audit" },
-        { title: "文章管理", url: "/admin/articles", icon: "articles" },
-        { title: "评论管理", url: "/admin/comments", icon: "comments" },
       ].select { |m| query.blank? || m[:title].include?(query) }
     end
 
     def quick_actions(query)
-      actions = [
-        { title: "新建文章", url: "/admin/articles", icon: "plus", category: "action" },
-      ]
+      actions = []
       query.present? ? actions.select { |a| a[:title].include?(query) } : []
     end
   end

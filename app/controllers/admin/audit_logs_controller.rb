@@ -6,7 +6,7 @@ module Admin
     skip_after_action :verify_policy_scoped
     before_action :authorize_restore, only: [ :restore ]
 
-    ALLOWED_RESTORE_TYPES = %w[Article Comment User Role ApiKey Export Notification Task Product Permission].freeze
+    ALLOWED_RESTORE_TYPES = %w[User Role ApiKey Export Notification Task Product Permission].freeze
 
     # GET /admin/audit_logs
     def index

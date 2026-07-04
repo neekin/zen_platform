@@ -45,6 +45,41 @@ Thank you for your interest in contributing!
 
 3. Run migrations and test
 
+## How to Write Tests
+
+### Backend (RSpec)
+
+```bash
+# Run all tests
+bundle exec rspec
+
+# Run specific test
+bundle exec rspec spec/models/article_spec.rb
+```
+
+### Frontend (Vitest)
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test
+npx vitest run test/modules/dsl/DslMeta.test.ts
+```
+
+### Test Data
+
+No FactoryBot — use `Model.create!` directly:
+```ruby
+let(:user) { User.create!(email: "test@test.com", username: "test", name: "Test", password: "pass") }
+```
+
+### Roles in Tests
+
+```ruby
+let(:admin) { User.create!(...).tap { |u| u.add_role(:admin) } }
+```
+
 ## Questions?
 
 Open a discussion on GitHub Issues.

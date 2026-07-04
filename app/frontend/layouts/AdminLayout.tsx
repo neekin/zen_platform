@@ -104,8 +104,10 @@ const themeLabels: Record<string, string> = {
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const page = usePage()
   const { user } = page.props
-  const currentUrl = page.url
   const { mode, resolved, setMode } = useTheme()
+
+  // 使用 window.location.pathname 获取精确路径（Inertia page.url 可能是重定向前的）
+  const pathname = window.location.pathname
 
   const currentTheme = resolved === 'dark' ? darkTheme : lightTheme
   const iconColor = resolved === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)'
@@ -119,9 +121,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           layout="mix"
           fixSiderbar
           route={menuRoutes}
-          location={{ pathname: currentUrl }}
+          location={{ pathname }}
           menuItemRender={(item, dom) => (
-            <a onClick={() => item.path && router.visit(item.path)}>{dom}</a>
+            <a
+              onClick={(e) => {
+                e.preventDefault()
+                if (item.path && item.path !== pathname) {
+                  router.visit(item.path)
+                }
+              }}
+            >
+              {dom}
+            </a>
           )}
           avatarProps={{
             src: undefined,

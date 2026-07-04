@@ -37,14 +37,17 @@ export function serializeEditorState(state: unknown): EditorContent {
 /** 反序列化：JSON 字符串 → EditorState */
 export function deserializeEditorState(json: EditorContent): LexicalStateJSON | null {
   try {
-    if (!json || json === '{}') return null
+    if (!json || json === '{}' || json === 'null' || json === 'undefined') return null
     const parsed = JSON.parse(json)
     if (isValidLexicalState(parsed)) {
       return parsed
     }
     return null
   } catch {
-    console.error('Failed to deserialize editor state')
+    // Only warn if the value looks like it should be valid JSON
+    if (json && json.length > 2 && json !== '{}') {
+      console.warn('RichText: content is not valid Lexical JSON, starting with empty editor')
+    }
     return null
   }
 }

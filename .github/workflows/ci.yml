@@ -83,7 +83,7 @@ jobs:
         run: bundle exec bundler-audit --update
 
       - name: Security scan
-        run: bundle exec brakeman --no-pager -z -w3
+        run: bundle exec brakeman --no-pager -z -w2
 
   frontend:
     runs-on: ubuntu-latest

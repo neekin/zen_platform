@@ -36,14 +36,16 @@ const Page = () => {
 
   useEffect(() => {
     if (flash?.alert) {
-      notification.error({
+      notification.open({
+        type: 'error',
         message: '登录失败',
         description: flash.alert,
         placement: 'bottomRight',
       })
     }
     if (flash?.notice) {
-      notification.success({
+      notification.open({
+        type: 'success',
         message: flash.notice,
         placement: 'bottomRight',
       })
@@ -188,7 +190,8 @@ const Page = () => {
               onFinish: () => setLoading(false),
             })
           } else {
-            notification.info({
+            notification.open({
+              type: 'info',
               message: '手机验证码登录暂未实现',
               placement: 'bottomRight',
             })
@@ -307,7 +310,8 @@ const Page = () => {
                 },
               ]}
               onGetCaptcha={async () => {
-                notification.success({
+                notification.open({
+                  type: 'success',
                   message: '获取验证码成功！验证码为：1234',
                   placement: 'bottomRight',
                 })

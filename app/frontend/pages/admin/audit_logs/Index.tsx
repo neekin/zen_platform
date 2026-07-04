@@ -1,7 +1,7 @@
 import React from 'react'
 import { router, usePage } from '@inertiajs/react'
 import { ProTable, ProDescriptions, type ProColumns } from '@ant-design/pro-components'
-import { Tag, Typography, Space, Button, Drawer, Modal, App } from 'antd'
+import { Tag, Typography, Space, Button, Drawer, App } from 'antd'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -38,7 +38,7 @@ const eventLabels: Record<string, string> = {
 
 export default function AuditLogsIndex() {
   const { audit_logs, filters } = usePage<{ props: Props }>().props as unknown as Props
-  const { message } = App.useApp()
+  const { message, modal } = App.useApp()
   const [selectedLog, setSelectedLog] = React.useState<AuditLog | null>(null)
   const [restoring, setRestoring] = React.useState(false)
 
@@ -49,7 +49,7 @@ export default function AuditLogsIndex() {
 
   const handleRestore = async (log: AuditLog) => {
     const confirmed = await new Promise<boolean>((resolve) => {
-      Modal.confirm({
+      modal.confirm({
         title: '确认还原',
         content: `确定要还原此${eventLabels[log.event] || log.event}操作吗？还原后数据将恢复到此版本的状态。`,
         okText: '确认还原',

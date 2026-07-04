@@ -65,12 +65,6 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
       resource: resource,
       action_name: action,
       allowed: !currentValue,
-    }, {
-      onSuccess: () => {
-        message.success('权限已更新')
-        router.reload()
-      },
-      onError: () => message.error('更新失败'),
     })
   }
 
@@ -82,10 +76,7 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
       okType: 'danger',
       cancelText: '取消',
       onOk: () => {
-        router.post('/admin/permissions/reset', {}, {
-          onSuccess: () => { message.success('已重置'); router.reload() },
-          onError: () => message.error('重置失败'),
-        })
+        router.post('/admin/permissions/reset')
       },
     })
   }
@@ -192,7 +183,7 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
         }
         open={!!selectedRole}
         onClose={() => setSelectedRole(null)}
-        width={600}
+        size="default"
       >
         {selectedRole && (
           <ProCard>

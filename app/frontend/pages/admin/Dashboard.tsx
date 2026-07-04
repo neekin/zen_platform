@@ -152,22 +152,22 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
           <ProCard title="文档" variant="borderless" className="glass-card">
             <Space orientation="vertical" size={12} style={{ width: '100%' }}>
               <div>
-                <Link href="https://neekin.github.io/zen_platform/" target="_blank">
-                  完整文档
+                <Link href="https://zen.justfunit.net" target="_blank">
+                  使用文档
                 </Link>
-                <Text type="secondary"> — 安装、配置、DSL、脚手架、API、部署</Text>
+                <Text type="secondary"> — 安装、配置、DSL、脚手架、部署</Text>
               </div>
               <div>
-                <Link href="https://neekin.github.io/zen_platform/dsl/" target="_blank">
+                <Link href="/api-docs">
+                  API 文档
+                </Link>
+                <Text type="secondary"> — Swagger UI，JWT 认证 + rswag 自动生成</Text>
+              </div>
+              <div>
+                <Link href="https://zen.justfunit.net/dsl/" target="_blank">
                   Model DSL
                 </Link>
                 <Text type="secondary"> — 字段定义、关联、展示配置</Text>
-              </div>
-              <div>
-                <Link href="https://neekin.github.io/zen_platform/scaffolding/" target="_blank">
-                  脚手架生成器
-                </Link>
-                <Text type="secondary"> — Admin CRUD 和 API 自动生成</Text>
               </div>
               <div>
                 <Link href="https://github.com/neekin/zen_platform" target="_blank">

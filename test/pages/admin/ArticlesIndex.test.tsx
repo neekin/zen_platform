@@ -60,7 +60,7 @@ describe('ArticlesIndex', () => {
       <ArticlesIndex meta={mockMeta as any} articles={[]} />
     )
     // DslTable should render the create button
-    expect(screen.getByText('新建文章')).toBeInTheDocument()
+    expect(screen.getByText('新建Article')).toBeInTheDocument()
   })
 
   it('renders article data in table', () => {

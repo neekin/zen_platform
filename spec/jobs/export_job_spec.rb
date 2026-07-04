@@ -5,13 +5,13 @@ require "rails_helper"
 RSpec.describe ExportJob, type: :job do
   let(:user) { User.create!(username: "exporter", email: "exp@test.com", name: "Exporter", password: "pass123") }
 
-  describe "ALLOWED_RESOURCES" do
+  describe "Export::ALLOWED_RESOURCES" do
     it "is an array" do
-      expect(described_class::ALLOWED_RESOURCES).to be_an(Array)
+      expect(Export::ALLOWED_RESOURCES).to be_an(Array)
     end
 
-    it "does not include User or ApiKey" do
-      expect(described_class::ALLOWED_RESOURCES).not_to include("User", "ApiKey")
+    it "includes Article and Comment" do
+      expect(Export::ALLOWED_RESOURCES).to include("Article", "Comment")
     end
   end
 

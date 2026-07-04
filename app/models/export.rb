@@ -1,4 +1,6 @@
 class Export < ApplicationRecord
+  ALLOWED_RESOURCES = %w[Article Comment User Role ApiKey Notification].freeze
+
   belongs_to :user
 
   validates :format, presence: true, inclusion: { in: %w[csv xlsx pdf] }

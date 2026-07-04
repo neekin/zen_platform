@@ -6,9 +6,9 @@
  */
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { Modal, App } from 'antd'
+import { App } from 'antd'
 import AdminLayout from '../../../layouts/AdminLayout'
-import { DslTable, DslForm } from '../../../modules/dsl'
+import { DslTable, DslForm, DslModal } from '../../../modules/dsl'
 import type { DslMeta } from '../../../types/dsl'
 import type { ReactNode } from 'react'
 
@@ -66,7 +66,7 @@ function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= clas
         createText="新建<%= class_name %>"
       />
 
-      <Modal
+      <DslModal
         title={editing ? '编辑<%= class_name %>' : '新建<%= class_name %>'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}

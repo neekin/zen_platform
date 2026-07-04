@@ -8,7 +8,9 @@ module Admin
     # GET /admin/profile
     def show
       render inertia: "admin/profile/Show", props: {
-        user: current_user.as_json(only: %i[id username email name phone note avatar created_at]),
+        user: current_user.as_json(only: %i[id username email name phone note created_at]).merge(
+          "avatar" => current_user.avatar.attached? ? url_for(current_user.avatar) : nil
+        ),
       }
     end
 
@@ -83,15 +85,8 @@ module Admin
         return
       end
 
-      # 将图片转为 Base64 存储（简单方案，生产环境建议用 Active Storage）
-      avatar_data = params[:avatar]
-      base64 = "data:#{avatar_data.content_type};base64,#{Base64.strict_encode64(avatar_data.read)}"
-
-      if current_user.update(avatar: base64)
-        render json: { code: 0, message: "头像已更新" }
-      else
-        render json: { code: 1, message: current_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
-      end
+      current_user.avatar.attach(params[:avatar])
+      render json: { code: 0, message: "头像已更新", url: url_for(current_user.avatar) }
     end
 
     private

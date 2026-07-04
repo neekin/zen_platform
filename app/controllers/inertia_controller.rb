@@ -7,7 +7,7 @@ class InertiaController < ApplicationController
         id: current_user.id,
         name: current_user.name,
         email: current_user.email,
-        avatar: current_user.avatar,
+        avatar: current_user.avatar.attached? ? url_for(current_user.avatar) : nil,
         roles: current_user.roles.pluck(:name)
       } : nil,
       flash: flash.to_hash.slice("notice", "alert").merge(ts: Time.current.to_f),

@@ -5,6 +5,7 @@ class User < ApplicationRecord
   has_many :api_keys, dependent: :destroy
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
   has_many :exports, dependent: :destroy
+  has_one_attached :avatar
 
   validates :email, presence: true, uniqueness: true
   validates :username, presence: true, uniqueness: true

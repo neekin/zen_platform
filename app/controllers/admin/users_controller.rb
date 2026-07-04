@@ -24,7 +24,7 @@ module Admin
               email: u.email,
               username: u.username,
               name: u.name,
-              avatar: u.avatar,
+              avatar: u.avatar.attached? ? url_for(u.avatar) : nil,
               phone: u.phone,
               roles: u.roles.pluck(:name),
               created_at: u.created_at.iso8601

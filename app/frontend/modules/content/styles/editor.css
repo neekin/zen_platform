@@ -66,6 +66,23 @@
   font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
 }
 
+/* ==================== 文本对齐 ==================== */
+.zen-align-left {
+  text-align: left;
+}
+
+.zen-align-center {
+  text-align: center;
+}
+
+.zen-align-right {
+  text-align: right;
+}
+
+.zen-align-justify {
+  text-align: justify;
+}
+
 /* ==================== 文本格式 ==================== */
 .zen-text-bold {
   font-weight: 700;

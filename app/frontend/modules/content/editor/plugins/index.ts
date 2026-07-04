@@ -4,6 +4,7 @@
  * 所有内置插件在这里注册
  */
 import { textFormatPlugin } from './text-format'
+import { textAlignPlugin } from './text-align'
 import { codePlugin } from './code'
 import { historyPlugin } from './history'
 import { headingPlugin } from './heading'
@@ -26,6 +27,7 @@ import type { Plugin } from '../../types'
 export const builtinPlugins: Plugin[] = [
   historyPlugin,
   textFormatPlugin,
+  textAlignPlugin,
   codePlugin,
   headingPlugin,
   quotePlugin,
@@ -60,6 +62,7 @@ export function registerPlugin(plugin: Plugin): void {
 
 /** 导出各个插件 */
 export { textFormatPlugin } from './text-format'
+export { textAlignPlugin } from './text-align'
 export { codePlugin } from './code'
 export { historyPlugin } from './history'
 export { headingPlugin } from './heading'

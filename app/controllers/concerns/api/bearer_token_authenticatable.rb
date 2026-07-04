@@ -3,6 +3,7 @@
 module Api
   module BearerTokenAuthenticatable
     extend ActiveSupport::Concern
+    include Api::JwtAuthenticatable
 
     def authenticate_bearer_token!
       token = request.headers["Authorization"]&.split(" ")&.last
@@ -15,17 +16,6 @@ module Api
 
     def current_api_user
       @current_api_user
-    end
-
-    private
-
-    def decode_jwt(token)
-      return nil if token.blank?
-
-      decoded = JWT.decode(token, Rails.application.secret_key_base, true, algorithm: "HS256")
-      decoded.first
-    rescue JWT::DecodeError, JWT::ExpiredSignature
-      nil
     end
   end
 end

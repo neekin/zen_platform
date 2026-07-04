@@ -5,6 +5,7 @@ export default defineConfig({
   description: '声明式全栈应用生成平台',
   lang: 'zh-CN',
   themeConfig: {
+    logo: '/logo.svg',
     nav: [
       { text: '指南', link: '/guide/' },
       { text: 'Model DSL', link: '/dsl/' },

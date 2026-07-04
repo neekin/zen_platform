@@ -9,7 +9,7 @@ title: Admin 生成器
 ## 基本用法
 
 ```bash
-rails generate zen:admin Article title:string body:rich_text status:enum
+rails generate zen:admin Article title:string body:text status:enum --rich-text=body
 ```
 
 ## 模式

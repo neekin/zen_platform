@@ -117,7 +117,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <div className="admin-layout" data-theme={resolved}>
         <ProLayout
           title="Zen Platform"
-          logo="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
+          logo="/logo-mark.svg"
           layout="mix"
           fixSiderbar
           route={menuRoutes}

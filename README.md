@@ -1,5 +1,6 @@
 <p align="center">
-  <h1 align="center">⚡ Zen Platform</h1>
+  <img src="public/logo-mark.svg" width="120" alt="Zen Platform" />
+  <h1 align="center">Zen Platform</h1>
   <p align="center">声明式全栈应用生成平台 — 一行 DSL，自动生成管理后台 + API</p>
 </p>
 

@@ -1,4 +1,7 @@
-# Zen Platform
+<p align="center">
+  <img src="public/logo-mark.svg" width="120" alt="Zen Platform" />
+  <h1 align="center">Zen Platform</h1>
+</p>
 
 [English](./README.md) | 简体中文
 

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # ActionCable WebSocket
+  mount ActionCable.server => "/cable"
+
   get "home/index"
 
   # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
@@ -14,10 +17,12 @@ Rails.application.routes.draw do
   mount Rswag::Api::Engine => "/api-docs"
 
   namespace :admin do
-    root "dashboard#index"
+    root to: redirect("/admin/dashboard")
+    get  "dashboard", to: "dashboard#index"
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
+    resources :users, only: [:index, :show, :create, :update, :destroy]
     resources :articles
     resources :comments
     resources :audit_logs, only: [ :index, :show ] do

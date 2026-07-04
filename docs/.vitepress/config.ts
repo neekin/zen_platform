@@ -23,6 +23,7 @@ export default defineConfig({
             { text: '快速上手', link: '/guide/quick-start' },
             { text: '安装配置', link: '/guide/installation' },
             { text: '配置参考', link: '/guide/configuration' },
+            { text: '通知系统', link: '/guide/notifications' },
           ],
         },
       ],

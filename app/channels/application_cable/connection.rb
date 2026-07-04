@@ -11,7 +11,9 @@ module ApplicationCable
     private
 
     def find_verified_user
-      if (user = User.find_by(id: cookies.encrypted[:user_id]))
+      # ActionCable Connection 没有 session 方法，通过 request.session 访问
+      user_id = request.session[:user_id]
+      if user_id && (user = User.find_by(id: user_id))
         user
       else
         reject_unauthorized_connection

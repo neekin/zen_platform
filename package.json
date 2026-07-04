@@ -46,6 +46,7 @@
     "@lexical/react": "^0.46.0",
     "@lexical/rich-text": "^0.46.0",
     "@lexical/selection": "^0.46.0",
+    "@rails/actioncable": "^8.1.300",
     "@types/nprogress": "^0.2.3",
     "@vitejs/plugin-react": "^6.0.3",
     "antd": "^6.0.0",

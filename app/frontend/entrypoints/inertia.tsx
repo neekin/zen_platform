@@ -1,6 +1,13 @@
-import { createInertiaApp } from '@inertiajs/react'
+import { createInertiaApp, router } from '@inertiajs/react'
 import { createRoot } from 'react-dom/client'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import ErrorBoundary from '../components/ErrorBoundary'
+
+NProgress.configure({ showSpinner: false, minimum: 0.2 })
+
+router.on('start', () => NProgress.start())
+router.on('finish', () => NProgress.done())
 
 const pages = import.meta.glob('../pages/**/*.tsx', { eager: true })
 

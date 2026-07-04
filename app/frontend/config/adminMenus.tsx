@@ -5,6 +5,9 @@ import {
   DashboardOutlined,
   FileTextOutlined,
   ShoppingCartOutlined,
+  SettingOutlined,
+  UserOutlined,
+  TeamOutlined,
   AuditOutlined,
   ProjectOutlined,
 } from '@ant-design/icons'
@@ -33,9 +36,26 @@ export const menuRoutes = {
       icon: <ShoppingCartOutlined />,
     },
     {
-      path: '/admin/audit_logs',
-      name: '审计日志',
-      icon: <AuditOutlined />,
+      path: '/admin/settings',
+      name: '系统设置',
+      icon: <SettingOutlined />,
+      routes: [
+        {
+          path: '/admin/users',
+          name: '用户管理',
+          icon: <UserOutlined />,
+        },
+        {
+          path: '/admin/roles',
+          name: '角色管理',
+          icon: <TeamOutlined />,
+        },
+        {
+          path: '/admin/audit_logs',
+          name: '审计日志',
+          icon: <AuditOutlined />,
+        },
+      ],
     },
   ],
 }

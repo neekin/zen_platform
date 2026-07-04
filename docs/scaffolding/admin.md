@@ -58,6 +58,126 @@ rails generate zen:admin Article title:string status:enum \
 
 生成器会自动在 Model 中添加 enum 声明（通过 DSL `field :status, :enum`）。
 
+## 表关联
+
+### belongs_to 关联
+
+假设文章属于分类（Category），先创建 Category，再创建 Article 并关联：
+
+```bash
+# 第一步：创建主表（Category）
+rails generate zen:admin Category name:string
+
+# 第二步：创建关联表（Article），使用 --belongs-to 指定关联
+rails generate zen:admin Article title:string body:text category_id:integer \
+  --belongs-to=category
+```
+
+生成器会自动：
+1. Model 中添加 `belongs_to :category`
+2. Form 中渲染下拉选择框（从 Category 表读取数据）
+3. Controller 中加载关联数据传给前端
+4. Table 中显示关联字段名称（而非 ID）
+
+### has_many 关联
+
+假设用户有多篇文章：
+
+```bash
+# 先创建 User
+rails generate zen:admin User name:string email:string
+
+# 再创建 Article，关联到 User
+rails generate zen:admin Article title:string user_id:integer \
+  --belongs-to=user
+```
+
+### 多重关联
+
+同时关联多个模型：
+
+```bash
+rails generate zen:admin Article title:string body:text \
+  user_id:integer category_id:integer \
+  --belongs-to=user,category
+```
+
+### 关联后的手动调整
+
+生成后需要手动补充：
+
+#### 1. Model 中添加 has_many
+
+```ruby
+# app/models/user.rb
+class User < ApplicationRecord
+  include Zen::ModelDsl
+
+  has_many :articles, dependent: :destroy
+end
+
+# app/models/category.rb
+class Category < ApplicationRecord
+  include Zen::ModelDsl
+
+  has_many :articles, dependent: :destroy
+end
+```
+
+#### 2. Migration 添加外键索引
+
+```ruby
+# db/migrate/xxx_add_index_to_articles.rb
+class AddIndexToArticles < ActiveRecord::Migration[8.0]
+  def change
+    add_index :articles, :user_id
+    add_index :articles, :category_id
+  end
+end
+```
+
+#### 3. DSL 配置关联显示
+
+```ruby
+# app/models/article.rb
+class Article < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :title, :string, required: true
+  field :body, :rich_text
+  field :status, :enum, values: %w[draft published archived]
+
+  belongs_to :user
+  belongs_to :category
+
+  display do
+    list do
+      column :title, link: true
+      column :category_name   # 显示关联名称
+      column :user_name       # 显示关联名称
+      column :status, badge: true
+    end
+    form do
+      section "内容" do
+        field :title, required: true
+        field :body, as: :rich_text
+        field :category_id, as: :select   # 关联下拉框
+        field :user_id, as: :select       # 关联下拉框
+      end
+    end
+  end
+
+  # 辅助方法：获取关联名称
+  def category_name
+    category&.name || '-'
+  end
+
+  def user_name
+    user&.name || '-'
+  end
+end
+```
+
 ## 产品形态
 
 ```bash

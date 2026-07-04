@@ -27,8 +27,8 @@ module Admin
               item_id: v.item_id,
               event: v.event,
               whodunnit: v.whodunnit,
-              object_changes: v.object_changes ? JSON.parse(v.object_changes) : nil,
-              metadata: v.metadata,
+              object_changes: safe_parse(v.object_changes),
+              metadata: safe_parse(v.metadata),
               created_at: v.created_at.iso8601,
             }
           },
@@ -51,12 +51,31 @@ module Admin
             item_id: version.item_id,
             event: version.event,
             whodunnit: version.whodunnit,
-            object: version.object ? JSON.parse(version.object) : nil,
-            object_changes: version.object_changes ? JSON.parse(version.object_changes) : nil,
-            metadata: version.metadata,
+            object: safe_parse(version.object),
+            object_changes: safe_parse(version.object_changes),
+            metadata: safe_parse(version.metadata),
             created_at: version.created_at.iso8601,
           },
         }
+    end
+
+    private
+
+    # PaperTrail 存储格式可能是 YAML 或 JSON，统一解析为 Hash
+    def safe_parse(data)
+      return nil if data.blank?
+
+      if data.is_a?(String)
+        if data.start_with?("---")
+          YAML.safe_load(data, permitted_classes: [Time, Date, Symbol])
+        else
+          JSON.parse(data)
+        end
+      else
+        data
+      end
+    rescue StandardError
+      nil
     end
   end
 end

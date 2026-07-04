@@ -9,6 +9,7 @@ import {
   AuditOutlined,
   SafetyCertificateOutlined,
   KeyOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons'
 
 export const menuRoutes = {
@@ -18,6 +19,11 @@ export const menuRoutes = {
       path: '/admin/dashboard',
       name: '仪表盘',
       icon: <DashboardOutlined />,
+    },
+    {
+      path: '/admin/articles',
+      name: '文章管理',
+      icon: <FileTextOutlined />,
     },
     {
       path: '/admin/settings',

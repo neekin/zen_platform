@@ -1,6 +1,6 @@
 /**
- * <%= class_name %> 管理页
- * 路由: /admin/<%= plural_name %>
+ * Article 管理页
+ * 路由: /admin/articles
  *
  * 由 Zen 脚手架生成 — 使用 DslTable + DslForm 动态渲染
  */
@@ -12,15 +12,13 @@ import { DslTable, DslForm, DslModal } from '../../../modules/dsl'
 import type { DslMeta } from '../../../types/dsl'
 import type { ReactNode } from 'react'
 
-interface <%= class_name %>IndexProps {
+interface ArticleIndexProps {
   meta: DslMeta
-  <%= plural_name %>: Record<string, any>[]
-<% belongs_to_associations.each do |assoc| %>
-  <%= assoc[:name] %>s: { id: number; <%= assoc[:display] %>: string }[]
-<% end %>
+  articles: Record<string, any>[]
+
 }
 
-function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= class_name %>IndexProps) {
+function ArticleIndex({ meta, articles, ...props }: ArticleIndexProps) {
   const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState<Record<string, any> | null>(null)
@@ -37,11 +35,11 @@ function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= clas
 
   const handleFinish = async (values: Record<string, any>) => {
     if (editing) {
-      router.put(`/admin/<%= plural_name %>/${editing.id}`, values, {
+      router.put(`/admin/articles/${editing.id}`, values, {
         onSuccess: () => { message.success('更新成功'); setModalOpen(false) },
       })
     } else {
-      router.post('/admin/<%= plural_name %>', values, {
+      router.post('/admin/articles', values, {
         onSuccess: () => { message.success('创建成功'); setModalOpen(false) },
       })
     }
@@ -50,24 +48,19 @@ function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= clas
 
   // 关联数据源
   const associations: Record<string, Array<{ label: string; value: any }>> = {}
-<% belongs_to_associations.each do |assoc| %>
-  associations['<%= assoc[:name] %>'] = (props.<%= assoc[:name] %>s || []).map((item: any) => ({
-    label: item.<%= assoc[:display] %>,
-    value: item.id,
-  }))
-<% end %>
+
 
   return (
     <>
       <DslTable
         meta={meta}
-        data={<%= plural_name %>}
-        basePath="/admin/<%= plural_name %>"
-        createText="新建<%= class_name %>"
+        data={articles}
+        basePath="/admin/articles"
+        createText="新建Article"
       />
 
       <DslModal
-        title={editing ? '编辑<%= class_name %>' : '新建<%= class_name %>'}
+        title={editing ? '编辑Article' : '新建Article'}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -86,5 +79,5 @@ function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= clas
   )
 }
 
-<%= class_name %>Index.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
-export default <%= class_name %>Index
+ArticleIndex.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default ArticleIndex

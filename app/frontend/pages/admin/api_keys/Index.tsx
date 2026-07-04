@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { ProTable, ProForm, ProFormText, ProFormSelect, ProFormDateTimePicker, type ProColumns } from '@ant-design/pro-components'
-import { App, Button, Space, Tag, Typography, Input } from 'antd'
+import { App, Button, Space, Tag, Typography, Input, Modal } from 'antd'
 import { PlusOutlined, DeleteOutlined, CopyOutlined, KeyOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import DslModal from '../../../modules/dsl/DslModal'
@@ -28,12 +28,12 @@ interface ApiKeysIndexProps {
 }
 
 function ApiKeysIndex({ api_keys, users, pagination }: ApiKeysIndexProps) {
-  const { message, modal } = App.useApp()
+  const { message } = App.useApp()
   const [createOpen, setCreateOpen] = useState(false)
   const [newKey, setNewKey] = useState<string | null>(null)
 
   const handleDelete = (record: ApiKeyRecord) => {
-    modal.confirm({
+    Modal.confirm({
       title: '确认删除',
       content: `确定删除 API Key「${record.name}」？此操作不可撤销，使用该 Key 的服务将立即失去访问权限。`,
       okText: '删除',

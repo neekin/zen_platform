@@ -24,6 +24,8 @@ module Admin
               email: u.email,
               username: u.username,
               name: u.name,
+              avatar: u.avatar,
+              phone: u.phone,
               roles: u.roles.pluck(:name),
               created_at: u.created_at.iso8601
             }

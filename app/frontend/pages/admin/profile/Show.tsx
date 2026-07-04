@@ -33,6 +33,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
   const [phoneLoading, setPhoneLoading] = useState(false)
   const [codeSending, setCodeSending] = useState(false)
   const [countdown, setCountdown] = useState(0)
+  const [showPhoneForm, setShowPhoneForm] = useState(!user.phone)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
   // 发送验证码
@@ -211,47 +212,81 @@ function ProfileShow({ user }: { user: UserProfile }) {
             title="手机绑定"
             variant="borderless"
             style={{ marginTop: 16 }}
-            extra={user.phone && <Text type="success">已绑定: {user.phone}</Text>}
           >
-            <Form
-              form={phoneForm}
-              layout="vertical"
-              onFinish={handleBindPhone}
-            >
-              <Form.Item
-                label="手机号码"
-                name="phone"
-                rules={[
-                  { required: true, message: '请输入手机号码' },
-                  { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确' },
-                ]}
-              >
-                <Input placeholder="请输入手机号码" prefix={<PhoneOutlined />} />
-              </Form.Item>
-
-              <Form.Item
-                label="验证码"
-                name="verification_code"
-                rules={[{ required: true, message: '请输入验证码' }]}
-              >
-                <Space.Compact style={{ width: '100%' }}>
-                  <Input placeholder="请输入验证码" prefix={<SafetyOutlined />} style={{ flex: 1 }} />
-                  <Button
-                    onClick={handleSendCode}
-                    loading={codeSending}
-                    disabled={countdown > 0}
-                  >
-                    {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
+            {user.phone && !showPhoneForm ? (
+              /* 已绑定状态 */
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <Space>
+                    <PhoneOutlined style={{ fontSize: 24, color: 'var(--ant-color-primary)' }} />
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: 500 }}>{user.phone}</div>
+                      <Text type="success" style={{ fontSize: 12 }}>已绑定</Text>
+                    </div>
+                  </Space>
+                  <Button type="link" onClick={() => setShowPhoneForm(true)}>
+                    更换手机号码
                   </Button>
-                </Space.Compact>
-              </Form.Item>
+                </div>
+              </div>
+            ) : (
+              /* 绑定/更换表单 */
+              <Form
+                form={phoneForm}
+                layout="vertical"
+                onFinish={handleBindPhone}
+              >
+                {user.phone && (
+                  <div style={{ marginBottom: 16 }}>
+                    <Text type="secondary">当前绑定: {user.phone}</Text>
+                  </div>
+                )}
 
-              <Form.Item>
-                <Button type="primary" htmlType="submit" loading={phoneLoading} icon={<PhoneOutlined />}>
-                  {user.phone ? '更换手机号码' : '绑定手机号码'}
-                </Button>
-              </Form.Item>
-            </Form>
+                <Form.Item
+                  label="新手机号码"
+                  name="phone"
+                  rules={[
+                    { required: true, message: '请输入手机号码' },
+                    { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确' },
+                  ]}
+                >
+                  <Input placeholder="请输入手机号码" prefix={<PhoneOutlined />} />
+                </Form.Item>
+
+                <Form.Item
+                  label="验证码"
+                  name="verification_code"
+                  rules={[{ required: true, message: '请输入验证码' }]}
+                >
+                  <Space.Compact style={{ width: '100%' }}>
+                    <Input placeholder="请输入验证码" prefix={<SafetyOutlined />} style={{ flex: 1 }} />
+                    <Button
+                      onClick={handleSendCode}
+                      loading={codeSending}
+                      disabled={countdown > 0}
+                    >
+                      {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
+                    </Button>
+                  </Space.Compact>
+                </Form.Item>
+
+                <Form.Item>
+                  <Space>
+                    <Button type="primary" htmlType="submit" loading={phoneLoading} icon={<PhoneOutlined />}>
+                      {user.phone ? '确认更换' : '绑定手机号码'}
+                    </Button>
+                    {user.phone && (
+                      <Button onClick={() => {
+                        setShowPhoneForm(false)
+                        phoneForm.resetFields()
+                      }}>
+                        取消
+                      </Button>
+                    )}
+                  </Space>
+                </Form.Item>
+              </Form>
+            )}
           </Card>
         </Col>
 

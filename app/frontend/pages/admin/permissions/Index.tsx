@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable, ProCard, type ProColumns } from '@ant-design/pro-components'
 import { App, Button, Tag, Switch, Space, Drawer } from 'antd'
@@ -55,62 +55,51 @@ const roleLabels: Record<string, string> = {
   viewer: '查看者',
 }
 
-function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsIndexProps) {
+function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions }: PermissionsIndexProps) {
   const { message, modal } = App.useApp()
+  const [matrix, setMatrix] = useState<RolePermissions[]>(initialMatrix)
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
+
+  // 同步 prop 变化（Inertia 重载后）
+  useEffect(() => { setMatrix(initialMatrix) }, [initialMatrix])
+
+  // 更新单个权限的工具函数
+  const updatePermission = (roleName: string, resource: string, action: string, allowed: boolean) => {
+    const updater = (prev: RolePermissions[]) =>
+      prev.map((r) =>
+        r.role === roleName
+          ? {
+              ...r,
+              permissions: r.permissions.map((p) =>
+                p.resource === resource
+                  ? { ...p, actions: p.actions.map((a) => a.action === action ? { ...a, allowed } : a) }
+                  : p
+              ),
+            }
+          : r
+      )
+    setMatrix(updater)
+    setSelectedRole((prev) => {
+      if (!prev || prev.role !== roleName) return prev
+      return updater([prev])[0]
+    })
+  }
 
   const handleToggle = (roleName: string, resource: string, action: string, currentValue: boolean) => {
     const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
+    const newValue = !currentValue
 
-    // 先乐观更新 UI
-    setSelectedRole((prev) => {
-      if (!prev || prev.role !== roleName) return prev
-      return {
-        ...prev,
-        permissions: prev.permissions.map((p) =>
-          p.resource === resource
-            ? {
-                ...p,
-                actions: p.actions.map((a) =>
-                  a.action === action ? { ...a, allowed: !currentValue } : a
-                ),
-              }
-            : p
-        ),
-      }
-    })
+    // 乐观更新
+    updatePermission(roleName, resource, action, newValue)
 
     // 异步请求
     fetch('/admin/permissions', {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrfToken,
-      },
-      body: JSON.stringify({
-        role_name: roleName,
-        resource: resource,
-        action_name: action,
-        allowed: !currentValue,
-      }),
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+      body: JSON.stringify({ role_name: roleName, resource: resource, action_name: action, allowed: newValue }),
     }).catch(() => {
-      // 失败时回滚
-      setSelectedRole((prev) => {
-        if (!prev || prev.role !== roleName) return prev
-        return {
-          ...prev,
-          permissions: prev.permissions.map((p) =>
-            p.resource === resource
-              ? {
-                  ...p,
-                  actions: p.actions.map((a) =>
-                    a.action === action ? { ...a, allowed: currentValue } : a
-                  ),
-                }
-              : p
-          ),
-        }
-      })
+      // 失败回滚
+      updatePermission(roleName, resource, action, currentValue)
     })
   }
 

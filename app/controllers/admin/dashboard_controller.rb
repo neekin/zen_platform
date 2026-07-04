@@ -7,13 +7,8 @@ module Admin
 
     def index
       render inertia: "admin/Dashboard", props: {
-        stats: {
-          user_count: User.count,
-          article_count: defined?(Article) ? Article.count : 0,
-          comment_count: defined?(Comment) ? Comment.count : 0,
-          today_count: today_count,
-        },
-        chart_data: articles_trend_data,
+        stats: build_stats,
+        chart_data: build_chart_data,
         recent_activities: recent_activities,
         framework: {
           name: "Zen Platform",
@@ -26,18 +21,49 @@ module Admin
 
     private
 
-    def today_count
-      User.where("created_at > ?", Date.today).count +
-        (defined?(Article) ? Article.where("created_at > ?", Date.today).count : 0)
+    def build_stats
+      stats = [{ label: "用户总数", value: User.count, icon: "user" }]
+
+      dsl_models.each do |model|
+        stats << {
+          label: "#{model.model_name.human}总数",
+          value: model.count,
+          icon: model_icon(model),
+        }
+      end
+
+      stats << { label: "今日新增", value: today_count, icon: "rise" }
+      stats
     end
 
-    def articles_trend_data
-      return [] unless defined?(Article)
+    def dsl_models
+      @dsl_models ||= ApplicationRecord.descendants.select do |m|
+        m.respond_to?(:zen_display_config) && m.table_exists?
+      end
+    end
+
+    def model_icon(model)
+      case model.name
+      when "Article" then "article"
+      when "Comment" then "comment"
+      else "database"
+      end
+    end
+
+    def today_count
+      count = User.where("created_at > ?", Date.today).count
+      dsl_models.each { |m| count += m.where("created_at > ?", Date.today).count }
+      count
+    end
+
+    def build_chart_data
+      model = dsl_models.first
+      return [] unless model
 
       30.days.ago.to_date.upto(Date.today).map do |date|
         {
           date: date.iso8601,
-          count: Article.where("DATE(created_at) = ?", date).count,
+          count: model.where("DATE(created_at) = ?", date).count,
         }
       end
     end

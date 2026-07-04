@@ -64,6 +64,8 @@ function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= clas
         data={<%= plural_name %>}
         basePath="/admin/<%= plural_name %>"
         createText="新建<%= class_name %>"
+        onCreate={() => { setEditing(null); setModalOpen(true) }}
+        onEdit={(record) => { setEditing(record); setModalOpen(true) }}
       />
 
       <DslModal

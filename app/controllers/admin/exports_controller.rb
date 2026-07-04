@@ -5,7 +5,8 @@ module Admin
     skip_after_action :verify_authorized
     skip_after_action :verify_policy_scoped
 
-    ALLOWED_EXPORT_RESOURCES = %w[Article Task Product].freeze
+    # 可导出的资源列表 — 用户自行添加业务模型名称
+    ALLOWED_EXPORT_RESOURCES = [].freeze
     ALLOWED_EXPORT_FORMATS = %w[csv xlsx pdf].freeze
 
     # POST /admin/exports

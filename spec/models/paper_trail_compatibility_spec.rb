@@ -12,70 +12,88 @@ RSpec.describe "PaperTrail Compatibility" do
     ).tap { |u| u.add_role(:admin) }
   end
 
-  it "records article creation" do
+  it "records user creation" do
     expect {
-      Article.create!(title: "PT Test", body: "Content", status: :draft)
+      User.create!(
+        username: "pt_create", email: "pt_create@test.com",
+        name: "Create", password: "pass123"
+      )
     }.to change(PaperTrail::Version, :count).by(1)
 
     version = PaperTrail::Version.last
-    expect(version.item_type).to eq("Article")
+    expect(version.item_type).to eq("User")
     expect(version.event).to eq("create")
   end
 
-  it "records article update" do
-    article = Article.create!(title: "Original", body: "Content", status: :draft)
+  it "records user update" do
+    user = User.create!(
+      username: "pt_update", email: "pt_update@test.com",
+      name: "Original", password: "pass123"
+    )
     expect {
-      article.update!(title: "Updated")
+      user.update!(name: "Updated")
     }.to change(PaperTrail::Version, :count).by(1)
 
     version = PaperTrail::Version.last
-    expect(version.item_type).to eq("Article")
+    expect(version.item_type).to eq("User")
     expect(version.event).to eq("update")
     expect(version.object_changes).to be_present
   end
 
-  it "records article deletion" do
-    article = Article.create!(title: "To Delete", body: "Content", status: :draft)
+  it "records user deletion" do
+    user = User.create!(
+      username: "pt_delete", email: "pt_delete@test.com",
+      name: "ToDelete", password: "pass123"
+    )
     expect {
-      article.destroy!
+      user.destroy!
     }.to change(PaperTrail::Version, :count).by(1)
 
     version = PaperTrail::Version.last
-    expect(version.item_type).to eq("Article")
+    expect(version.item_type).to eq("User")
     expect(version.event).to eq("destroy")
   end
 
   it "stores object_changes as YAML" do
-    article = Article.create!(title: "YAML Test", body: "Content", status: :draft)
-    article.update!(title: "Changed")
+    user = User.create!(
+      username: "pt_yaml", email: "pt_yaml@test.com",
+      name: "YAML Test", password: "pass123"
+    )
+    user.update!(name: "Changed")
 
     version = PaperTrail::Version.last
     expect(version.object_changes).to be_a(String)
     expect(version.object_changes).to start_with("---")
   end
 
-  it "restores deleted article via reify" do
-    article = Article.create!(title: "Restore Me", body: "Content", status: :draft)
-    article.destroy!
+  it "restores deleted user via reify" do
+    user = User.create!(
+      username: "pt_restore", email: "pt_restore@test.com",
+      name: "Restore Me", password: "pass123"
+    )
+    user.destroy!
 
-    version = PaperTrail::Version.where(item_type: "Article", event: "destroy").last
+    version = PaperTrail::Version.where(item_type: "User", event: "destroy").last
     # reify may fail with Psych::DisallowedClass for TimeWithZone
     # Use safe_parse fallback
     begin
       restored = version.reify
     rescue Psych::DisallowedClass
       object = YAML.unsafe_load(version.object)
-      restored = Article.new(object.except("id", "created_at", "updated_at"))
+      restored = User.new(object.except("id", "created_at", "updated_at"))
     end
-    expect(restored).to be_a(Article)
-    expect(restored.title).to eq("Restore Me")
+    expect(restored).to be_a(User)
+    expect(restored.name).to eq("Restore Me")
   end
 
   it "includes request metadata in version" do
     Current.request_id = "test-req-123"
     Current.ip = "127.0.0.1"
 
-    Article.create!(title: "Meta Test", body: "Content", status: :draft)
+    User.create!(
+      username: "pt_meta", email: "pt_meta@test.com",
+      name: "Meta Test", password: "pass123"
+    )
 
     version = PaperTrail::Version.last
     expect(version.request_id).to eq("test-req-123")

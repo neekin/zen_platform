@@ -50,22 +50,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
     t.index ["user_id"], name: "index_api_keys_on_user_id"
   end
 
-  create_table "articles", force: :cascade do |t|
-    t.text "body"
-    t.integer "category_id"
-    t.datetime "created_at", null: false
-    t.integer "status"
-    t.string "title"
-    t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_articles_on_category_id"
-  end
-
-  create_table "categories", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
   create_table "exports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "error_message"
@@ -108,15 +92,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
     t.index ["role_name"], name: "index_permissions_on_role_name"
   end
 
-  create_table "products", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name", null: false
-    t.decimal "price", precision: 10, scale: 2
-    t.integer "status", default: 0
-    t.datetime "updated_at", null: false
-  end
-
   create_table "roles", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name"
@@ -126,17 +101,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
     t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
     t.index ["name"], name: "index_roles_on_name"
     t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
-  end
-
-  create_table "tasks", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.integer "position", default: 0
-    t.integer "status", default: 0
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id"
-    t.index ["user_id"], name: "index_tasks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -176,9 +140,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_keys", "users"
-  add_foreign_key "articles", "categories"
   add_foreign_key "exports", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"
-  add_foreign_key "tasks", "users"
 end

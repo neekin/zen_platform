@@ -25,7 +25,7 @@ RSpec.describe NotificationService, type: :service do
       notification = described_class.notify(
         recipient: recipient,
         action: "export_ready",
-        metadata: { format: "csv", resource: "Article" }
+        metadata: { format: "csv", resource: "User" }
       )
       expect(notification.metadata).to be_present
     end

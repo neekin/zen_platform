@@ -18,13 +18,6 @@ Rails.application.routes.draw do
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
-    resources :tasks, only: [:index, :show, :create, :update, :destroy]
-    resources :articles, only: [:index, :show, :create, :update, :destroy] do
-      collection do
-        delete :bulk_destroy
-      end
-    end
-    resources :products, only: [:index, :show, :create, :update, :destroy]
     resources :audit_logs, only: [:index, :show] do
       member do
         post :restore

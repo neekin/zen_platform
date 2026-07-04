@@ -9,9 +9,6 @@ class Permission < ApplicationRecord
   # 默认权限配置（与 Policy 代码一致）
   DEFAULTS = {
     "super_admin" => {
-      "Article" => %w[index show create update destroy],
-      "Task" => %w[index show create update destroy],
-      "Product" => %w[index show create update destroy],
       "User" => %w[index show create update destroy],
       "Role" => %w[index create destroy],
       "AuditLog" => %w[index show restore],
@@ -19,9 +16,6 @@ class Permission < ApplicationRecord
       "Export" => %w[create show],
     },
     "admin" => {
-      "Article" => %w[index show create update destroy],
-      "Task" => %w[index show create update destroy],
-      "Product" => %w[index show create update destroy],
       "User" => %w[index show update],
       "Role" => %w[index],
       "AuditLog" => %w[index show restore],
@@ -29,9 +23,6 @@ class Permission < ApplicationRecord
       "Export" => %w[create show],
     },
     "editor" => {
-      "Article" => %w[index show create update],
-      "Task" => %w[index show create update],
-      "Product" => %w[index show create update],
       "User" => %w[],
       "Role" => %w[],
       "AuditLog" => %w[index show],
@@ -39,9 +30,6 @@ class Permission < ApplicationRecord
       "Export" => %w[create show],
     },
     "viewer" => {
-      "Article" => %w[index show],
-      "Task" => %w[index show],
-      "Product" => %w[index show],
       "User" => %w[],
       "Role" => %w[],
       "AuditLog" => %w[index show],
@@ -51,7 +39,7 @@ class Permission < ApplicationRecord
   }.freeze
 
   # 获取所有资源和操作
-  RESOURCES = %w[Article Task Product User Role AuditLog Notification Export].freeze
+  RESOURCES = %w[User Role AuditLog Notification Export].freeze
   ACTIONS = %w[index show create update destroy].freeze
 
   # 检查角色是否有权限

@@ -3,9 +3,8 @@
 module Api
   module V1
     class MetaController < ApiController
-      MODEL_WHITELIST = %w[Article Product Task Category User].freeze
-
       # GET /api/v1/meta/:model_name
+      # 自动检测包含 Zen::ModelDsl 的模型，无需维护白名单
       def show
         model_class = resolve_model(params[:model_name])
         return render_error(message: "模型不存在") unless model_class
@@ -18,9 +17,10 @@ module Api
 
       def resolve_model(name)
         class_name = name.to_s.classify
-        return nil unless MODEL_WHITELIST.include?(class_name)
+        klass = class_name.safe_constantize
+        return nil unless klass && klass < ApplicationRecord
 
-        class_name.safe_constantize
+        klass
       end
     end
   end

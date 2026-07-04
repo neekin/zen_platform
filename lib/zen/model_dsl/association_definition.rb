@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Zen
-  class AssociationDefinition
+  module ModelDsl
+    class AssociationDefinition
     attr_reader :name, :type, :options
 
     def initialize(name, type, options = {})
@@ -88,6 +89,7 @@ module Zen
         order: order,
         conditions: conditions
       }.compact
+    end
     end
   end
 end

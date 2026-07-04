@@ -21,6 +21,7 @@ import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { LinkNode } from '@lexical/link'
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html'
+import { $getRoot } from 'lexical'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect, useRef } from 'react'
 import type { EditorState, LexicalEditor } from 'lexical'
@@ -37,11 +38,9 @@ function DefaultValuePlugin({ value }: { value?: string }) {
         const parser = new DOMParser()
         const dom = parser.parseFromString(value, 'text/html')
         const nodes = $generateNodesFromDOM(editor, dom)
-        const root = editor.getRoot()
-        if (root) {
-          root.clear()
-          root.append(...nodes)
-        }
+        const root = $getRoot()
+        root.clear()
+        root.append(...nodes)
       })
       isInit.current = true
     }
@@ -59,8 +58,6 @@ export interface RichTextProps {
 }
 
 function InnerEditor({ onChange }: { onChange?: (value: string) => void }) {
-  const [editor] = useLexicalComposerContext()
-
   const handleChange = (editorState: EditorState, editor: LexicalEditor) => {
     editorState.read(() => {
       const html = $generateHtmlFromNodes(editor)

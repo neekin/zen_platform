@@ -4,13 +4,12 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import {
   FORMAT_TEXT_COMMAND,
-  FORMAT_ELEMENT_COMMAND,
   UNDO_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from 'lexical'
 import { $getSelection, $isRangeSelection } from 'lexical'
-import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from '@lexical/list'
+import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND } from '@lexical/list'
 import { $createHeadingNode } from '@lexical/rich-text'
 import { $setBlocksType } from '@lexical/selection'
 import { useCallback, useEffect, useState } from 'react'
@@ -34,7 +33,6 @@ export default function ToolbarPlugin() {
   const [isItalic, setIsItalic] = useState(false)
   const [isUnderline, setIsUnderline] = useState(false)
   const [isStrikethrough, setIsStrikethrough] = useState(false)
-  const [blockType, setBlockType] = useState<BlockType>('paragraph')
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection()
@@ -56,19 +54,6 @@ export default function ToolbarPlugin() {
       1,
     )
   }, [editor, updateToolbar])
-
-  const formatHeading = (headingSize: BlockType) => {
-    editor.update(() => {
-      const selection = $getSelection()
-      if ($isRangeSelection(selection)) {
-        if (headingSize === 'paragraph') {
-          $setBlocksType(selection, () => $createHeadingNode('h1'))
-        } else {
-          $setBlocksType(selection, () => $createHeadingNode(headingSize))
-        }
-      }
-    })
-  }
 
   return (
     <div style={{ borderBottom: '1px solid #d9d9d9', padding: '4px 8px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 4 }}>

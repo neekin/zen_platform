@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Zen
-  module FieldTypes
+  module ModelDsl
+    module FieldTypes
     # 字段类型映射
     TYPE_MAPPINGS = {
       # 基础类型
@@ -67,6 +68,7 @@ module Zen
       # 默认颜色映射
       color_map = field_def.options[:colors] || {}
       color_map[value.to_sym] || :default
+    end
     end
   end
 end

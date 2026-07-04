@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Zen
-  class FieldDefinition
+  module ModelDsl
+    class FieldDefinition
     attr_reader :name, :type, :options
 
     def initialize(name, type, options = {})
@@ -172,6 +173,7 @@ module Zen
       else
         :text
       end
+    end
     end
   end
 end

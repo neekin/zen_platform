@@ -65,7 +65,7 @@ jobs:
         run: npm ci
 
       - name: TypeScript check
-        run: npm run check
+        run: npx tsc --noEmit
 
       - name: Frontend tests
         run: npm test

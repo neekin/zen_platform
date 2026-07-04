@@ -61,20 +61,20 @@ module Admin
 
       if allowed.to_s == "false"
         permission.destroy
-        redirect_to admin_permissions_path, notice: "已恢复默认权限"
+        render json: { code: 0, message: "已恢复默认权限" }
       else
         permission.update!(allowed: true)
-        redirect_to admin_permissions_path, notice: "权限已更新"
+        render json: { code: 0, message: "权限已更新" }
       end
     rescue ActiveRecord::RecordInvalid => e
-      redirect_to admin_permissions_path, alert: e.message
+      render json: { code: 1, message: e.message }, status: :unprocessable_entity
     end
 
     # POST /admin/permissions/reset
     def reset
       Permission.delete_all
       Permission.seed_defaults!
-      redirect_to admin_permissions_path, notice: "已重置为默认权限"
+      render json: { code: 0, message: "已重置为默认权限" }
     end
 
     private

@@ -59,20 +59,49 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
   const { message, modal } = App.useApp()
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
 
-  const handleToggle = (roleName: string, resource: string, action: string, currentValue: boolean) => {
-    router.patch('/admin/permissions', {
-      role_name: roleName,
-      resource: resource,
-      action_name: action,
-      allowed: !currentValue,
-    }, {
-      preserveState: false,
-      onFinish: () => {
-        // 更新 selectedRole 以反映新权限
-        const updatedRole = matrix.find((r) => r.role === roleName)
-        if (updatedRole) setSelectedRole(updatedRole)
-      },
-    })
+  const handleToggle = async (roleName: string, resource: string, action: string, currentValue: boolean) => {
+    const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
+
+    try {
+      const res = await fetch('/admin/permissions', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+        },
+        body: JSON.stringify({
+          role_name: roleName,
+          resource: resource,
+          action_name: action,
+          allowed: !currentValue,
+        }),
+      })
+
+      if (res.ok) {
+        // 本地更新 selectedRole 的权限状态
+        setSelectedRole((prev) => {
+          if (!prev || prev.role !== roleName) return prev
+          return {
+            ...prev,
+            permissions: prev.permissions.map((p) =>
+              p.resource === resource
+                ? {
+                    ...p,
+                    actions: p.actions.map((a) =>
+                      a.action === action ? { ...a, allowed: !currentValue } : a
+                    ),
+                  }
+                : p
+            ),
+          }
+        })
+        message.success('权限已更新')
+      } else {
+        message.error('更新失败')
+      }
+    } catch {
+      message.error('更新失败')
+    }
   }
 
   const handleReset = () => {
@@ -82,8 +111,22 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
       okText: '确认重置',
       okType: 'danger',
       cancelText: '取消',
-      onOk: () => {
-        router.post('/admin/permissions/reset')
+      onOk: async () => {
+        const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
+        try {
+          const res = await fetch('/admin/permissions/reset', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': csrfToken },
+          })
+          if (res.ok) {
+            message.success('已重置')
+            router.reload()
+          } else {
+            message.error('重置失败')
+          }
+        } catch {
+          message.error('重置失败')
+        }
       },
     })
   }

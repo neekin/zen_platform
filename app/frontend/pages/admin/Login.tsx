@@ -49,7 +49,7 @@ const loginDarkTheme = {
 
 const Page = () => {
   const { notification } = App.useApp()
-  const [loginType, _setLoginType] = useState<LoginType>('account')
+  const [loginType, setLoginType] = useState<LoginType>('account')
   const [loading, setLoading] = useState(false)
   const { flash } = usePage<SharedProps>().props
 
@@ -147,6 +147,7 @@ const Page = () => {
             setLoading(true)
             if (loginType === 'account') {
               router.post('/admin/login', {
+                login_type: 'account',
                 account: values.username,
                 password: values.password,
                 auto_login: values.autoLogin ? 'true' : 'false',
@@ -154,18 +155,20 @@ const Page = () => {
                 onFinish: () => setLoading(false),
               })
             } else {
-              notification.open({
-                type: 'info',
-                message: '手机验证码登录暂未实现',
-                placement: 'bottomRight',
+              router.post('/admin/login', {
+                login_type: 'phone',
+                phone: values.mobile,
+                verification_code: values.captcha,
+                auto_login: values.autoLogin ? 'true' : 'false',
+              }, {
+                onFinish: () => setLoading(false),
               })
-              setLoading(false)
             }
           }}
         >
           <Tabs
             activeKey={loginType}
-            onChange={(key) => _setLoginType(key as LoginType)}
+            onChange={(key) => setLoginType(key as LoginType)}
             items={[
               { key: 'account', label: <span style={{ color: 'rgba(255,255,255,0.85)' }}>账号密码登录</span> },
               { key: 'phone', label: <span style={{ color: 'rgba(255,255,255,0.85)' }}>手机号登录</span> },
@@ -227,11 +230,50 @@ const Page = () => {
                 name="captcha"
                 rules={[{ required: true, message: '请输入验证码！' }]}
                 onGetCaptcha={async () => {
-                  notification.open({
-                    type: 'success',
-                    message: '获取验证码成功！验证码为：1234',
-                    placement: 'bottomRight',
-                  })
+                  // 从表单获取手机号
+                  const form = document.querySelector('form')
+                  const phoneInput = form?.querySelector('input[name="mobile"]') as HTMLInputElement
+                  const phone = phoneInput?.value
+
+                  if (!phone) {
+                    notification.open({
+                      type: 'warning',
+                      message: '请先输入手机号',
+                      placement: 'bottomRight',
+                    })
+                    throw new Error('请先输入手机号')
+                  }
+
+                  try {
+                    const res = await fetch('/admin/send_login_code', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                      },
+                      body: JSON.stringify({ phone }),
+                    })
+                    const data = await res.json()
+
+                    if (data.code === 0) {
+                      notification.open({
+                        type: 'success',
+                        message: '验证码已发送',
+                        description: '请查看控制台获取验证码',
+                        placement: 'bottomRight',
+                      })
+                    } else {
+                      notification.open({
+                        type: 'error',
+                        message: '发送失败',
+                        description: data.message,
+                        placement: 'bottomRight',
+                      })
+                      throw new Error(data.message)
+                    }
+                  } catch (error) {
+                    throw error
+                  }
                 }}
               />
             </>

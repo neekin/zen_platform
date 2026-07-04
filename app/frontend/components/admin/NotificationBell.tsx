@@ -52,7 +52,7 @@ export default function NotificationBell() {
                 if (!item.read) markAsRead(item.id)
               }}
             >
-              <Space direction="vertical" size={2} style={{ width: '100%' }}>
+              <Space orientation="vertical" size={2} style={{ width: '100%' }}>
                 <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
                   <Text strong style={{ color: '#1677FF' }}>{item.actor?.name || '系统'}</Text>
                   {' '}

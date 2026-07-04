@@ -4,7 +4,7 @@
  * 支持预览、拖拽上传、裁剪（可选）
  */
 import { useState, useCallback } from 'react'
-import { Upload, Image, message } from 'antd'
+import { Upload, Image, App } from 'antd'
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
 import type { UploadAdapter } from '../../content'
@@ -35,6 +35,7 @@ export default function ImageUpload({
   disabled = false,
   placeholder = '上传图片',
 }: ImageUploadProps) {
+  const { message } = App.useApp()
   const [loading, setLoading] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
 

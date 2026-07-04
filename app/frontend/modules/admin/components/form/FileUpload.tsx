@@ -4,7 +4,7 @@
  * 支持多文件上传、进度显示、文件列表
  */
 import { useState, useCallback } from 'react'
-import { Upload, Button, List, message } from 'antd'
+import { Upload, Button, List, App } from 'antd'
 import { UploadOutlined, DeleteOutlined, FileOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
 import type { UploadAdapter } from '../../content'
@@ -38,6 +38,7 @@ export default function FileUpload({
   multiple = true,
   disabled = false,
 }: FileUploadProps) {
+  const { message } = App.useApp()
   const [loading, setLoading] = useState(false)
 
   // 处理上传

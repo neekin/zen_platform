@@ -60,7 +60,7 @@ RSpec.describe "Api::V1::Auth", type: :request do
     get "获取当前用户" do
       tags "认证管理"
       produces "application/json"
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       response "200", "成功" do
         schema type: :object,

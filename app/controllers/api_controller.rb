@@ -52,7 +52,7 @@ class ApiController < ActionController::API
       method: request.method,
       status: response.status,
       duration_ms: ((Time.current - @_request_start) * 1000).round(2),
-      auth_strategy: @_auth_strategy,
+      auth_strategy: @_auth_strategy
     }.to_json)
   end
 

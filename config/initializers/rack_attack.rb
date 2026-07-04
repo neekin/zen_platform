@@ -46,8 +46,8 @@ Rack::Attack.throttled_responder = lambda do |req|
     "Retry-After" => (match_data[:period] - (now % match_data[:period])).to_s,
     "X-RateLimit-Limit" => match_data[:limit].to_s,
     "X-RateLimit-Remaining" => "0",
-    "X-RateLimit-Reset" => (now + (match_data[:period] - now % match_data[:period])).to_s,
+    "X-RateLimit-Reset" => (now + (match_data[:period] - now % match_data[:period])).to_s
   }
   body = { error: "Rate limit exceeded. Retry later." }.to_json
-  [429, headers, [body]]
+  [ 429, headers, [ body ] ]
 end

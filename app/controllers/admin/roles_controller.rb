@@ -16,9 +16,9 @@ module Admin
             {
               id: r.id,
               name: r.name,
-              users_count: r.users.count,
+              users_count: r.users.count
             }
-          },
+          }
         }
     end
 

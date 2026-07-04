@@ -19,7 +19,7 @@ module Admin
       actions = Permission::ACTIONS
 
       # 加载所有权限记录
-      all_permissions = Permission.all.group_by { |p| [p.role_name, p.resource, p.action_name] }
+      all_permissions = Permission.all.group_by { |p| [ p.role_name, p.resource, p.action_name ] }
 
       # 构建矩阵数据
       matrix = roles.map do |role_name|
@@ -30,16 +30,16 @@ module Admin
             {
               resource: resource,
               actions: valid_actions.map do |action_name|
-                key = [role_name, resource, action_name]
+                key = [ role_name, resource, action_name ]
                 perm = all_permissions[key]&.first
                 {
                   action: action_name,
                   allowed: perm ? perm.allowed : Permission::DEFAULTS.dig(role_name, resource)&.include?(action_name) || false,
-                  persisted: perm.present?,
+                  persisted: perm.present?
                 }
-              end,
+              end
             }
-          end,
+          end
         }
       end
 
@@ -49,7 +49,7 @@ module Admin
           roles: roles,
           resources: resources,
           resource_actions: Permission::RESOURCE_ACTIONS,
-          actions: actions,
+          actions: actions
         }
     end
 

@@ -1,5 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react'
 import { createRoot } from 'react-dom/client'
+import ErrorBoundary from '../components/ErrorBoundary'
 
 const pages = import.meta.glob('../pages/**/*.tsx', { eager: true })
 
@@ -13,7 +14,11 @@ void createInertiaApp({
   },
 
   setup({ el, App, props }) {
-    createRoot(el).render(<App {...props} />)
+    createRoot(el).render(
+      <ErrorBoundary>
+        <App {...props} />
+      </ErrorBoundary>
+    )
   },
 
   strictMode: true,

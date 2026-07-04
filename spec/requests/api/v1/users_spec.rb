@@ -7,7 +7,7 @@ RSpec.describe "Api::V1::Users", type: :request do
     get "获取用户列表" do
       tags "用户管理"
       produces "application/json"
-      security [api_key: [], bearer_auth: []]
+      security [ api_key: [], bearer_auth: [] ]
 
       parameter name: :"X-Api-Key", in: :header, type: :string, required: false
       parameter name: :Authorization, in: :header, type: :string, required: false
@@ -58,7 +58,7 @@ RSpec.describe "Api::V1::Users", type: :request do
     get "获取用户详情" do
       tags "用户管理"
       produces "application/json"
-      security [api_key: [], bearer_auth: []]
+      security [ api_key: [], bearer_auth: [] ]
 
       parameter name: :id, in: :path, type: :integer, description: "用户ID"
       parameter name: :"X-Api-Key", in: :header, type: :string, required: false

@@ -10,14 +10,14 @@ module Admin
       render inertia: "admin/Dashboard", props: {
         stats: {
           user_count: User.count,
-          role_count: Role.count,
+          role_count: Role.count
         },
         framework: {
           name: "Zen Platform",
           version: "0.3.0",
           rails_version: Rails::VERSION::STRING,
-          ruby_version: RUBY_VERSION,
-        },
+          ruby_version: RUBY_VERSION
+        }
       }
     end
   end

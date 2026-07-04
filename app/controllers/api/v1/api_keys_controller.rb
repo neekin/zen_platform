@@ -20,7 +20,7 @@ module Api
             key_masked: mask_key(k.key),
             expires_at: k.expires_at&.iso8601,
             expired: k.expired?,
-            created_at: k.created_at.iso8601,
+            created_at: k.created_at.iso8601
           }
         })
       end
@@ -34,7 +34,7 @@ module Api
             name: api_key.name,
             key: api_key.key,
             expires_at: api_key.expires_at&.iso8601,
-            created_at: api_key.created_at.iso8601,
+            created_at: api_key.created_at.iso8601
           }, message: "创建成功，请妥善保存 Key，此后无法再次查看")
         else
           render_error(message: api_key.errors.full_messages.join(", "))

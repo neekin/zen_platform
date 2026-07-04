@@ -2,7 +2,7 @@
 
 module Admin
   class CommentsController < AdminController
-    before_action :set_comment, only: [:update, :destroy]
+    before_action :set_comment, only: [ :update, :destroy ]
 
     def index
       @comments = policy_scope(Comment)

@@ -8,7 +8,7 @@ RSpec.describe "Api::V1::Payment", type: :request do
       tags "支付管理"
       consumes "application/json"
       produces "application/json"
-      security [signature: []]
+      security [ signature: [] ]
 
       parameter name: :"X-App-Id", in: :header, type: :string, required: true
       parameter name: :"X-Timestamp", in: :header, type: :string, required: true

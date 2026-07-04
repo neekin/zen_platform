@@ -14,7 +14,7 @@ class NotificationService
       recipient,
       {
         type: "notification",
-        notification: notification.as_json(include: { actor: { only: [:id, :name] } }),
+        notification: notification.as_json(include: { actor: { only: [ :id, :name ] } })
       }
     )
 

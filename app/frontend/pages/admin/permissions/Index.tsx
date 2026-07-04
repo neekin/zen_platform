@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
-import { PageContainer, ProCard } from '@ant-design/pro-components'
-import { App, Button, Table, Tag, Switch, Space, Modal } from 'antd'
-import { ReloadOutlined, SaveOutlined } from '@ant-design/icons'
+import { PageContainer, ProTable, ProCard, type ProColumns } from '@ant-design/pro-components'
+import { App, Button, Tag, Switch, Space, Modal, Drawer } from 'antd'
+import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
+import DslModal from '../../../modules/dsl/DslModal'
 import type { ReactNode } from 'react'
 
 interface PermissionAction {
@@ -47,9 +48,16 @@ const roleColors: Record<string, string> = {
   viewer: 'green',
 }
 
+const roleLabels: Record<string, string> = {
+  super_admin: '超级管理员',
+  admin: '管理员',
+  editor: '编辑者',
+  viewer: '查看者',
+}
+
 function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsIndexProps) {
   const { message } = App.useApp()
-  const [saving, setSaving] = useState(false)
+  const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
 
   const handleToggle = (roleName: string, resource: string, action: string, currentValue: boolean) => {
     router.patch('/admin/permissions', {
@@ -58,7 +66,10 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
       action_name: action,
       allowed: !currentValue,
     }, {
-      onSuccess: () => message.success('权限已更新'),
+      onSuccess: () => {
+        message.success('权限已更新')
+        router.reload()
+      },
       onError: () => message.error('更新失败'),
     })
   }
@@ -79,76 +90,154 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
     })
   }
 
-  // 构建表格数据：每行一个资源，每列一个角色的权限
-  const dataSource = resources.map((resource) => {
-    const row: Record<string, any> = { key: resource, resource }
-    matrix.forEach((roleData) => {
-      const resourcePerm = roleData.permissions.find((p) => p.resource === resource)
-      if (resourcePerm) {
-        resourcePerm.actions.forEach((actionData) => {
-          row[`${roleData.role}_${actionData.action}`] = actionData
-        })
-      }
-    })
-    return row
+  // 角色列表数据
+  const roleList = matrix.map((roleData) => {
+    const totalActions = roleData.permissions.reduce((sum, p) => sum + p.actions.length, 0)
+    const allowedActions = roleData.permissions.reduce(
+      (sum, p) => sum + p.actions.filter((a) => a.allowed).length, 0
+    )
+    return {
+      role: roleData.role,
+      permissions: roleData.permissions,
+      totalActions,
+      allowedActions,
+      resourceCount: roleData.permissions.length,
+    }
   })
 
-  const columns: any[] = [
+  const roleColumns: ProColumns[] = [
     {
-      title: '资源',
-      dataIndex: 'resource',
-      key: 'resource',
-      width: 120,
-      fixed: 'left',
-      render: (text: string) => <Tag color="geekblue">{text}</Tag>,
-    },
-    ...roles.map((role) => ({
-      title: (
+      title: '角色',
+      dataIndex: 'role',
+      key: 'role',
+      render: (_, record) => (
         <Space>
-          <Tag color={roleColors[role] || 'default'}>{role}</Tag>
+          <Tag color={roleColors[record.role] || 'default'}>
+            {roleLabels[record.role] || record.role}
+          </Tag>
+          <span style={{ color: 'var(--ant-color-text-secondary)', fontSize: 12 }}>
+            {record.role}
+          </span>
         </Space>
       ),
-      key: role,
-      children: actions.map((action) => ({
-        title: actionLabels[action] || action,
-        key: `${role}_${action}`,
-        width: 90,
-        align: 'center' as const,
-        render: (_: any, record: Record<string, any>) => {
-          const perm = record[`${role}_${action}`]
-          if (!perm) return <span style={{ color: '#ccc' }}>-</span>
-          return (
-            <Switch
-              size="small"
-              checked={perm.allowed}
-              onChange={() => handleToggle(role, record.resource, action, perm.allowed)}
-            />
-          )
-        },
-      })),
-    })),
+    },
+    {
+      title: '权限范围',
+      key: 'scope',
+      render: (_, record) => (
+        <Space size={4} wrap>
+          {record.permissions.slice(0, 4).map((p) => (
+            <Tag key={p.resource} color="geekblue">{p.resource}</Tag>
+          ))}
+          {record.permissions.length > 4 && <Tag>+{record.permissions.length - 4}</Tag>}
+        </Space>
+      ),
+    },
+    {
+      title: '已授权',
+      key: 'stats',
+      width: 120,
+      render: (_, record) => (
+        <span>
+          <span style={{ color: '#52c41a', fontWeight: 600 }}>{record.allowedActions}</span>
+          <span style={{ color: 'var(--ant-color-text-secondary)' }}> / {record.totalActions}</span>
+        </span>
+      ),
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 120,
+      render: (_, record) => (
+        <Button
+          type="link"
+          icon={<SettingOutlined />}
+          onClick={() => setSelectedRole(record)}
+        >
+          配置权限
+        </Button>
+      ),
+    },
   ]
 
   return (
     <PageContainer
       title="权限管理"
-      subTitle="配置角色对资源的操作权限"
+      subTitle="按角色配置资源操作权限"
       extra={
-        <Space>
-          <Button icon={<ReloadOutlined />} onClick={handleReset}>重置默认</Button>
-        </Space>
+        <Button icon={<ReloadOutlined />} onClick={handleReset}>重置默认</Button>
       }
     >
-      <ProCard>
-        <Table
-          dataSource={dataSource}
-          columns={columns}
-          pagination={false}
-          scroll={{ x: roles.length * actions.length * 90 + 120 }}
-          bordered
-          size="small"
-        />
-      </ProCard>
+      <ProTable
+        headerTitle="角色列表"
+        rowKey="role"
+        columns={roleColumns}
+        dataSource={roleList}
+        search={false}
+        pagination={false}
+        options={false}
+      />
+
+      {/* 角色权限配置抽屉 */}
+      <Drawer
+        title={
+          <Space>
+            <span>权限配置</span>
+            {selectedRole && (
+              <Tag color={roleColors[selectedRole.role] || 'default'}>
+                {roleLabels[selectedRole.role] || selectedRole.role}
+              </Tag>
+            )}
+          </Space>
+        }
+        open={!!selectedRole}
+        onClose={() => setSelectedRole(null)}
+        width={600}
+      >
+        {selectedRole && (
+          <ProCard>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
+                    资源
+                  </th>
+                  {actions.map((action) => (
+                    <th key={action} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
+                      {actionLabels[action] || action}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {selectedRole.permissions.map((resourcePerm) => (
+                  <tr key={resourcePerm.resource}>
+                    <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                      <Tag color="geekblue">{resourcePerm.resource}</Tag>
+                    </td>
+                    {actions.map((action) => {
+                      const actionData = resourcePerm.actions.find((a) => a.action === action)
+                      return (
+                        <td key={action} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                          {actionData ? (
+                            <Switch
+                              size="small"
+                              checked={actionData.allowed}
+                              onChange={() => handleToggle(selectedRole.role, resourcePerm.resource, action, actionData.allowed)}
+                            />
+                          ) : (
+                            <span style={{ color: '#ccc' }}>-</span>
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ProCard>
+        )}
+      </Drawer>
     </PageContainer>
   )
 }

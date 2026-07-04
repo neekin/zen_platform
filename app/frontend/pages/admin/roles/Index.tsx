@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { ProTable, ProForm, ProFormText, type ProColumns } from '@ant-design/pro-components'
-import { App, Button, Space, Tag } from 'antd'
+import { App, Button, Space, Tag, Modal } from 'antd'
+import {
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import DslModal from '../../../modules/dsl/DslModal'
@@ -18,7 +19,7 @@ interface RolesIndexProps {
 }
 
 function RolesIndex({ roles }: RolesIndexProps) {
-  const { message, modal } = App.useApp()
+  const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
 
   const builtInRoles = ['super_admin', 'admin', 'editor', 'viewer']
@@ -28,7 +29,7 @@ function RolesIndex({ roles }: RolesIndexProps) {
       message.warning('内置角色不能删除')
       return
     }
-    modal.confirm({
+    Modal.confirm({
       title: '确认删除',
       content: `确定删除角色 "${record.name}"？`,
       okText: '删除',

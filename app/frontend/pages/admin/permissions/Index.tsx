@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable, ProCard, type ProColumns } from '@ant-design/pro-components'
-import { App, Button, Tag, Switch, Space, Drawer } from 'antd'
+import { App, Button, Tag, Switch, Space, Drawer, Modal } from 'antd'
+import {
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import DslModal from '../../../modules/dsl/DslModal'
@@ -57,7 +58,7 @@ const roleLabels: Record<string, string> = {
 }
 
 function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, resource_actions }: PermissionsIndexProps) {
-  const { message, modal } = App.useApp()
+  const { message } = App.useApp()
   const [matrix, setMatrix] = useState<RolePermissions[]>(initialMatrix)
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
 
@@ -105,7 +106,7 @@ function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, re
   }
 
   const handleReset = () => {
-    modal.confirm({
+    Modal.confirm({
       title: '重置权限',
       content: '确定要重置所有权限为默认值吗？自定义权限配置将丢失。',
       okText: '确认重置',

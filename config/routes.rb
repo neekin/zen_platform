@@ -30,6 +30,8 @@ Rails.application.routes.draw do
         post :restore
       end
     end
+    resources :users, except: [:show]
+    resources :roles, except: [:show, :edit, :update]
     resources :exports, only: [:create, :show]
     resources :notifications, only: [:index] do
       member do

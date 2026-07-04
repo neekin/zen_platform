@@ -6,11 +6,7 @@ import {
   FileTextOutlined,
   CommentOutlined,
   RiseOutlined,
-  CodeOutlined,
-  SafetyCertificateOutlined,
-  AuditOutlined,
-  ThunderboltOutlined,
-  ApiOutlined,
+  DatabaseOutlined,
 } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
@@ -19,13 +15,14 @@ const { Link, Text } = Typography
 
 Dashboard.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
 
+interface StatItem {
+  label: string
+  value: number
+  icon: string
+}
+
 interface DashboardProps {
-  stats: {
-    user_count: number
-    article_count: number
-    comment_count: number
-    today_count: number
-  }
+  stats: StatItem[]
   chart_data: Array<{ date: string; count: number }>
   recent_activities: Array<{
     id: number
@@ -41,6 +38,22 @@ interface DashboardProps {
     rails_version: string
     ruby_version: string
   }
+}
+
+const iconMap: Record<string, ReactNode> = {
+  user: <UserOutlined />,
+  article: <FileTextOutlined />,
+  comment: <CommentOutlined />,
+  rise: <RiseOutlined />,
+  database: <DatabaseOutlined />,
+}
+
+const iconColors: Record<string, string> = {
+  user: 'var(--ant-color-primary)',
+  article: '#52c41a',
+  comment: '#faad14',
+  rise: '#eb2f96',
+  database: '#13c2c2',
 }
 
 const eventColors: Record<string, string> = {
@@ -75,52 +88,28 @@ export default function Dashboard({ stats, chart_data, recent_activities, framew
     <PageContainer title="仪表盘" subTitle={`${framework.name} v${framework.version}`}>
       {/* 统计卡片 */}
       <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} lg={6}>
-          <StatisticCard
-            className="glass-card"
-            statistic={{
-              title: '用户总数',
-              value: stats.user_count,
-              prefix: <UserOutlined style={{ color: 'var(--ant-color-primary)' }} />,
-            }}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatisticCard
-            className="glass-card"
-            statistic={{
-              title: '文章总数',
-              value: stats.article_count,
-              prefix: <FileTextOutlined style={{ color: '#52c41a' }} />,
-            }}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatisticCard
-            className="glass-card"
-            statistic={{
-              title: '评论总数',
-              value: stats.comment_count,
-              prefix: <CommentOutlined style={{ color: '#faad14' }} />,
-            }}
-          />
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <StatisticCard
-            className="glass-card"
-            statistic={{
-              title: '今日新增',
-              value: stats.today_count,
-              prefix: <RiseOutlined style={{ color: '#eb2f96' }} />,
-            }}
-          />
-        </Col>
+        {stats.map((stat, index) => (
+          <Col key={index} xs={24} sm={12} lg={Math.max(6, 24 / stats.length)}>
+            <StatisticCard
+              className="glass-card"
+              statistic={{
+                title: stat.label,
+                value: stat.value,
+                prefix: (
+                  <span style={{ color: iconColors[stat.icon] || 'var(--ant-color-primary)' }}>
+                    {iconMap[stat.icon] || <DatabaseOutlined />}
+                  </span>
+                ),
+              }}
+            />
+          </Col>
+        ))}
       </Row>
 
       {/* 图表 + 最近活动 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={14}>
-          <ProCard title="文章发布趋势（近 30 天）" variant="borderless" className="glass-card">
+          <ProCard title="数据趋势（近 30 天）" variant="borderless" className="glass-card">
             {chart_data.length > 0 ? (
               <Line {...chartConfig} />
             ) : (

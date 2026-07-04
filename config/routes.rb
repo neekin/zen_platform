@@ -25,7 +25,11 @@ Rails.application.routes.draw do
       end
     end
     resources :products, only: [:index, :show, :create, :update, :destroy]
-    resources :audit_logs, only: [:index, :show]
+    resources :audit_logs, only: [:index, :show] do
+      member do
+        post :restore
+      end
+    end
     resources :exports, only: [:create, :show]
     resources :notifications, only: [:index] do
       member do

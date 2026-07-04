@@ -1,8 +1,7 @@
 import React from 'react'
-import { usePage } from '@inertiajs/react'
-import { ProTable, type ProColumns } from '@ant-design/pro-components'
-import { Tag, Typography, Space, Button, Drawer } from 'antd'
-import { ProDescriptions } from '@ant-design/pro-components'
+import { router, usePage } from '@inertiajs/react'
+import { ProTable, ProDescriptions, type ProColumns } from '@ant-design/pro-components'
+import { Tag, Typography, Space, Button, Drawer, Modal, App } from 'antd'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -31,9 +30,56 @@ const eventColors: Record<string, string> = {
   destroy: 'red',
 }
 
+const eventLabels: Record<string, string> = {
+  create: '创建',
+  update: '更新',
+  destroy: '删除',
+}
+
 export default function AuditLogsIndex() {
   const { audit_logs, filters } = usePage<{ props: Props }>().props as unknown as Props
+  const { message } = App.useApp()
   const [selectedLog, setSelectedLog] = React.useState<AuditLog | null>(null)
+  const [restoring, setRestoring] = React.useState(false)
+
+  const canRestore = (log: AuditLog | null): boolean => {
+    if (!log) return false
+    return ['update', 'destroy'].includes(log.event)
+  }
+
+  const handleRestore = async (log: AuditLog) => {
+    const confirmed = await new Promise<boolean>((resolve) => {
+      Modal.confirm({
+        title: '确认还原',
+        content: `确定要还原此${eventLabels[log.event] || log.event}操作吗？还原后数据将恢复到此版本的状态。`,
+        okText: '确认还原',
+        cancelText: '取消',
+        okButtonProps: { danger: true },
+        onOk: () => resolve(true),
+        onCancel: () => resolve(false),
+      })
+    })
+
+    if (!confirmed) return
+
+    setRestoring(true)
+    try {
+      router.post(`/admin/audit_logs/${log.id}/restore`, {}, {
+        onSuccess: () => {
+          message.success('还原成功')
+          setSelectedLog(null)
+          router.reload()
+        },
+        onError: (errors) => {
+          const errorMsg = typeof errors === 'object' ? Object.values(errors).join(', ') : String(errors)
+          message.error(`还原失败: ${errorMsg}`)
+        },
+        onFinish: () => setRestoring(false),
+      })
+    } catch {
+      setRestoring(false)
+    }
+  }
 
   const columns: ProColumns<AuditLog>[] = [
     {
@@ -49,11 +95,11 @@ export default function AuditLogsIndex() {
       dataIndex: 'event',
       key: 'event',
       width: 100,
-      filters: filters.events.map((e) => ({ text: e, value: e })),
+      filters: filters.events.map((e) => ({ text: eventLabels[e] || e, value: e })),
       onFilter: (value, record) => record.event === value,
       render: (_, record) => (
         <Tag color={eventColors[record.event] || 'default'}>
-          {record.event.toUpperCase()}
+          {eventLabels[record.event] || record.event}
         </Tag>
       ),
     },
@@ -126,6 +172,18 @@ export default function AuditLogsIndex() {
         open={!!selectedLog}
         onClose={() => setSelectedLog(null)}
         width={600}
+        extra={
+          selectedLog && canRestore(selectedLog) ? (
+            <Button
+              type="primary"
+              danger
+              loading={restoring}
+              onClick={() => handleRestore(selectedLog)}
+            >
+              还原到此版本
+            </Button>
+          ) : undefined
+        }
       >
         {selectedLog && (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
@@ -135,7 +193,7 @@ export default function AuditLogsIndex() {
               </ProDescriptions.Item>
               <ProDescriptions.Item label="操作">
                 <Tag color={eventColors[selectedLog.event] || 'default'}>
-                  {selectedLog.event.toUpperCase()}
+                  {eventLabels[selectedLog.event] || selectedLog.event}
                 </Tag>
               </ProDescriptions.Item>
               <ProDescriptions.Item label="模型">{selectedLog.item_type}</ProDescriptions.Item>

@@ -35,6 +35,7 @@ vi.mock('../../../app/frontend/modules/dsl', () => ({
   DslForm: ({ initialValues, submitText }: any) => (
     <form>{submitText || '提交'} - {initialValues?.title || ''}</form>
   ),
+  DslModal: ({ children, title, open }: any) => open ? <div data-testid="dsl-modal"><h2>{title}</h2>{children}</div> : null,
 }))
 
 import ArticlesIndex from '../../../app/frontend/pages/admin/articles/Index'

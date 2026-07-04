@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../lib/zen/configuration"
+
 Zen.configure do |config|
   config.app_name = "Zen Platform"
   config.logo = "/logo-mark.svg"

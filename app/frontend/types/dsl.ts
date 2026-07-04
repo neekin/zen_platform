@@ -115,4 +115,9 @@ export interface DslMeta {
   associations: Record<string, AssociationDefinition>
   display: DisplayConfig
   products: ProductConfig[]
+  batch_actions?: Array<{
+    name: string
+    label: string
+    confirm?: string
+  }>
 }

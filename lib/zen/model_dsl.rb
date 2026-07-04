@@ -34,6 +34,7 @@ module Zen
       class_attribute :zen_associations, default: {}
       class_attribute :zen_display_config, default: {}
       class_attribute :zen_product_configs, default: []
+      class_attribute :zen_batch_actions, default: []
     end
 
     class_methods do
@@ -117,6 +118,24 @@ module Zen
         end
       end
 
+      # 定义批量操作
+      #
+      # batch_action :publish, label: "批量发布", confirm: "确定发布选中的记录？" do |ids|
+      #   where(id: ids).update_all(status: "published")
+      # end
+      def batch_action(name, label: nil, confirm: nil, &block)
+        self.zen_batch_actions = zen_batch_actions + [{
+          name: name.to_s,
+          label: label || name.to_s.humanize,
+          confirm: confirm,
+        }]
+
+        define_method("batch_#{name}") do |ids|
+          instance_exec(ids, &block)
+        end
+        private "batch_#{name}"
+      end
+
       # 获取完整元数据（用于前端动态渲染）
       def zen_meta
         {
@@ -124,7 +143,8 @@ module Zen
           fields: zen_fields.transform_values(&:to_h),
           associations: zen_associations.transform_values(&:to_h),
           display: zen_display_config,
-          products: zen_product_configs
+          products: zen_product_configs,
+          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } },
         }
       end
     end

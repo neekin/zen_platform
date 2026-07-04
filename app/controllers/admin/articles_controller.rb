@@ -43,6 +43,25 @@ module Admin
 
     private
 
+    # POST /admin/articles/batch_action
+    def batch_action
+      action_name_param = params[:action_name]
+      ids = params[:ids] || []
+
+      unless Article.zen_batch_actions.any? { |a| a[:name] == action_name_param }
+        render json: { code: 1, message: "未知的批量操作" }, status: :bad_request
+        return
+      end
+
+      method_name = "batch_#{action_name_param}"
+      if respond_to?(method_name, true)
+        send(method_name, ids)
+        render json: { code: 0, message: "批量操作完成" }
+      else
+        render json: { code: 1, message: "操作未实现" }, status: :bad_request
+      end
+    end
+
     def set_article
       @article = Article.find(params[:id])
     end

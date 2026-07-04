@@ -24,7 +24,11 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
     resources :users, only: [:index, :show, :create, :update, :destroy]
-    resources :articles
+    resources :articles do
+      collection do
+        post :batch_action
+      end
+    end
     resources :comments
     resources :audit_logs, only: [ :index, :show ] do
       member do

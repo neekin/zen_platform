@@ -25,6 +25,9 @@ export interface DslTableProps {
     onChange: (keys: React.Key[]) => void
   }
   onBulkDelete?: (ids: React.Key[]) => void
+  /** 批量操作 */
+  batchActions?: Array<{ name: string; label: string; confirm?: string }>
+  onBatchAction?: (actionName: string, ids: React.Key[]) => void
   /** 创建按钮回调（modal 模式下使用） */
   onCreate?: () => void
   /** 编辑按钮回调（modal 模式下使用） */
@@ -46,6 +49,8 @@ export default function DslTable({
   extraColumns = [],
   rowSelection,
   onBulkDelete,
+  batchActions,
+  onBatchAction,
   onCreate,
   onEdit,
   pagination,
@@ -125,12 +130,27 @@ export default function DslTable({
             )
           }
 
-          if (rowSelection && rowSelection.selectedRowKeys.length > 0 && onBulkDelete) {
-            items.push(
-              <Popconfirm key="bulk" title={`确定删除 ${rowSelection.selectedRowKeys.length} 项？`} onConfirm={() => onBulkDelete(rowSelection.selectedRowKeys)}>
-                <Button danger>批量删除 ({rowSelection.selectedRowKeys.length})</Button>
-              </Popconfirm>
-            )
+          if (rowSelection && rowSelection.selectedRowKeys.length > 0) {
+            if (batchActions) {
+              batchActions.forEach((action) => {
+                items.push(
+                  <Popconfirm
+                    key={action.name}
+                    title={action.confirm || `确定执行"${action.label}"？`}
+                    onConfirm={() => onBatchAction?.(action.name, rowSelection.selectedRowKeys)}
+                  >
+                    <Button size="small">{action.label}</Button>
+                  </Popconfirm>
+                )
+              })
+            }
+            if (onBulkDelete) {
+              items.push(
+                <Popconfirm key="bulk" title={`确定删除 ${rowSelection.selectedRowKeys.length} 项？`} onConfirm={() => onBulkDelete(rowSelection.selectedRowKeys)}>
+                  <Button danger size="small">批量删除 ({rowSelection.selectedRowKeys.length})</Button>
+                </Popconfirm>
+              )
+            }
           }
           if (createText) {
             items.push(

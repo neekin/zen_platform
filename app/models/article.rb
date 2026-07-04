@@ -51,4 +51,13 @@ class Article < ApplicationRecord
   end
 
   scope :published, -> { where(status: "published") }
+
+  # 批量操作
+  batch_action :publish, label: "批量发布", confirm: "确定发布选中的文章？" do |ids|
+    Article.where(id: ids).update_all(status: "published", published_at: Time.current)
+  end
+
+  batch_action :archive, label: "归档", confirm: "确定归档选中的文章？" do |ids|
+    Article.where(id: ids).update_all(status: "archived")
+  end
 end

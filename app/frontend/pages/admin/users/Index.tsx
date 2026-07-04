@@ -38,8 +38,9 @@ function UsersIndex({ users, roles, pagination }: UsersIndexProps) {
       cancelText: '取消',
       onOk: () => {
         router.delete(`/admin/users/${id}`, {
-          onSuccess: () => { message.success('删除成功'); router.reload() },
-          onError: () => message.error('删除失败'),
+          onError: (errors) => {
+            message.error(Object.values(errors).join(', ') || '删除失败')
+          },
         })
       },
     })
@@ -135,17 +136,17 @@ function UsersIndex({ users, roles, pagination }: UsersIndexProps) {
             username: editingUser.username,
             name: editingUser.name,
             roles: editingUser.roles,
-          } : {}}
+          } : undefined}
           onFinish={async (values) => {
             const method = editingUser ? 'patch' : 'post'
             const url = editingUser ? `/admin/users/${editingUser.id}` : '/admin/users'
             router[method](url, { user: values, roles: values.roles }, {
               onSuccess: () => {
-                message.success(editingUser ? '更新成功' : '创建成功')
                 setModalOpen(false)
-                router.reload()
               },
-              onError: () => message.error('操作失败'),
+              onError: (errors) => {
+                message.error(Object.values(errors).join(', ') || '操作失败')
+              },
             })
             return true
           }}

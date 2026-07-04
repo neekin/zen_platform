@@ -44,9 +44,9 @@ module Admin
       user = User.new(user_params)
       if user.save
         user.roles = Role.where(name: params[:roles]) if params[:roles].present?
-        render json: { code: 0, message: "创建成功" }
+        redirect_to admin_users_path, notice: "创建成功"
       else
-        render json: { code: 1, message: user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+        redirect_to admin_users_path, alert: user.errors.full_messages.join(", ")
       end
     end
 
@@ -58,19 +58,19 @@ module Admin
       attrs.delete(:password_confirmation) if attrs[:password_confirmation].blank?
       user.update!(attrs)
       user.roles = Role.where(name: params[:roles]) if params[:roles].present?
-      render json: { code: 0, message: "更新成功" }
+      redirect_to admin_users_path, notice: "更新成功"
     rescue ActiveRecord::RecordInvalid => e
-      render json: { code: 1, message: e.message }, status: :unprocessable_entity
+      redirect_to admin_users_path, alert: e.message
     end
 
     # DELETE /admin/users/:id
     def destroy
       user = User.find(params[:id])
       if user == current_user
-        render json: { code: 1, message: "不能删除自己" }, status: :unprocessable_entity
+        redirect_to admin_users_path, alert: "不能删除自己"
       else
         user.destroy!
-        render json: { code: 0, message: "删除成功" }
+        redirect_to admin_users_path, notice: "删除成功"
       end
     end
 
@@ -78,7 +78,7 @@ module Admin
 
     def require_admin!
       unless current_user.has_any_role?(:super_admin, :admin)
-        render json: { code: 1, message: "没有权限" }, status: :forbidden
+        redirect_to admin_root_path, alert: "没有权限"
       end
     end
 

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 class UserPolicy < ApplicationPolicy
-  def index?  = user.has_any_role?(:super_admin, :admin)
-  def show?   = index?
-  def create? = user.has_any_role?(:super_admin)
-  def update? = user.has_any_role?(:super_admin, :admin)
-  def destroy? = user.has_any_role?(:super_admin)
+  def index? = check_permission(:index)
+  def show? = check_permission(:show)
+  def create? = check_permission(:create)
+  def update? = check_permission(:update)
+  def destroy? = check_permission(:destroy)
 end

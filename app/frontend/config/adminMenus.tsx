@@ -17,7 +17,7 @@ export const menuRoutes = {
   route: '/admin',
   routes: [
     {
-      path: '/admin',
+      path: '/admin/dashboard',
       name: '仪表盘',
       icon: <DashboardOutlined />,
     },

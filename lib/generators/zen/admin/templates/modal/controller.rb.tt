@@ -2,11 +2,23 @@
 
 module Admin
   class <%= class_name.pluralize %>Controller < AdminController
+    # 包含 Pagy 分页方法
+    include Pagy::Method
+
     before_action :set_<%= singular_name %>, only: [:show, :update, :destroy]
 
     # GET /admin/<%= plural_name %>
     def index
-      @<%= plural_name %> = policy_scope(<%= class_name %>)
+      # 使用 Ransack 搜索和过滤
+      q = <%= class_name %>.ransack(search_params)
+      base_query = q.result(distinct: true)
+
+      # 使用授权作用域（如果使用了 Pundit）
+      base_query = policy_scope(base_query) if defined?(policy_scope)
+
+      # 使用 Pagy 分页
+      @pagy, records = pagy(:offset, base_query, **pagy_params)
+
 <% if has_belongs_to? %>
 <% belongs_to_associations.each do |assoc| %>
       @<%= assoc[:name] %>s = <%= assoc[:name].to_s.classify %>.all
@@ -15,13 +27,20 @@ module Admin
 
       render inertia: "admin/<%= plural_name %>/<%= kanban? ? 'Kanban' : 'Index' %>",
         props: zen_props(<%= class_name %>,
-          <%= plural_name %>: @<%= plural_name %>.as_json(
+          <%= plural_name %>: records.map { |r| r.as_json(
             include: {
 <% belongs_to_associations.each do |assoc| %>
               <%= assoc[:name] %>: { only: [:id, :<%= assoc[:display] %>] },
 <% end %>
             }
-          ),
+          ) },
+          pagination: {
+            page: @pagy.page,
+            per_page: @pagy.limit,
+            total: @pagy.count,
+            pages: @pagy.pages
+          },
+          search_params: search_params
 <% belongs_to_associations.each do |assoc| %>
           <%= assoc[:name] %>s: @<%= assoc[:name] %>s.as_json(only: [:id, :<%= assoc[:display] %>]),
 <% end %>
@@ -79,6 +98,20 @@ module Admin
 
     def <%= singular_name %>_params
       params.require(:<%= singular_name %>).permit(<%= permitted_params %>)
+    end
+
+    # Pagy 分页参数
+    def pagy_params
+      {
+        page: (params[:page]  || 1).to_i,
+        limit: (params[:per_page] || 20).to_i.clamp(1, 100)
+      }
+    end
+
+    # Ransack 搜索参数
+    def search_params
+      return {} unless params[:q].present?
+      params[:q].permit(:name_cont, :email_cont, :title_cont).to_h
     end
   end
 end

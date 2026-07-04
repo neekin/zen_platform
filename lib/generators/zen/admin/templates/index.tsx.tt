@@ -17,11 +17,21 @@ import type { EditorContent } from '../../../modules/content'
 import type { ReactNode } from 'react'
 import type { ActionType, ProColumns } from '@ant-design/pro-components'
 
-interface <%= class_name %> {
+interface <%= class_name %>Record {
   id: number
 <%= attributes.map { |a| "  #{a.name}: #{js_type(a.type)}" }.join("\n") %>
   created_at: string
   updated_at: string
+}
+
+interface <%= class_name %>IndexProps {
+  <%= plural_name %>: <%= class_name %>Record[]
+  pagination?: {
+    page: number
+    per_page: number
+    total: number
+    pages: number
+  }
 }
 <% if has_rich_text? %>
 
@@ -44,15 +54,24 @@ const ENUM_OPTIONS: Record<string, { label: string; value: string; color: string
 }
 <% end %>
 
-function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
+function <%= class_name %>Index({ <%= plural_name %>, pagination }: <%= class_name %>IndexProps) {
   const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
-  const [editing, setEditing] = useState<<%= class_name %> | null>(null)
+  const [editing, setEditing] = useState<<%= class_name %>Record | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [viewing, setViewing] = useState<<%= class_name %> | null>(null)
+  const [viewing, setViewing] = useState<<%= class_name %>Record | null>(null)
 <% rich_text_attributes.each do |a| %>
   const [<%= a.name %>Content, set<%= a.name.camelize %>Content] = useState<EditorContent>('{}')
 <% end %>
+
+  // 处理分页、排序、过滤变化
+  const handleTableChange = (params: { page?: number; per_page?: number; q?: string }) => {
+    router.get('/admin/<%= plural_name %>', {
+      page: params.page || 1,
+      per_page: params.per_page || 20,
+      q: params.q || undefined,
+    })
+  }
 
   const openCreate = () => {
     setEditing(null)
@@ -185,7 +204,24 @@ function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%
         columns={columns}
         dataSource={<%= plural_name %>}
         rowKey="id"
-        search={false}
+        // 启用搜索
+        search={{
+          placeholder: "搜索<%= class_name %>...",
+          onSearch: (value) => handleTableChange({ q: value }),
+        }}
+        // 分页配置
+        pagination={pagination ? {
+          current: pagination.page,
+          pageSize: pagination.per_page,
+          total: pagination.total,
+          onChange: (page, pageSize) => handleTableChange({ page, per_page: pageSize }),
+        } : false}
+        // 表格变化回调（分页、排序、过滤）
+        onChange={(pag, filters, sorter, extra) => {
+          if (extra.action === 'paginate') {
+            handleTableChange({ page: pag.current, per_page: pag.pageSize })
+          }
+        }}
         toolBarRender={() => [
           <Button key="add" type="primary" icon={<PlusOutlined />} onClick={openCreate}>新建<%= class_name %></Button>,
         ]}

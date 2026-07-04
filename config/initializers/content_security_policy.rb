@@ -12,10 +12,13 @@ Rails.application.configure do
       policy.script_src :self, :https, :nonce
       policy.frame_ancestors :none
     else
-      # Development: allow Vite dev server + HMR
+      # Development: allow Vite dev server + HMR + ActionCable WebSocket
       vite_host = "http://#{ViteRuby.config.host_with_port}"
       policy.script_src :self, :https, :unsafe_inline, :unsafe_eval, :blob, vite_host
-      policy.connect_src :self, :https, vite_host, "ws://#{ViteRuby.config.host_with_port}"
+      policy.connect_src :self, :https, vite_host,
+                         "ws://#{ViteRuby.config.host_with_port}",
+                         "ws://localhost:3100", "ws://127.0.0.1:3100",
+                         "ws://localhost:3000", "ws://127.0.0.1:3000"
     end
   end
 

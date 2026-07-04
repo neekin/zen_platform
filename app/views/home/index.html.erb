@@ -10,7 +10,7 @@
   <nav class="nav-glass">
     <div class="nav-content">
       <div class="nav-logo">
-        <span class="logo-icon">⚡</span>
+        <img src="/logo-mark.svg" alt="Zen" class="logo-icon-svg" />
         <span class="logo-text">Zen Platform</span>
       </div>
       <div class="nav-links">
@@ -43,7 +43,7 @@
         <a href="/admin" class="btn btn-primary magnetic">
           <span>🚀</span> 立即开始
         </a>
-        <a href="#demo" class="btn btn-glass magnetic">
+        <a href="#dsl" class="btn btn-glass magnetic">
           <span>▶️</span> 观看演示
         </a>
       </div>
@@ -78,7 +78,7 @@
   </section>
 
   <!-- DSL Demo Section -->
-  <section class="section" id="demo">
+  <section class="section" id="dsl">
     <div class="container">
       <div class="section-header">
         <span class="section-tag">声明即所得</span>
@@ -250,7 +250,7 @@
           <div class="stack-label">Backend</div>
           <div class="stack-items">
             <span class="stack-item-tag">Rails 8.1</span>
-            <span class="stack-item-tag">Ruby 3.4</span>
+            <span class="stack-item-tag">Ruby 4.0</span>
             <span class="stack-item-tag">SQLite3</span>
             <span class="stack-item-tag">Solid Queue</span>
           </div>
@@ -339,7 +339,7 @@
   <footer class="footer">
     <div class="container footer-content">
       <div class="footer-left">
-        <span class="footer-logo">⚡ Zen Platform</span>
+        <span class="footer-logo"><img src="/logo-mark.svg" alt="Zen" class="footer-logo-svg" /> Zen Platform</span>
         <span class="footer-copy">&copy; 2026</span>
       </div>
       <div class="footer-links">
@@ -464,6 +464,20 @@
 }
 
 .logo-icon { font-size: 24px; }
+.logo-icon-svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(212, 165, 55, 0.3));
+}
+.footer-logo-svg {
+  width: 22px;
+  height: 22px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+  margin-top: -2px;
+}
 
 .nav-links {
   display: flex;

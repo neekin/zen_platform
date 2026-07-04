@@ -80,4 +80,8 @@ gem "inertia_rails", "~> 3.21"
 
 gem "vite_rails", "~> 3.11"
 
+# 分页、搜索、过滤
+gem "pagy"  # 高性能分页
+gem "ransack"  # 搜索和过滤
+
 gem "bullet", "~> 8.1", group: :development

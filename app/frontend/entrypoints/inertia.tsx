@@ -2,6 +2,7 @@ import { createInertiaApp, router } from '@inertiajs/react'
 import { createRoot } from 'react-dom/client'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { App as AntApp, ConfigProvider } from 'antd'
 import ErrorBoundary from '../components/ErrorBoundary'
 
 NProgress.configure({ showSpinner: false, minimum: 0.2 })
@@ -23,7 +24,9 @@ void createInertiaApp({
   setup({ el, App, props }) {
     createRoot(el).render(
       <ErrorBoundary>
-        <App {...props} />
+        <AntApp>
+          <App {...props} />
+        </AntApp>
       </ErrorBoundary>
     )
   },

@@ -19,7 +19,7 @@ export default function FlashMessage() {
 
     if (flash.notice) {
       notification.success({
-        message: '成功',
+        title: '成功',
         description: flash.notice,
         placement: 'bottomRight',
         duration: 3,
@@ -28,7 +28,7 @@ export default function FlashMessage() {
 
     if (flash.alert) {
       notification.error({
-        message: '错误',
+        title: '错误',
         description: flash.alert,
         placement: 'bottomRight',
         duration: 4,

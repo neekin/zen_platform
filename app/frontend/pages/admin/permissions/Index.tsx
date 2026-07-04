@@ -65,6 +65,13 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
       resource: resource,
       action_name: action,
       allowed: !currentValue,
+    }, {
+      preserveState: false,
+      onFinish: () => {
+        // 更新 selectedRole 以反映新权限
+        const updatedRole = matrix.find((r) => r.role === roleName)
+        if (updatedRole) setSelectedRole(updatedRole)
+      },
     })
   }
 

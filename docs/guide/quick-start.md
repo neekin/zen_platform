@@ -2,7 +2,7 @@
 
 ## 环境要求
 
-- Ruby 3.4+
+- Ruby 4.0+
 - Node.js 20+
 - SQLite3
 

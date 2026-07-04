@@ -11,7 +11,7 @@ title: 部署
 | Web 服务器 | Render / Fly.io / Heroku / VPS |
 | 数据库 | PostgreSQL 15+ |
 | 文件存储 | Active Storage + S3 / CloudFlare R2 |
-| Ruby | 3.4+ |
+| Ruby | 4.0+ |
 | Node.js | 20+ |
 
 ## 部署方式

@@ -29,6 +29,12 @@ Rails.application.routes.draw do
     post "login", to: "sessions#create"
     post "send_login_code", to: "sessions#send_login_code"
     delete "logout", to: "sessions#destroy"
+
+    # 密码重置
+    get  "password/new", to: "password_resets#new", as: :new_password
+    post "password", to: "password_resets#create", as: :password
+    get  "password/:token/edit", to: "password_resets#edit", as: :edit_password
+    patch "password/:token", to: "password_resets#update"
     resources :articles do
       collection do
         post :batch_action

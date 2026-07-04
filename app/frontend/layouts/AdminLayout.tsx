@@ -140,7 +140,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </a>
           )}
           avatarProps={{
-            src: undefined,
+            src: user?.avatar || undefined,
             title: user?.name || 'Admin',
             size: 'small',
             render: (_props, dom) => (

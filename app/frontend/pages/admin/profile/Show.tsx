@@ -5,8 +5,8 @@
 import { useState, useRef } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
-import { App, Card, Form, Input, Button, Row, Col, Space, Divider, Typography, Statistic } from 'antd'
-import { UserOutlined, LockOutlined, MobileOutlined, EditOutlined, SafetyOutlined } from '@ant-design/icons'
+import { App, Card, Form, Input, Button, Row, Col, Space, Divider, Typography, Avatar, Upload } from 'antd'
+import { UserOutlined, LockOutlined, MobileOutlined, EditOutlined, SafetyOutlined, CameraOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -20,6 +20,7 @@ interface UserProfile {
   name: string
   phone: string | null
   note: string | null
+  avatar: string | null
   created_at: string
 }
 
@@ -167,8 +168,64 @@ function ProfileShow({ user }: { user: UserProfile }) {
     }
   }
 
+  const handleAvatarChange = async (info: any) => {
+    if (info.file.status === 'done') {
+      message.success('头像已更新')
+      router.reload()
+    } else if (info.file.status === 'error') {
+      message.error('上传失败')
+    }
+  }
+
   return (
     <PageContainer title="个人中心">
+      {/* 头像卡片 */}
+      <Card variant="borderless" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <Upload
+            name="avatar"
+            showUploadList={false}
+            action="/admin/profile"
+            method="PATCH"
+            headers={{
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+            }}
+            onChange={handleAvatarChange}
+          >
+            <div style={{ position: 'relative', cursor: 'pointer' }}>
+              <Avatar
+                size={80}
+                src={user.avatar}
+                icon={!user.avatar ? <UserOutlined /> : undefined}
+                style={{ backgroundColor: user.avatar ? 'transparent' : 'var(--ant-color-primary)' }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  background: 'var(--ant-color-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid white',
+                }}
+              >
+                <CameraOutlined style={{ fontSize: 12, color: 'white' }} />
+              </div>
+            </div>
+          </Upload>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>{user.name || user.username}</div>
+            <div style={{ color: 'var(--ant-color-text-secondary)' }}>{user.email}</div>
+            <div style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12, marginTop: 4 }}>点击头像更换</div>
+          </div>
+        </div>
+      </Card>
+
       <Row gutter={[16, 16]}>
         {/* 左侧：基本信息 + 手机绑定 */}
         <Col xs={24} lg={12}>

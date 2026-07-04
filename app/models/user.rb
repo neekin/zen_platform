@@ -45,4 +45,37 @@ class User < ApplicationRecord
   def self.find_by_account(account)
     find_by("email = :q OR username = :q", q: account)
   end
+
+  # 生成重置密码令牌
+  def generate_reset_password_token!
+    token = SecureRandom.urlsafe_base64(32)
+    update!(
+      reset_password_token: Digest::SHA256.hexdigest(token),
+      reset_password_sent_at: Time.current
+    )
+    token
+  end
+
+  # 根据令牌查找用户
+  def self.find_by_reset_password_token(token)
+    return nil if token.blank?
+
+    hashed_token = Digest::SHA256.hexdigest(token)
+    find_by(reset_password_token: hashed_token)
+  end
+
+  # 重置密码令牌是否过期（2小时）
+  def reset_password_expired?
+    reset_password_sent_at.blank? || reset_password_sent_at < 2.hours.ago
+  end
+
+  # 重置密码
+  def reset_password!(new_password)
+    result = update(
+      password: new_password,
+      reset_password_token: nil,
+      reset_password_sent_at: nil
+    )
+    result
+  end
 end

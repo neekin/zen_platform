@@ -8,11 +8,11 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?  = user.has_any_role?(:super_admin, :admin, :editor, :viewer)
-  def show?   = index?
-  def create? = user.has_any_role?(:super_admin, :admin, :editor)
-  def update? = create?
-  def destroy? = user.has_any_role?(:super_admin, :admin)
+  def index?  = check_permission(:index)
+  def show?   = check_permission(:show)
+  def create? = check_permission(:create)
+  def update? = check_permission(:update)
+  def destroy? = check_permission(:destroy)
 
   class Scope
     attr_reader :user, :scope
@@ -25,5 +25,16 @@ class ApplicationPolicy
     def resolve
       scope.all
     end
+  end
+
+  private
+
+  # 检查用户是否有权限（数据库优先，回退到默认配置）
+  def check_permission(action)
+    resource = record.is_a?(Class) ? record.name : record.class.name
+    user.roles.each do |role|
+      return true if Permission.allowed?(role.name, resource, action.to_s)
+    end
+    false
   end
 end

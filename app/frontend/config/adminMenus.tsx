@@ -10,6 +10,7 @@ import {
   TeamOutlined,
   AuditOutlined,
   ProjectOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons'
 
 export const menuRoutes = {
@@ -49,6 +50,11 @@ export const menuRoutes = {
           path: '/admin/roles',
           name: '角色管理',
           icon: <TeamOutlined />,
+        },
+        {
+          path: '/admin/permissions',
+          name: '权限管理',
+          icon: <SafetyCertificateOutlined />,
         },
         {
           path: '/admin/audit_logs',

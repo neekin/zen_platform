@@ -7,6 +7,7 @@ import {
   MoonOutlined,
   SunOutlined,
   DesktopOutlined,
+  UserOutlined,
 } from '@ant-design/icons'
 import { Dropdown, Tooltip } from 'antd'
 import NotificationBell from '@/components/admin/NotificationBell'
@@ -146,6 +147,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Dropdown
                 menu={{
                   items: [
+                    {
+                      key: 'profile',
+                      icon: <UserOutlined />,
+                      label: '个人中心',
+                      onClick: () => router.visit('/admin/profile'),
+                    },
+                    {
+                      type: 'divider',
+                    },
                     {
                       key: 'logout',
                       icon: <LogoutOutlined />,

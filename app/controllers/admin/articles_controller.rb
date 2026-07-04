@@ -5,7 +5,7 @@ module Admin
     # 包含 Pagy 分页方法
     include Pagy::Method
 
-    before_action :set_article, only: [:show, :update, :destroy]
+    before_action :set_article, only: [ :show, :update, :destroy ]
 
     # GET /admin/articles
     def index
@@ -24,9 +24,7 @@ module Admin
       render inertia: "admin/articles/Index",
         props: zen_props(Article,
           articles: records.map { |r| r.as_json(
-            include: {
-
-            }
+            include: {}
           ) },
           pagination: {
             page: @pagy.page,
@@ -45,9 +43,7 @@ module Admin
       render inertia: "admin/articles/Show",
         props: {
           article: @article.as_json(
-            include: {
-
-            }
+            include: {}
           )
         }
     end

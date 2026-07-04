@@ -61,13 +61,16 @@ end
 
 ## 🆚 对比
 
-| 功能 | Zen Platform | ActiveAdmin | Avo | 若依 |
-|------|--------------|-------------|-----|------|
-| DSL 声明 | ✅ | ✅ | ✅ | ❌ |
-| 前端自动渲染 | ✅ React 19 | ❌ ERB | ❌ ERB | ✅ Vue |
-| 多产品形态 | ✅ | ❌ | ❌ | 部分 |
-| 富文本 | ✅ 20 插件 | ❌ | ❌ | 基础 |
+| 维度 | Zen Platform | ActiveAdmin | Avo | Administrate |
+|------|-------------|-------------|-----|--------------|
+| 前端框架 | React + Ant Design | Arbre (ERB) | ViewComponent | ERB |
+| DSL 驱动 | ✅ Model DSL | ✅ DSL | ✅ Resource DSL | ❌ 手写 |
+| 富文本 | ✅ 20 插件 | ❌ | ❌ | ❌ |
+| 多形态 | ✅ CRUD/看板/日历/画廊 | ❌ | ❌ | ❌ |
 | API 生成 | ✅ Swagger | ❌ | ❌ | ❌ |
+| 权限 | ✅ Pundit + Rolify | ✅ CanCanCan | ✅ Pundit | ❌ |
+| 实时通知 | ✅ ActionCable | ❌ | ❌ | ❌ |
+| 前端测试 | ✅ Vitest | ❌ | ❌ | ❌ |
 
 ## 🤝 贡献
 

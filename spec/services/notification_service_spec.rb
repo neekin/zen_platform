@@ -60,18 +60,18 @@ RSpec.describe NotificationService, type: :service do
 
     it "creates a notification for each recipient" do
       expect {
-        described_class.notify_users(recipients: [user2, user3], action: "announcement")
+        described_class.notify_users(recipients: [ user2, user3 ], action: "announcement")
       }.to change(Notification, :count).by(2)
     end
 
     it "deduplicates by user id" do
       expect {
-        described_class.notify_users(recipients: [user2, user2, user3], action: "announcement")
+        described_class.notify_users(recipients: [ user2, user2, user3 ], action: "announcement")
       }.to change(Notification, :count).by(2)
     end
 
     it "returns array of notifications" do
-      result = described_class.notify_users(recipients: [user2, user3], action: "ping")
+      result = described_class.notify_users(recipients: [ user2, user3 ], action: "ping")
       expect(result).to be_an(Array)
       expect(result.size).to eq(2)
     end
@@ -124,13 +124,13 @@ RSpec.describe NotificationService, type: :service do
 
     it "notifies users in any of the roles" do
       expect {
-        described_class.notify_roles(["admin", "editor"], action: "broadcast")
+        described_class.notify_roles([ "admin", "editor" ], action: "broadcast")
       }.to change(Notification, :count).by(2)
     end
 
     it "deduplicates users with multiple matching roles" do
       # multi_role_user 有 admin + editor 两个角色，应该只收到一条
-      described_class.notify_roles(["admin", "editor"], action: "broadcast")
+      described_class.notify_roles([ "admin", "editor" ], action: "broadcast")
       multi_notifs = Notification.where(recipient: multi_role_user)
       expect(multi_notifs.count).to eq(1)
     end
@@ -195,7 +195,7 @@ RSpec.describe NotificationService, type: :service do
 
     it "accepts array of excluded users" do
       expect {
-        described_class.notify_all_except([u1, u2], action: "login")
+        described_class.notify_all_except([ u1, u2 ], action: "login")
       }.to change(Notification, :count).by(User.count - 2)
     end
   end

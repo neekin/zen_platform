@@ -6,6 +6,8 @@ module Api
       include Api::JwtAuthenticatable
       include Api::SwaggerDocControllable
 
+      skip_before_action :require_authentication
+
       swagger_tag "API Key 管理"
 
       before_action { authenticate_with :jwt }

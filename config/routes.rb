@@ -61,7 +61,6 @@ Rails.application.routes.draw do
       get "meta/:model_name", to: "meta#show"
       resources :users, only: %i[index show]
       resources :api_keys, only: %i[index create destroy]
-      resources :payment, only: %i[create]
     end
   end
 end

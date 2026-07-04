@@ -3,6 +3,7 @@
 module Api
   module V1
     class MetaController < ApiController
+      skip_before_action :require_authentication
       before_action -> { authenticate_with(:jwt, :api_key) }
 
       # GET /api/v1/meta/:model_name

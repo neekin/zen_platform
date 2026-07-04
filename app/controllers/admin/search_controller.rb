@@ -21,7 +21,7 @@ module Admin
       render json: {
         records: results.first(20),
         menus: menu_items,
-        actions: quick_actions(query),
+        actions: quick_actions(query)
       }
     end
 
@@ -40,7 +40,7 @@ module Admin
           model: model_class.name,
           title: record.send(searchable_fields.first).to_s,
           subtitle: model_class.model_name.human,
-          url: "/admin/#{model_class.model_name.collection}/#{record.id}",
+          url: "/admin/#{model_class.model_name.collection}/#{record.id}"
         }
       end
     rescue StandardError => e
@@ -55,7 +55,7 @@ module Admin
         { title: "角色管理", url: "/admin/roles", icon: "team" },
         { title: "权限管理", url: "/admin/permissions", icon: "safety" },
         { title: "API Key", url: "/admin/api_keys", icon: "key" },
-        { title: "审计日志", url: "/admin/audit_logs", icon: "audit" },
+        { title: "审计日志", url: "/admin/audit_logs", icon: "audit" }
       ].select { |m| query.blank? || m[:title].include?(query) }
     end
 

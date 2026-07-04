@@ -13,8 +13,8 @@ module Admin
           name: "Zen Platform",
           version: File.read(Rails.root.join("VERSION")).strip,
           rails_version: Rails::VERSION::STRING,
-          ruby_version: RUBY_VERSION,
-        },
+          ruby_version: RUBY_VERSION
+        }
       }
     end
 
@@ -25,16 +25,16 @@ module Admin
       # 每个 stat: { label:, value:, icon: }
       # icon 可选: user, article, comment, rise, database
       stats = [
-        { label: "用户总数", value: User.count, icon: "user" },
+        { label: "用户总数", value: User.count, icon: "user" }
       ]
 
       # 自动发现 DSL 模型并添加统计
       ApplicationRecord.descendants.select { |m| m.respond_to?(:zen_display_config) && m.table_exists? }.each do |model|
         icon = case model.name
-               when "Article" then "article"
-               when "Comment" then "comment"
-               else "database"
-               end
+        when "Article" then "article"
+        when "Comment" then "comment"
+        else "database"
+        end
         stats << { label: "#{model.model_name.human}总数", value: model.count, icon: icon }
       end
 
@@ -50,7 +50,7 @@ module Admin
           item_type: version.item_type,
           item_id: version.item_id,
           whodunnit: version.whodunnit,
-          created_at: version.created_at.iso8601,
+          created_at: version.created_at.iso8601
         }
       end
     rescue StandardError => e

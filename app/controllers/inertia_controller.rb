@@ -7,15 +7,15 @@ class InertiaController < ApplicationController
         id: current_user.id,
         name: current_user.name,
         email: current_user.email,
-        roles: current_user.roles.pluck(:name),
+        roles: current_user.roles.pluck(:name)
       } : nil,
       flash: flash.to_hash.slice("notice", "alert").merge(ts: Time.current.to_f),
       zen_config: {
         app_name: Zen.configuration.app_name,
         logo: Zen.configuration.logo,
         primary_color: Zen.configuration.primary_color,
-        sidebar_mode: Zen.configuration.sidebar_mode.to_s,
-      },
+        sidebar_mode: Zen.configuration.sidebar_mode.to_s
+      }
     }
   end
 

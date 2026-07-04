@@ -7,7 +7,7 @@ Thank you for your interest in contributing!
 1. Fork and clone the repository
 2. Run `bin/setup` to install dependencies and set up the database
 3. Run `bin/dev` to start the development server
-4. Visit `http://localhost:3000/admin` to see the admin panel
+4. Visit `http://localhost:3100/admin` to see the admin panel
 
 ## Development Workflow
 

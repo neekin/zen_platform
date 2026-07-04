@@ -85,12 +85,12 @@ module Admin
       when "update"
         # 更新事件 → 还原到该版本
         if version.object.present?
-          object = YAML.unsafe_load(version.object)
+          object = safe_load_yaml(version.object)
         elsif version.object_changes.present?
           # object 为空时，用 object_changes 反推
-          changes = YAML.unsafe_load(version.object_changes)
+          changes = safe_load_yaml(version.object_changes)
           object = {}
-          changes.each { |key, (old_val, _)| object[key] = old_val }
+          changes&.each { |key, (old_val, _)| object[key] = old_val }
         else
           render json: { code: 1, message: "无法还原：版本数据为空" }, status: :unprocessable_entity
           return
@@ -116,7 +116,7 @@ module Admin
           render json: { code: 1, message: "无法还原：版本数据为空" }, status: :unprocessable_entity
           return
         end
-        object = YAML.unsafe_load(version.object)
+        object = safe_load_yaml(version.object)
         record = version.item_type.constantize.new(object)
         record.id = version.item_id  # 恢复原始 ID
 
@@ -145,20 +145,61 @@ module Admin
     end
 
     # PaperTrail 存储格式为 YAML（可能包含 Ruby 对象）
-    # 使用 unsafe_load 因为我们信任数据来源（自己的数据库）
+    # 使用 safe_load 并明确指定允许的类（白名单）
+    # 注意：数据来源是自己的数据库，但是为了安全起见，我们仍然使用白名单
+    PERMITTED_YAML_CLASSES = [
+      ActiveSupport::TimeWithZone,
+      ActiveSupport::TimeZone,
+      Symbol,
+      Time,
+      Date,
+      DateTime,
+      Hash,
+      Array,
+      String,
+      Integer,
+      Float,
+      BigDecimal,
+      TrueClass,
+      FalseClass,
+      NilClass,
+      ActiveSupport::Duration,
+      ActiveSupport::HashWithIndifferentAccess,
+      ActiveSupport::SafeBuffer,
+      Regexp,
+      Range,
+      Set
+    ].freeze
+
     def safe_parse(data)
       return nil if data.blank?
 
       if data.is_a?(String)
         if data.start_with?("---")
-          YAML.unsafe_load(data)
+          YAML.safe_load(data, permitted_classes: PERMITTED_YAML_CLASSES, aliases: true)
         else
           JSON.parse(data)
         end
       else
         data
       end
-    rescue StandardError
+    rescue Psych::DisallowedClass => e
+      # 如果遇到新的未知类，记录到日志并返回 nil
+      Rails.logger.warn("PaperTrail YAML 反序列化遇到未知类: #{e.message}")
+      nil
+    rescue StandardError => e
+      Rails.logger.warn("PaperTrail YAML 解析失败: #{e.message}")
+      nil
+    end
+
+    # 安全地加载 YAML（用于恢复操作，需要完整反序列化）
+    def safe_load_yaml(yaml_string)
+      YAML.safe_load(yaml_string, permitted_classes: PERMITTED_YAML_CLASSES, aliases: true)
+    rescue Psych::DisallowedClass => e
+      Rails.logger.warn("PaperTrail YAML 反序列化遇到未知类: #{e.message}")
+      nil
+    rescue StandardError => e
+      Rails.logger.warn("PaperTrail YAML 解析失败: #{e.message}")
       nil
     end
   end

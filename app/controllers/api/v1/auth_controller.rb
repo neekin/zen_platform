@@ -9,9 +9,9 @@ module Api
       swagger_tag "认证管理"
 
       def login
-        user = User.find_by_account(params[:account])
+        user = User.find_by_account(auth_params[:account])
 
-        if user&.authenticate(params[:password])
+        if user&.authenticate(auth_params[:password])
           token = encode_jwt(user.id)
           render_success({ token: token, user: user.as_json(only: %i[id username email name]) })
         else
@@ -24,6 +24,12 @@ module Api
         return unless @current_api_user
 
         render_success(@current_api_user.as_json(only: %i[id username email name]))
+      end
+
+      private
+
+      def auth_params
+        params.permit(:account, :password)
       end
     end
   end

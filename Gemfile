@@ -79,3 +79,5 @@ gem "rack-attack", "~> 6.7"
 gem "inertia_rails", "~> 3.21"
 
 gem "vite_rails", "~> 3.11"
+
+gem "bullet", "~> 8.1", group: :development

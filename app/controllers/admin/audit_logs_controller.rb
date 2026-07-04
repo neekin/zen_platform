@@ -6,6 +6,8 @@ module Admin
     skip_after_action :verify_policy_scoped
     before_action :authorize_restore, only: [:restore]
 
+    ALLOWED_RESTORE_TYPES = %w[Article Comment User Role ApiKey Export Notification Task Product Permission].freeze
+
     # GET /admin/audit_logs
     def index
       page = (params[:page] || 1).to_i
@@ -63,6 +65,11 @@ module Admin
     # POST /admin/audit_logs/:id/restore
     def restore
       version = PaperTrail::Version.find(params[:id])
+
+      unless ALLOWED_RESTORE_TYPES.include?(version.item_type)
+        render json: { code: 1, message: "不支持恢复此类型: #{version.item_type}" }, status: :unprocessable_entity
+        return
+      end
 
       case version.event
       when "create"

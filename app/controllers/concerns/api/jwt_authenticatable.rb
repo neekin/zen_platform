@@ -34,7 +34,7 @@ module Api
     end
 
     def jwt_secret
-      Rails.application.secret_key_base
+      Rails.application.credentials.jwt_secret || Rails.application.secret_key_base
     end
   end
 end

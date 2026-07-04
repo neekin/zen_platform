@@ -37,7 +37,20 @@ module Admin
       export = current_user.exports.find(params[:id])
 
       if export.completed? && export.file_path.present?
-        send_file export.file_path,
+        storage_root = Rails.root.join("storage").to_s
+        resolved_path = File.expand_path(export.file_path)
+
+        unless resolved_path.start_with?(storage_root + "/")
+          redirect_to admin_root_path, alert: "非法文件路径"
+          return
+        end
+
+        unless File.exist?(resolved_path)
+          redirect_to admin_root_path, alert: "文件不存在"
+          return
+        end
+
+        send_file resolved_path,
           filename: File.basename(export.file_path),
           disposition: "attachment"
       else

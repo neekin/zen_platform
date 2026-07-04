@@ -6,25 +6,18 @@ Rails.application.configure do
     policy.font_src    :self, :https, :data
     policy.img_src     :self, :https, :data, :blob
     policy.object_src  :none
-    policy.script_src  :self, :https, :unsafe_inline
-    # Allow @vite/client to hot reload javascript changes in development
-    policy.script_src *policy.script_src, :unsafe_eval, "http://#{ViteRuby.config.host_with_port}" if Rails.env.development?
+    policy.style_src   :self, :https, :unsafe_inline
 
-    policy.style_src   :self, :https
-    # Allow @vite/client to hot reload style changes in development
-    policy.style_src *policy.style_src, :unsafe_inline if Rails.env.development?
+    if Rails.env.production?
+      policy.script_src :self, :https, :nonce
+    else
+      policy.script_src :self, :https, :unsafe_inline, :unsafe_eval
+      policy.connect_src :self, :https, "http://#{ViteRuby.config.host_with_port}", "ws://#{ViteRuby.config.host_with_port}"
+    end
 
-    policy.connect_src :self, :https, "http://#{ViteRuby.config.host_with_port}", "ws://#{ViteRuby.config.host_with_port}" if Rails.env.development?
-
-    # Specify URI for violation reports
-    # policy.report_uri "/csp-violation-report-endpoint"
+    policy.frame_ancestors :none
   end
 
-  # Generate session nonces for permitted importmap and inline scripts.
-  # style-src is excluded so that unsafe-inline works for Vite HMR and Ant Design.
-  config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-  config.content_security_policy_nonce_directives = %w(script-src)
-
-  # Report violations without enforcing the policy.
-  # config.content_security_policy_report_only = true
+  config.content_security_policy_nonce_generator = ->(_request) { SecureRandom.base64(16) }
+  config.content_security_policy_nonce_directives = %w[script-src]
 end

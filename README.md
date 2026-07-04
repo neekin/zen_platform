@@ -4,8 +4,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/yourusername/zen_platform/actions"><img src="https://github.com/yourusername/zen_platform/workflows/CI/badge.svg" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/yourusername/zen_platform" alt="License"></a>
+  <a href="https://github.com/neekin/zen_platform/actions"><img src="https://github.com/neekin/zen_platform/workflows/CI/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/neekin/zen_platform" alt="License"></a>
   <img src="https://img.shields.io/badge/ruby-4.0-red" alt="Ruby">
   <img src="https://img.shields.io/badge/rails-8.1-red" alt="Rails">
   <img src="https://img.shields.io/badge/react-19-blue" alt="React">
@@ -27,17 +27,14 @@
 
 ```bash
 # 1. 克隆
-git clone https://github.com/yourusername/zen_platform.git
+git clone https://github.com/neekin/zen_platform.git
 cd zen_platform
 
-# 2. 安装依赖 + 初始化数据库
+# 2. 安装依赖 + 初始化数据库（完成后自动启动服务器）
 bin/setup
-
-# 3. 启动开发服务器
-bin/dev
 ```
 
-打开 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
+打开 `http://localhost:3000/admin`，登录 `admin@example.com` / `password123`
 
 ## DSL 示例
 

@@ -13,7 +13,7 @@ hero:
       link: /dsl/
     - theme: alt
       text: GitHub
-      link: https://github.com/yourusername/zen_platform
+      link: https://github.com/neekin/zen_platform
 features:
   - icon: 📝
     title: 声明即所得

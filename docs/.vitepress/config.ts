@@ -76,7 +76,7 @@ export default defineConfig({
       ],
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/yourusername/zen_platform' },
+      { icon: 'github', link: 'https://github.com/neekin/zen_platform' },
     ],
     search: {
       provider: 'local',

@@ -18,7 +18,7 @@ title: 安装配置
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/zen_platform.git
+git clone https://github.com/neekin/zen_platform.git
 cd zen_platform
 
 # 安装 Ruby 依赖
@@ -34,7 +34,7 @@ bin/rails db:setup
 bin/dev
 ```
 
-访问 `http://localhost:3100/admin`，使用以下账号登录：
+访问 `http://localhost:3000/admin`，使用以下账号登录：
 
 | 角色 | 邮箱 | 密码 |
 |------|------|------|
@@ -66,7 +66,7 @@ RAILS_LOG_LEVEL=info
 
 ## 常见问题
 
-### Port 3100 被占用？
+### Port 3000 被占用？
 
 修改 `Procfile.dev` 第一行的端口号。
 

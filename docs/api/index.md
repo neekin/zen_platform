@@ -8,7 +8,7 @@ Zen Platform 提供 RESTful JSON API，自动根据 Model DSL 生成端点。
 
 ## Base URL
 
-- 开发：`http://localhost:3100/api/v1`
+- 开发：`http://localhost:3000/api/v1`
 - 生产：配置 `API_BASE_URL` 环境变量
 
 ## 认证

@@ -18,13 +18,12 @@
 ## 🚀 快速开始
 
 ```bash
-git clone https://github.com/yourusername/zen_platform.git
+git clone https://github.com/neekin/zen_platform.git
 cd zen_platform
 bin/setup
-bin/dev
 ```
 
-访问 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
+访问 `http://localhost:3000/admin`，登录 `admin@example.com` / `password123`
 
 ## 📖 DSL 示例
 
@@ -55,7 +54,7 @@ end
 
 ## 📖 文档
 
-完整文档：https://yourusername.github.io/zen_platform
+完整文档：https://neekin.github.io/zen_platform
 
 ## 🆚 对比
 

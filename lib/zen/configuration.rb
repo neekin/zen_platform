@@ -12,15 +12,14 @@ module Zen
     end
   end
 
-  class << self
-    attr_accessor :configuration
+  # 使用模块级实例变量，避免 class << self 的加载顺序问题
+  @configuration = nil
 
-    def configuration
-      @configuration ||= Configuration.new
-    end
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
 
-    def configure
-      yield(configuration)
-    end
+  def self.configure
+    yield(configuration)
   end
 end

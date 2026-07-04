@@ -10,7 +10,9 @@ import {
 } from '@ant-design/icons'
 import { Dropdown, Tooltip } from 'antd'
 import NotificationBell from '@/components/admin/NotificationBell'
+import CommandPalette from '@/components/admin/CommandPalette'
 import { useTheme } from '@/hooks/useTheme'
+import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import '../styles/admin.css'
 import { menuRoutes } from '@/config/adminMenus'
@@ -105,10 +107,23 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const page = usePage()
   const { user } = page.props
   const { mode, resolved, setMode } = useTheme()
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
-  // 使用 window.location.pathname 获取精确路径（Inertia page.url 可能是重定向前的）
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setPaletteOpen(prev => !prev)
+      }
+      if (e.key === 'Escape') {
+        setPaletteOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   const pathname = window.location.pathname
-
   const currentTheme = resolved === 'dark' ? darkTheme : lightTheme
   const iconColor = resolved === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)'
 
@@ -185,6 +200,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         >
           {children}
         </ProLayout>
+        <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
       </div>
     </ConfigProvider>
   )

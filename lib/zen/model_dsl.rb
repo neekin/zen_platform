@@ -169,4 +169,15 @@ module Zen
       self.class.zen_product_configs
     end
   end
+
+  # 获取所有声明了 searchable 字段的 DSL 模型
+  def self.searchable_models
+    ApplicationRecord.descendants.select do |model|
+      model.respond_to?(:zen_display_config) &&
+        model.zen_display_config.is_a?(Hash) &&
+        model.zen_display_config[:list].is_a?(Hash) &&
+        model.zen_display_config[:list][:searchable_fields].is_a?(Array) &&
+        model.zen_display_config[:list][:searchable_fields].present?
+    end
+  end
 end

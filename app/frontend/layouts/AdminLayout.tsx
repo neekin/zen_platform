@@ -12,84 +12,11 @@ import { Dropdown, Tooltip } from 'antd'
 import NotificationBell from '@/components/admin/NotificationBell'
 import CommandPalette from '@/components/admin/CommandPalette'
 import { useTheme } from '@/hooks/useTheme'
+import { useZenConfig } from '@/hooks/useZenConfig'
 import { useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import '../styles/admin.css'
 import { menuRoutes } from '@/config/adminMenus'
-
-const darkTheme = {
-  algorithm: theme.darkAlgorithm,
-  token: {
-    colorPrimary: '#1677FF',
-    colorBgContainer: 'rgba(20, 27, 45, 0.85)',
-    colorBgElevated: 'rgba(25, 35, 55, 0.9)',
-    colorBgLayout: '#0a0f1e',
-    colorBorder: 'rgba(100, 140, 200, 0.15)',
-    colorBorderSecondary: 'rgba(100, 140, 200, 0.08)',
-    borderRadius: 8,
-    fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
-  },
-  components: {
-    Layout: {
-      headerBg: 'rgba(10, 15, 30, 0.8)',
-      siderBg: 'rgba(12, 18, 35, 0.9)',
-      bodyBg: '#0a0f1e',
-      headerColor: 'rgba(255, 255, 255, 0.85)',
-    },
-    Menu: {
-      darkItemBg: 'transparent',
-      darkSubMenuItemBg: 'transparent',
-      darkItemSelectedBg: 'rgba(22, 119, 255, 0.15)',
-      darkItemColor: 'rgba(255, 255, 255, 0.65)',
-      darkItemSelectedColor: '#1677FF',
-      itemHeight: 40,
-    },
-    Card: {
-      colorBgContainer: 'rgba(20, 27, 45, 0.7)',
-    },
-    Table: {
-      colorBgContainer: 'rgba(20, 27, 45, 0.5)',
-      headerBg: 'rgba(22, 119, 255, 0.08)',
-    },
-  },
-}
-
-const lightTheme = {
-  algorithm: theme.defaultAlgorithm,
-  token: {
-    colorPrimary: '#1677FF',
-    colorBgContainer: '#ffffff',
-    colorBgElevated: '#ffffff',
-    colorBgLayout: '#f5f7fa',
-    colorBorder: '#e8ecf0',
-    colorBorderSecondary: '#f0f2f5',
-    borderRadius: 8,
-    fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
-  },
-  components: {
-    Layout: {
-      headerBg: '#ffffff',
-      siderBg: '#ffffff',
-      bodyBg: '#f5f7fa',
-      headerColor: 'rgba(0, 0, 0, 0.88)',
-    },
-    Menu: {
-      itemBg: 'transparent',
-      subMenuItemBg: 'transparent',
-      itemSelectedBg: 'rgba(22, 119, 255, 0.08)',
-      itemColor: 'rgba(0, 0, 0, 0.65)',
-      itemSelectedColor: '#1677FF',
-      itemHeight: 40,
-    },
-    Card: {
-      colorBgContainer: '#ffffff',
-    },
-    Table: {
-      colorBgContainer: '#ffffff',
-      headerBg: 'rgba(22, 119, 255, 0.04)',
-    },
-  },
-}
 
 const themeIcons: Record<string, ReactNode> = {
   dark: <MoonOutlined style={{ fontSize: 16 }} />,
@@ -108,6 +35,69 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { user } = page.props
   const { mode, resolved, setMode } = useTheme()
   const [paletteOpen, setPaletteOpen] = useState(false)
+  const zenConfig = useZenConfig()
+
+  const currentTheme = resolved === 'dark' ? {
+    algorithm: theme.darkAlgorithm,
+    token: {
+      colorPrimary: zenConfig.primary_color,
+      colorBgContainer: 'rgba(20, 27, 45, 0.85)',
+      colorBgElevated: 'rgba(25, 35, 55, 0.9)',
+      colorBgLayout: '#0a0f1e',
+      colorBorder: 'rgba(100, 140, 200, 0.15)',
+      colorBorderSecondary: 'rgba(100, 140, 200, 0.08)',
+      borderRadius: 8,
+      fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
+    },
+    components: {
+      Layout: {
+        headerBg: 'rgba(10, 15, 30, 0.8)',
+        siderBg: 'rgba(12, 18, 35, 0.9)',
+        bodyBg: '#0a0f1e',
+        headerColor: 'rgba(255, 255, 255, 0.85)',
+      },
+      Menu: {
+        darkItemBg: 'transparent',
+        darkSubMenuItemBg: 'transparent',
+        darkItemSelectedBg: `${zenConfig.primary_color}26`,
+        darkItemColor: 'rgba(255, 255, 255, 0.65)',
+        darkItemSelectedColor: zenConfig.primary_color,
+        itemHeight: 40,
+      },
+      Card: { colorBgContainer: 'rgba(20, 27, 45, 0.7)' },
+      Table: { colorBgContainer: 'rgba(20, 27, 45, 0.5)', headerBg: `${zenConfig.primary_color}14` },
+    },
+  } : {
+    algorithm: theme.defaultAlgorithm,
+    token: {
+      colorPrimary: zenConfig.primary_color,
+      colorBgContainer: '#ffffff',
+      colorBgElevated: '#ffffff',
+      colorBgLayout: '#f5f7fa',
+      colorBorder: '#e8ecf0',
+      colorBorderSecondary: '#f0f2f5',
+      borderRadius: 8,
+      fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
+    },
+    components: {
+      Layout: {
+        headerBg: '#ffffff',
+        siderBg: '#ffffff',
+        bodyBg: '#f5f7fa',
+        headerColor: 'rgba(0, 0, 0, 0.88)',
+      },
+      Menu: {
+        itemBg: 'transparent',
+        subMenuItemBg: 'transparent',
+        itemSelectedBg: `${zenConfig.primary_color}14`,
+        itemColor: 'rgba(0, 0, 0, 0.65)',
+        itemSelectedColor: zenConfig.primary_color,
+        itemHeight: 40,
+      },
+      Card: { colorBgContainer: '#ffffff' },
+      Table: { colorBgContainer: '#ffffff', headerBg: `${zenConfig.primary_color}0a` },
+    },
+  }
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -124,16 +114,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }, [])
 
   const pathname = window.location.pathname
-  const currentTheme = resolved === 'dark' ? darkTheme : lightTheme
   const iconColor = resolved === 'dark' ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)'
 
   return (
     <ConfigProvider theme={currentTheme}>
       <div className="admin-layout" data-theme={resolved}>
         <ProLayout
-          title="Zen Platform"
-          logo="/logo-mark.svg"
-          layout="mix"
+          title={zenConfig.app_name}
+          logo={zenConfig.logo}
+          layout={zenConfig.sidebar_mode as any}
           fixSiderbar
           route={menuRoutes}
           location={{ pathname }}

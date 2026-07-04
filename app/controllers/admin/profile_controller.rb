@@ -76,10 +76,28 @@ module Admin
       end
     end
 
+    # PATCH /admin/profile/avatar
+    def update_avatar
+      if params[:avatar].blank?
+        render json: { code: 1, message: "请选择头像" }, status: :unprocessable_entity
+        return
+      end
+
+      # 将图片转为 Base64 存储（简单方案，生产环境建议用 Active Storage）
+      avatar_data = params[:avatar]
+      base64 = "data:#{avatar_data.content_type};base64,#{Base64.strict_encode64(avatar_data.read)}"
+
+      if current_user.update(avatar: base64)
+        render json: { code: 0, message: "头像已更新" }
+      else
+        render json: { code: 1, message: current_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def profile_params
-      params.permit(:name, :note, :avatar)
+      params.permit(:name, :note)
     end
   end
 end

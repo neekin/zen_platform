@@ -168,13 +168,70 @@ function ProfileShow({ user }: { user: UserProfile }) {
     }
   }
 
-  const handleAvatarChange = async (info: any) => {
-    if (info.file.status === 'done') {
-      message.success('头像已更新')
-      router.reload()
-    } else if (info.file.status === 'error') {
-      message.error('上传失败')
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+
+  const handleAvatarSelect = (info: any) => {
+    const file = info.file
+    if (!file) return
+
+    // 验证文件类型
+    const isImage = file.type.startsWith('image/')
+    if (!isImage) {
+      message.error('只能上传图片文件')
+      return
     }
+
+    // 验证文件大小 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      message.error('图片大小不能超过 5MB')
+      return
+    }
+
+    // 生成预览
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setAvatarPreview(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+    setAvatarFile(file)
+  }
+
+  const handleAvatarSave = async () => {
+    if (!avatarFile) return
+
+    setAvatarUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('avatar', avatarFile)
+
+      const res = await fetch('/admin/profile/avatar', {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: formData,
+      })
+      const data = await res.json()
+      if (data.code === 0) {
+        message.success('头像已更新')
+        setAvatarPreview(null)
+        setAvatarFile(null)
+        router.reload()
+      } else {
+        message.error(data.message)
+      }
+    } catch {
+      message.error('上传失败')
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
+
+  const handleAvatarCancel = () => {
+    setAvatarPreview(null)
+    setAvatarFile(null)
   }
 
   return (
@@ -183,21 +240,17 @@ function ProfileShow({ user }: { user: UserProfile }) {
       <Card variant="borderless" style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <Upload
-            name="avatar"
             showUploadList={false}
-            action="/admin/profile"
-            method="PATCH"
-            headers={{
-              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-            }}
-            onChange={handleAvatarChange}
+            beforeUpload={() => false}
+            onChange={handleAvatarSelect}
+            accept="image/*"
           >
             <div style={{ position: 'relative', cursor: 'pointer' }}>
               <Avatar
                 size={80}
-                src={user.avatar}
-                icon={!user.avatar ? <UserOutlined /> : undefined}
-                style={{ backgroundColor: user.avatar ? 'transparent' : 'var(--ant-color-primary)' }}
+                src={avatarPreview || user.avatar}
+                icon={!avatarPreview && !user.avatar ? <UserOutlined /> : undefined}
+                style={{ backgroundColor: (avatarPreview || user.avatar) ? 'transparent' : 'var(--ant-color-primary)' }}
               />
               <div
                 style={{
@@ -221,7 +274,18 @@ function ProfileShow({ user }: { user: UserProfile }) {
           <div>
             <div style={{ fontSize: 18, fontWeight: 600 }}>{user.name || user.username}</div>
             <div style={{ color: 'var(--ant-color-text-secondary)' }}>{user.email}</div>
-            <div style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12, marginTop: 4 }}>点击头像更换</div>
+            {avatarPreview ? (
+              <Space style={{ marginTop: 8 }}>
+                <Button type="primary" size="small" onClick={handleAvatarSave} loading={avatarUploading}>
+                  保存头像
+                </Button>
+                <Button size="small" onClick={handleAvatarCancel}>
+                  取消
+                </Button>
+              </Space>
+            ) : (
+              <div style={{ color: 'var(--ant-color-text-tertiary)', fontSize: 12, marginTop: 4 }}>点击头像更换</div>
+            )}
           </div>
         </div>
       </Card>

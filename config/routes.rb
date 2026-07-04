@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     patch "profile/password", to: "profile#update_password"
     post "profile/send_code", to: "profile#send_code"
     patch "profile/bind_phone", to: "profile#bind_phone"
+    patch "profile/avatar", to: "profile#update_avatar"
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     post "send_login_code", to: "sessions#send_login_code"

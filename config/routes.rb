@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     root to: redirect("/admin/dashboard")
     get  "dashboard", to: "dashboard#index"
     get  "search", to: "search#index"
+    get  "profile", to: "profile#show"
+    patch "profile", to: "profile#update"
+    patch "profile/password", to: "profile#update_password"
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"

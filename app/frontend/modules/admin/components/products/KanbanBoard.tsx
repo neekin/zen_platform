@@ -114,8 +114,18 @@ export default function KanbanBoard({
         return
       }
 
-      // Allow same-column reorder (newIndex = 0 for simplicity)
-      onCardMove?.(draggedCard.id, draggedCard.columnId, columnId, 0)
+      // 计算同列内拖拽的目标位置
+      let newIndex = 0
+      if (draggedCard.columnId === columnId) {
+        const container = e.currentTarget
+        const cardElements = Array.from(container.querySelectorAll('[data-card-id]'))
+        const dropTarget = (e.target as HTMLElement).closest('[data-card-id]')
+        if (dropTarget) {
+          newIndex = cardElements.indexOf(dropTarget)
+        }
+      }
+
+      onCardMove?.(draggedCard.id, draggedCard.columnId, columnId, newIndex)
       setDraggedCard(null)
     },
     [draggedCard, onCardMove],

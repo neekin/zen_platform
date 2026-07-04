@@ -174,8 +174,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 </span>
               </Tooltip>
             </Dropdown>,
-            <Tooltip key="help" title="帮助文档">
-              <QuestionCircleOutlined style={{ fontSize: 16, color: iconColor }} />
+            <Tooltip key="help" title="使用文档">
+              <a href="https://zen.justfunit.net" target="_blank" rel="noopener noreferrer">
+                <QuestionCircleOutlined style={{ fontSize: 16, color: iconColor }} />
+              </a>
             </Tooltip>,
             <NotificationBell key="notification" />,
           ]}

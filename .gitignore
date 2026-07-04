@@ -58,3 +58,5 @@ docs/.vitepress/cache
 !CHANGELOG.md
 !docs/**/*.md
 
+design/
+.DS_Store

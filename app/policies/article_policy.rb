@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 class ArticlePolicy < ApplicationPolicy
-  def index?  = true
-  def show?   = true
-  def create? = user.has_any_role?(:super_admin, :admin, :editor)
-  def update? = create?
-  def destroy? = user.has_any_role?(:super_admin, :admin)
+  def index? = true
+  def show? = true
 
   class Scope < ApplicationPolicy::Scope
     def resolve

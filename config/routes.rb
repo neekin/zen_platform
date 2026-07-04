@@ -32,6 +32,12 @@ Rails.application.routes.draw do
     end
     resources :users, except: [:show]
     resources :roles, except: [:show, :edit, :update]
+    resources :permissions, only: [:index] do
+      collection do
+        patch :update
+        post :reset
+      end
+    end
     resources :exports, only: [:create, :show]
     resources :notifications, only: [:index] do
       member do

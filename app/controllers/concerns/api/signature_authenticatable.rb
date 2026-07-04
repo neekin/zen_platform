@@ -5,6 +5,7 @@ module Api
     extend ActiveSupport::Concern
 
     def authenticate_signature!
+      request.body.rewind
       app_id = request.headers["X-App-Id"]
       signature = request.headers["X-Signature"]
       timestamp = request.headers["X-Timestamp"]

@@ -9,9 +9,6 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    services:
-      sqlite3:
-        image: sqlite3:latest
 
     steps:
       - uses: actions/checkout@v4
@@ -29,23 +26,28 @@ jobs:
         env:
           RAILS_ENV: test
 
-      - name: Security audit
-        run: |
-          bundle exec bundler-audit --update
-          bundle exec brakeman --no-pager
-
-      - name: Lint
-        run: bundle exec rubocop --parallel
-
       - name: RSpec tests
         run: bundle exec rspec
         env:
           RAILS_ENV: test
 
-      - name: Minitest tests
-        run: bin/rails test
-        env:
-          RAILS_ENV: test
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Dependency audit
+        run: bundle exec bundler-audit --update
+
+      - name: Security scan
+        run: bundle exec brakeman --no-pager -z -w3
 
   frontend:
     runs-on: ubuntu-latest

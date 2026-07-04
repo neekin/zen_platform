@@ -94,6 +94,7 @@ export default defineConfig({
             { text: '概述', link: '/deployment/' },
             { text: 'Docker 部署', link: '/deployment/docker' },
             { text: '数据库配置', link: '/deployment/database' },
+            { text: '文件存储', link: '/deployment/storage' },
           ],
         },
       ],

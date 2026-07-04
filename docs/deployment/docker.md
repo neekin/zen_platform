@@ -56,4 +56,19 @@ Fork 仓库后，在 Render 创建 Web Service 连接 GitHub 仓库即可。
 3. 启用 SSL
 4. 配置日志收集
 5. 设置监控告警
-6. 使用 Active Storage + S3 存储文件
+6. 使用 [MinIO 或 S3 存储文件](/deployment/storage)
+
+## ⚠️ 持久化存储
+
+**Docker 部署必须挂载存储卷**，否则每次部署上传的文件（头像、图片、附件）会丢失：
+
+```yaml
+# docker-compose.yml
+services:
+  web:
+    volumes:
+      - ./storage:/rails/storage    # ← 持久化上传文件
+      - ./db:/rails/db              # ← 持久化数据库
+```
+
+详见 [文件存储](/deployment/storage) 文档。

@@ -44,7 +44,7 @@ module Zen
       # field :cover, :image, accept: %w[image/jpeg image/png]
       # field :category_id, :reference, target: Category
       def field(name, type, **options)
-        self.zen_fields = zen_fields.merge(name.to_sym => Zen::FieldDefinition.new(name, type, options))
+        self.zen_fields = zen_fields.merge(name.to_sym => Zen::ModelDsl::FieldDefinition.new(name, type, options))
 
         # 自动集成 ActiveRecord enum
         if type == :enum && options[:values].is_a?(Array) && !options[:values].empty?
@@ -59,7 +59,7 @@ module Zen
       # belongs_to :user, display: :name, searchable: true
       def belongs_to(name, **options)
         # 保存 DSL 配置
-        assoc = Zen::AssociationDefinition.new(name, :belongs_to, options.except(:optional, :foreign_key, :class_name))
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :belongs_to, options.except(:optional, :foreign_key, :class_name))
         self.zen_associations = zen_associations.merge(name.to_sym => assoc)
 
         # 调用 ActiveRecord 的 belongs_to 创建实际关联
@@ -78,7 +78,7 @@ module Zen
         return if name == :versions
         return unless options.key?(:dependent) || options.key?(:class_name) || args.empty?
 
-        assoc = Zen::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
         self.zen_associations = zen_associations.merge(name.to_sym => assoc)
       end
 
@@ -87,7 +87,7 @@ module Zen
       # has_many :tags, through: :article_tags
       def has_many_through(name, through, **options)
         # 保存 DSL 配置
-        assoc = Zen::AssociationDefinition.new(name, :has_many_through, options.merge(through: through))
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :has_many_through, options.merge(through: through))
         self.zen_associations = zen_associations.merge(name.to_sym => assoc)
         
         # 调用 ActiveRecord 的 has_many 创建实际关联
@@ -96,7 +96,7 @@ module Zen
 
       # 展示配置块
       def display(&block)
-        config = Zen::DisplayConfig.new
+        config = Zen::ModelDsl::DisplayConfig.new
         config.instance_eval(&block) if block
         self.zen_display_config = config.to_h
       end
@@ -170,9 +170,3 @@ module Zen
     end
   end
 end
-
-# 加载子模块
-require_relative "model_dsl/field_definition"
-require_relative "model_dsl/association_definition"
-require_relative "model_dsl/display_config"
-require_relative "model_dsl/field_types"

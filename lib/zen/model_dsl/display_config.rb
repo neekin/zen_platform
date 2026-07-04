@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Zen
-  class DisplayConfig
+  module ModelDsl
+    class DisplayConfig
     attr_reader :list_config, :form_config, :detail_config
 
     def initialize
@@ -29,10 +30,10 @@ module Zen
         detail: @detail_config.to_h
       }
     end
-  end
+    end
 
-  # 列表配置
-  class ListConfig
+    # 列表配置
+    class ListConfig
     attr_reader :columns
 
     def initialize
@@ -54,10 +55,10 @@ module Zen
     def to_h
       { columns: @columns }
     end
-  end
+    end
 
-  # 表单配置
-  class FormConfig
+    # 表单配置
+    class FormConfig
     attr_reader :sections
 
     def initialize
@@ -97,10 +98,10 @@ module Zen
     def to_h
       { sections: @sections }
     end
-  end
+    end
 
-  # 详情配置
-  class DetailConfig
+    # 详情配置
+    class DetailConfig
     attr_reader :sections, :associations
 
     def initialize
@@ -143,6 +144,7 @@ module Zen
 
     def to_h
       { sections: @sections, associations: @associations }
+    end
     end
   end
 end

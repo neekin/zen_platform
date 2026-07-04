@@ -8,6 +8,9 @@ import {
   TeamOutlined,
   AuditOutlined,
   SafetyCertificateOutlined,
+  KeyOutlined,
+  FileTextOutlined,
+  CommentOutlined,
 } from '@ant-design/icons'
 
 export const menuRoutes = {
@@ -17,6 +20,16 @@ export const menuRoutes = {
       path: '/admin',
       name: '仪表盘',
       icon: <DashboardOutlined />,
+    },
+    {
+      path: '/admin/articles',
+      name: '文章管理',
+      icon: <FileTextOutlined />,
+    },
+    {
+      path: '/admin/comments',
+      name: '评论管理',
+      icon: <CommentOutlined />,
     },
     {
       path: '/admin/settings',
@@ -37,6 +50,11 @@ export const menuRoutes = {
           path: '/admin/permissions',
           name: '权限管理',
           icon: <SafetyCertificateOutlined />,
+        },
+        {
+          path: '/admin/api_keys',
+          name: 'API Key',
+          icon: <KeyOutlined />,
         },
         {
           path: '/admin/audit_logs',

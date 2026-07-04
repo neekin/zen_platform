@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_04_122846) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -48,6 +48,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
     t.integer "user_id", null: false
     t.index ["key"], name: "index_api_keys_on_key", unique: true
     t.index ["user_id"], name: "index_api_keys_on_user_id"
+  end
+
+  create_table "articles", force: :cascade do |t|
+    t.text "body"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.text "internal_notes"
+    t.datetime "published_at"
+    t.string "status", default: "draft"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id"
+    t.index ["created_at"], name: "index_articles_on_created_at"
+    t.index ["status"], name: "index_articles_on_status"
+    t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "comments", force: :cascade do |t|
+    t.integer "article_id"
+    t.string "author_name", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["article_id"], name: "index_comments_on_article_id"
   end
 
   create_table "exports", force: :cascade do |t|
@@ -140,6 +164,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_103456) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "api_keys", "users"
+  add_foreign_key "articles", "users"
+  add_foreign_key "comments", "articles"
   add_foreign_key "exports", "users"
   add_foreign_key "notifications", "users", column: "actor_id"
   add_foreign_key "notifications", "users", column: "recipient_id"

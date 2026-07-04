@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy"
+    resources :articles
+    resources :comments
     resources :audit_logs, only: [:index, :show] do
       member do
         post :restore
@@ -31,6 +33,7 @@ Rails.application.routes.draw do
         post :reset
       end
     end
+    resources :api_keys, only: [:index, :create, :destroy]
     resources :exports, only: [:create, :show]
     resources :notifications, only: [:index] do
       member do
@@ -49,6 +52,7 @@ Rails.application.routes.draw do
       get "auth/me", to: "auth#me"
       get "meta/:model_name", to: "meta#show"
       resources :users, only: %i[index show]
+      resources :api_keys, only: %i[index create destroy]
       resources :payment, only: %i[create]
     end
   end

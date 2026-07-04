@@ -16,4 +16,7 @@ admin.update!(
 )
 admin.add_role(:super_admin) unless admin.has_role?(:super_admin)
 
-puts "Seed data created: #{User.count} users, #{Role.count} roles"
+# Initialize default permissions
+Permission.seed_defaults!
+
+puts "Seed data created: #{User.count} users, #{Role.count} roles, #{Permission.count} permissions"

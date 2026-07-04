@@ -42,8 +42,9 @@ node_modules
 # https://vitejs.dev/guide/env-and-mode.html#env-files
 *.local
 
-# VitePress build output
+# VitePress build output and cache
 docs/.vitepress/dist
+docs/.vitepress/cache
 
 # Planning and audit files
 .mimocode/

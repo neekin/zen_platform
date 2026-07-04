@@ -12,6 +12,7 @@ import {
 import { Dropdown, Tooltip } from 'antd'
 import NotificationBell from '@/components/admin/NotificationBell'
 import CommandPalette from '@/components/admin/CommandPalette'
+import FlashMessage from '@/components/admin/FlashMessage'
 import { useTheme } from '@/hooks/useTheme'
 import { useZenConfig } from '@/hooks/useZenConfig'
 import { useState, useEffect } from 'react'
@@ -200,6 +201,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           {children}
         </ProLayout>
         <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+        <FlashMessage />
       </div>
     </ConfigProvider>
   )

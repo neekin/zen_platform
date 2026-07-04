@@ -3,10 +3,7 @@
  *
  * 所有内置插件在这里注册
  */
-import { boldPlugin } from './bold'
-import { italicPlugin } from './italic'
-import { underlinePlugin } from './underline'
-import { strikethroughPlugin } from './strikethrough'
+import { textFormatPlugin } from './text-format'
 import { codePlugin } from './code'
 import { historyPlugin } from './history'
 import { headingPlugin } from './heading'
@@ -28,10 +25,7 @@ import type { Plugin } from '../../types'
 /** 内置插件列表 */
 export const builtinPlugins: Plugin[] = [
   historyPlugin,
-  boldPlugin,
-  italicPlugin,
-  underlinePlugin,
-  strikethroughPlugin,
+  textFormatPlugin,
   codePlugin,
   headingPlugin,
   quotePlugin,
@@ -65,10 +59,7 @@ export function registerPlugin(plugin: Plugin): void {
 }
 
 /** 导出各个插件 */
-export { boldPlugin } from './bold'
-export { italicPlugin } from './italic'
-export { underlinePlugin } from './underline'
-export { strikethroughPlugin } from './strikethrough'
+export { textFormatPlugin } from './text-format'
 export { codePlugin } from './code'
 export { historyPlugin } from './history'
 export { headingPlugin } from './heading'

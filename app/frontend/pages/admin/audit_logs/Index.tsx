@@ -186,7 +186,7 @@ export default function AuditLogsIndex() {
         }
       >
         {selectedLog && (
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
             <ProDescriptions column={1} bordered size="small">
               <ProDescriptions.Item label="时间">
                 {new Date(selectedLog.created_at).toLocaleString('zh-CN')}

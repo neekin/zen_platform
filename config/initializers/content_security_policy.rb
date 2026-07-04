@@ -20,9 +20,10 @@ Rails.application.configure do
     # policy.report_uri "/csp-violation-report-endpoint"
   end
 
-  # Generate session nonces for permitted importmap, inline scripts, and inline styles.
+  # Generate session nonces for permitted importmap and inline scripts.
+  # style-src is excluded so that unsafe-inline works for Vite HMR and Ant Design.
   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-  config.content_security_policy_nonce_directives = %w(script-src style-src)
+  config.content_security_policy_nonce_directives = %w(script-src)
 
   # Report violations without enforcing the policy.
   # config.content_security_policy_report_only = true

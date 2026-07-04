@@ -1,7 +1,8 @@
 import {
   ProForm, ProFormText, ProFormTextArea, ProFormDigit, ProFormSwitch,
-  ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard, Form,
+  ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard,
 } from '@ant-design/pro-components'
+import { Form } from 'antd'
 import { lazy, Suspense } from 'react'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '../../types/dsl'
 

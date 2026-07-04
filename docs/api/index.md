@@ -24,6 +24,12 @@ Zen Platform 提供 RESTful JSON API，自动根据 Model DSL 生成端点。
 | Bearer Token | [认证方式](./authentication) |
 | Signature | [认证方式](./authentication) |
 
+认证解决"你是谁"的问题，权限控制解决"你能做什么"的问题。详见 [权限控制](./permissions)。
+
+## 字段过滤
+
+脚手架生成的 API 默认返回所有字段。生产环境必须限制返回字段，排除敏感信息。详见 [字段过滤](./field-filtering)。
+
 ## 通用响应格式
 
 ### 成功

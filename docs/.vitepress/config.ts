@@ -9,6 +9,7 @@ export default defineConfig({
       { text: '指南', link: '/guide/' },
       { text: 'Model DSL', link: '/dsl/' },
       { text: '脚手架', link: '/scaffolding/' },
+      { text: '前端组件', link: '/frontend/' },
       { text: '富文本', link: '/rich-text/' },
       { text: 'API', link: '/api/' },
       { text: '部署', link: '/deployment/' },
@@ -43,6 +44,20 @@ export default defineConfig({
             { text: '概述', link: '/scaffolding/' },
             { text: 'Admin 生成器', link: '/scaffolding/admin' },
             { text: 'API 生成器', link: '/scaffolding/api' },
+          ],
+        },
+      ],
+      '/frontend/': [
+        {
+          text: '前端组件',
+          items: [
+            { text: '概述', link: '/frontend/' },
+            { text: 'DslTable', link: '/frontend/dsl-table' },
+            { text: 'DslForm', link: '/frontend/dsl-form' },
+            { text: 'DslModal', link: '/frontend/dsl-modal' },
+            { text: '表单组件', link: '/frontend/form-widgets' },
+            { text: '展示组件', link: '/frontend/display-widgets' },
+            { text: '权限组件', link: '/frontend/permission-guard' },
           ],
         },
       ],

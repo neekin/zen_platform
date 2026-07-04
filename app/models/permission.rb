@@ -42,6 +42,18 @@ class Permission < ApplicationRecord
   RESOURCES = %w[User Role AuditLog Notification Export].freeze
   ACTIONS = %w[index show create update destroy].freeze
 
+  # 每个资源支持的操作（不支持的不显示）
+  RESOURCE_ACTIONS = {
+    "User"         => %w[index show create update destroy],
+    "Role"         => %w[index create destroy],
+    "AuditLog"     => %w[index show restore],
+    "Notification" => %w[index mark_as_read mark_all_as_read],
+    "Export"       => %w[create show],
+    "Article"      => %w[index show create update destroy],
+    "Task"         => %w[index show create update destroy],
+    "Product"      => %w[index show create update destroy],
+  }.freeze
+
   # 检查角色是否有权限
   def self.allowed?(role_name, resource, action_name)
     perm = find_by(role_name: role_name, resource: resource, action_name: action_name)

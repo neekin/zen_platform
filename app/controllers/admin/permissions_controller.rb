@@ -9,7 +9,8 @@ module Admin
 
     # GET /admin/permissions
     def index
-      roles = Role.pluck(:name)
+      # super_admin 不参与权限管理（bypass 机制自动拥有所有权限）
+      roles = Role.where.not(name: "super_admin").pluck(:name)
 
       # 动态发现资源：RESOURCE_ACTIONS 中的 + 数据库中有 Permission 记录的
       db_resources = Permission.distinct.pluck(:resource)
@@ -55,6 +56,12 @@ module Admin
     # PATCH /admin/permissions
     def update
       role_name = params[:role_name]
+
+      # super_admin 权限不可修改
+      if role_name == "super_admin"
+        return render json: { code: 1, message: "超级管理员无需配置权限" }, status: :forbidden
+      end
+
       resource = params[:resource]
       action_name = params[:action_name]
       allowed = params[:allowed]
@@ -78,8 +85,7 @@ module Admin
 
     # POST /admin/permissions/reset
     def reset
-      Permission.delete_all
-      Permission.seed_defaults!
+      Permission.reset_defaults!
       render json: { code: 0, message: "已重置为默认权限" }
     end
 

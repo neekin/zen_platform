@@ -45,14 +45,16 @@ module Zen
     end
 
     def register_permissions
-      # 在 Permission::RESOURCE_ACTIONS 中注册新资源的默认操作
-      actions = kanban? ? %w[index show create update destroy] : %w[index show create update destroy]
+      actions = %w[index show create update destroy]
+
+      # 注入 RESOURCE_ACTIONS（声明新资源支持哪些操作）
       inject_into_file "app/models/permission.rb",
         after: "RESOURCE_ACTIONS = {" do
         "\n    \"#{class_name}\"      => %w[#{actions.join(' ')}],"
       end
-    rescue StandardError
-      # 如果注入失败（文件格式变了），忽略
+    rescue StandardError => e
+      say "⚠️ 权限注入失败: #{e.message}", :yellow
+      say "请手动在 app/models/permission.rb 的 RESOURCE_ACTIONS 中添加 #{class_name}", :yellow
     end
 
     def create_index_page

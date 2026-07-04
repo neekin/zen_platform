@@ -47,7 +47,7 @@ export function LinkDialog({ open, initialUrl = '', initialText = '', onConfirm,
       destroyOnHidden
       maxBodyHeight="calc(100vh - 300px)"
     >
-      <Space direction="vertical" style={{ width: '100%' }} size="middle">
+      <Space orientation="vertical" style={{ width: '100%' }} size="middle">
         <div>
           <div style={{ marginBottom: 4, fontSize: 14, color: 'var(--ant-color-text)' }}>链接地址</div>
           <Input

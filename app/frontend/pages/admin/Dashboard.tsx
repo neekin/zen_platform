@@ -122,7 +122,7 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={12}>
           <ProCard title="快速开始" variant="borderless" className="glass-card">
-            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+            <Space orientation="vertical" size={12} style={{ width: '100%' }}>
               <div>
                 <Tag color="blue">1</Tag>
                 <Text>定义模型 DSL — 在模型中声明字段和展示配置</Text>
@@ -150,7 +150,7 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
         </Col>
         <Col xs={24} lg={12}>
           <ProCard title="文档" variant="borderless" className="glass-card">
-            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+            <Space orientation="vertical" size={12} style={{ width: '100%' }}>
               <div>
                 <Link href="https://neekin.github.io/zen_platform/" target="_blank">
                   完整文档

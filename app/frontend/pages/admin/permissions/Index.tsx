@@ -59,49 +59,59 @@ function PermissionsIndex({ matrix, roles, resources, actions }: PermissionsInde
   const { message, modal } = App.useApp()
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
 
-  const handleToggle = async (roleName: string, resource: string, action: string, currentValue: boolean) => {
+  const handleToggle = (roleName: string, resource: string, action: string, currentValue: boolean) => {
     const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
 
-    try {
-      const res = await fetch('/admin/permissions', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({
-          role_name: roleName,
-          resource: resource,
-          action_name: action,
-          allowed: !currentValue,
-        }),
-      })
-
-      if (res.ok) {
-        // 本地更新 selectedRole 的权限状态
-        setSelectedRole((prev) => {
-          if (!prev || prev.role !== roleName) return prev
-          return {
-            ...prev,
-            permissions: prev.permissions.map((p) =>
-              p.resource === resource
-                ? {
-                    ...p,
-                    actions: p.actions.map((a) =>
-                      a.action === action ? { ...a, allowed: !currentValue } : a
-                    ),
-                  }
-                : p
-            ),
-          }
-        })
-        message.success('权限已更新')
-      } else {
-        message.error('更新失败')
+    // 先乐观更新 UI
+    setSelectedRole((prev) => {
+      if (!prev || prev.role !== roleName) return prev
+      return {
+        ...prev,
+        permissions: prev.permissions.map((p) =>
+          p.resource === resource
+            ? {
+                ...p,
+                actions: p.actions.map((a) =>
+                  a.action === action ? { ...a, allowed: !currentValue } : a
+                ),
+              }
+            : p
+        ),
       }
-    } catch {
-      message.error('更新失败')
-    }
+    })
+
+    // 异步请求
+    fetch('/admin/permissions', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      body: JSON.stringify({
+        role_name: roleName,
+        resource: resource,
+        action_name: action,
+        allowed: !currentValue,
+      }),
+    }).catch(() => {
+      // 失败时回滚
+      setSelectedRole((prev) => {
+        if (!prev || prev.role !== roleName) return prev
+        return {
+          ...prev,
+          permissions: prev.permissions.map((p) =>
+            p.resource === resource
+              ? {
+                  ...p,
+                  actions: p.actions.map((a) =>
+                    a.action === action ? { ...a, allowed: currentValue } : a
+                  ),
+                }
+              : p
+          ),
+        }
+      })
+    })
   }
 
   const handleReset = () => {

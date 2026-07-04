@@ -7,8 +7,8 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { App } from 'antd'
-import AdminLayout from '../../../layouts/AdminLayout'
-import { DslTable, DslForm, DslModal } from '../../../modules/dsl'
+import AdminLayout from '@/layouts/AdminLayout'
+import { DslTable, DslForm, DslModal } from '@/modules/dsl'
 import type { DslMeta } from '../../../types/dsl'
 import type { ReactNode } from 'react'
 

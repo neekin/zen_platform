@@ -6,7 +6,7 @@ import { router, useForm } from '@inertiajs/react'
 import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components'
 import { App, Card, Button, Space } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
 function <%= class_name %>New({ errors }: { errors?: string[] }) {

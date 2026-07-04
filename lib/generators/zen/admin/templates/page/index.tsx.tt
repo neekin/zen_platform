@@ -6,7 +6,7 @@ import { router } from '@inertiajs/react'
 import { PageContainer, ProTable } from '@ant-design/pro-components'
 import { App, Button, Space, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 import type { ProColumns } from '@ant-design/pro-components'
 

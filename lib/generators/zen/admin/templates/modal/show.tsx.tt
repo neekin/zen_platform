@@ -6,9 +6,9 @@ import { router } from '@inertiajs/react'
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
 import { App, Button, Space, Popconfirm, Tag } from 'antd'
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 <% if has_rich_text? %>
-import { RichTextViewer } from '../../../modules/content'
+import { RichTextViewer } from '@/modules/content'
 <% end %>
 import type { ReactNode } from 'react'
 
@@ -47,7 +47,7 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
         <ProDescriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %> ? '是' : '否'}</ProDescriptions.Item>
 <% elsif association_foreign_key?(a) %>
         <ProDescriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">{<%= singular_name %>.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}</ProDescriptions.Item>
-<% elsif rich_text_fields.include?(a.name.to_sym) %>
+<% elsif rich_text?(a) %>
         <ProDescriptions.Item label="<%= a.name %>" span={2}>
           {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? <RichTextViewer content={<%= singular_name %>.<%= a.name %>} /> : '-'}
         </ProDescriptions.Item>

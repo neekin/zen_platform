@@ -6,7 +6,9 @@ import { router } from '@inertiajs/react'
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
 import { App, Button, Space, Popconfirm, Tag } from 'antd'
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
+
+import { RichTextViewer } from '@/modules/content'
 
 import type { ReactNode } from 'react'
 
@@ -43,7 +45,9 @@ function ArticleShow({ article }: { article: Article }) {
 
 
 
-        <ProDescriptions.Item label="body">{article.body}</ProDescriptions.Item>
+        <ProDescriptions.Item label="body" span={2}>
+          {article.body && article.body !== '{}' ? <RichTextViewer content={article.body} /> : '-'}
+        </ProDescriptions.Item>
 
 
         <ProDescriptions.Item label="创建时间">{article.created_at}</ProDescriptions.Item>

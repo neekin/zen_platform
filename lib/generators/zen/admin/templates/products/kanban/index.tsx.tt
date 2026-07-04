@@ -9,9 +9,9 @@ import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
 import { App, Button, Modal, message } from 'antd'
 import { PlusOutlined, UnorderedListOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
-import KanbanBoard from '../../../modules/admin/components/products/KanbanBoard'
-import type { KanbanColumn, KanbanCard } from '../../../modules/admin/components/products/KanbanBoard'
+import AdminLayout from '@/layouts/AdminLayout'
+import KanbanBoard from '@/modules/admin/components/products/KanbanBoard'
+import type { KanbanColumn, KanbanCard } from '@/modules/admin/components/products/KanbanBoard'
 import type { ReactNode } from 'react'
 
 interface <%= class_name %> {

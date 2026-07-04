@@ -24,6 +24,53 @@ end
 
 ## 列表配置
 
+### 分页、搜索、过滤
+
+```ruby
+display do
+  list do
+    paginate enabled: true          # 启用分页（Pagy）
+    searchable :email, :username    # 可搜索字段（Ransack）
+    filterable :role                # 可过滤字段
+    column :email
+    column :username
+    column :role
+  end
+end
+```
+
+#### paginate（分页）
+
+| 选项 | 说明 | 默认值 |
+|------|------|--------|
+| `enabled: true` | 启用分页 | `false` |
+
+启用后：
+- 后端使用 Pagy 计算分页元数据（`page`、`per_page`、`total`、`pages`）
+- 前端 ProTable 自动渲染分页控件
+
+#### searchable（搜索）
+
+```ruby
+searchable :email, :username  # 可搜索字段
+```
+
+启用后：
+- 后端使用 Ransack 生成搜索查询
+- 前端 ProTable 显示搜索框
+- 支持多字段模糊搜索（`_cont` 谓词）
+
+#### filterable（过滤）
+
+```ruby
+filterable :role, :status  # 可过滤字段
+```
+
+启用后：
+- 后端使用 Ransack 生成过滤查询
+- 前端 ProTable 列头显示过滤菜单
+- 支持枚举字段的精确匹配
+
 ### column（列表列）
 
 ```ruby

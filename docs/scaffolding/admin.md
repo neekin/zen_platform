@@ -93,6 +93,125 @@ end
 
 生成器自动集成 `zen_props`（DSL 元数据）、`policy_scope`（Pundit 权限）、`authorize`。
 
+## 分页、搜索、过滤
+
+生成器自动集成 **Pagy**（分页）和 **Ransack**（搜索、过滤）。
+
+### DSL 配置
+
+在 Model 中配置：
+
+```ruby
+class User < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :email, :string, required: true
+  field :username, :string
+  field :role, :enum, values: %w[admin editor viewer]
+
+  display do
+    list do
+      paginate enabled: true          # 启用分页
+      searchable :email, :username    # 启用搜索
+      filterable :role                # 启用过滤
+      column :email
+      column :username
+      column :role, badge: true
+    end
+  end
+end
+```
+
+### 生成代码说明
+
+#### 后端（Controller）
+
+```ruby
+# app/controllers/admin/users_controller.rb
+class Admin::UsersController < AdminController
+  include Pagy::Method
+
+  def index
+    q = User.ransack(search_params)
+    base_query = q.result(distinct: true)
+    @pagy, users = pagy(:offset, base_query, **pagy_params)
+
+    render inertia: "admin/users/Index",
+      props: zen_props(User, users: users.as_json,
+        pagination: {
+          page: @pagy.page,
+          per_page: @pagy.limit,
+          total: @pagy.count,
+          pages: @pagy.pages
+        }
+      )
+  end
+
+  private
+
+  def search_params
+    params[:q]&.permit(:email_cont, :username_cont, :role_eq)
+  end
+
+  def pagy_params
+    {
+      page: params[:page] || 1,
+      limit: params[:per_page] || 20
+    }
+  end
+end
+```
+
+#### 前端（ProTable）
+
+```tsx
+// app/frontend/pages/admin/users/Index.tsx
+<ProTable
+  headerTitle="用户列表"
+  search={{ placeholder: "搜索邮箱、用户名..." }}
+  onChange={(pagination) => {
+    router.get('/admin/users', {
+      page: pagination.current,
+      per_page: pagination.pageSize
+    })
+  }}
+  columns={[
+    {
+      title: '角色',
+      dataIndex: 'roles',
+      filters: [
+        { text: '管理员', value: 'admin' },
+        { text: '编辑', value: 'editor' }
+      ]
+    }
+  ]}
+/>
+```
+
+### Ransack 谓词
+
+| 谓词 | 说明 | 示例 |
+|-------|------|------|
+| `_cont` | 包含（模糊搜索） | `email_cont` |
+| `_eq` | 等于（精确匹配） | `role_eq` |
+| `_gteq` | 大于等于 | `created_at_gteq` |
+| `_lteq` | 小于等于 | `created_at_lteq` |
+| `_in` | 在列表中 | `status_in` |
+
+### 自定义
+
+如果不使用 DSL，可手动在 Controller 中添加：
+
+```ruby
+include Pagy::Method
+
+def index
+  q = Model.ransack(params[:q])
+  @pagy, records = pagy(:offset, q.result, **pagy_params)
+  # ...
+end
+```
+
 ## 添加菜单（必做）
 
 生成器**不会**自动添加菜单项，需要手动配置。

@@ -20,7 +20,8 @@
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build": "vite build"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",

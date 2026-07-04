@@ -171,7 +171,7 @@ export default function AuditLogsIndex() {
         title="变更详情"
         open={!!selectedLog}
         onClose={() => setSelectedLog(null)}
-        width={600}
+        size="default"
         extra={
           selectedLog && canRestore(selectedLog) ? (
             <Button

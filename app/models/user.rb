@@ -19,14 +19,16 @@ class User < ApplicationRecord
       paginate per_page: 20, max_per_page: 100
 
       # 搜索配置
-      searchable :email, :username, :name
+      searchable :email, :username, :name, :phone
 
       # 过滤配置
       filterable :role
 
+      column :avatar, as: :avatar
       column :email
       column :username
       column :name
+      column :phone
       column :role, badge: true
       column :created_at, format: :relative_time
     end

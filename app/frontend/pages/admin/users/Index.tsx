@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { ProTable, ProForm, ProFormText, ProFormSelect, type ProColumns } from '@ant-design/pro-components'
-import { App, Button, Space, Tag, Modal } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { App, Button, Space, Tag, Modal, Avatar } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, UserOutlined, PhoneOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import DslModal from '@/modules/dsl/DslModal'
 import type { ReactNode } from 'react'
@@ -12,6 +12,8 @@ interface UserRecord {
   email: string
   username: string
   name: string
+  avatar: string | null
+  phone: string | null
   roles: string[]
   created_at: string
 }
@@ -45,9 +47,30 @@ function UsersIndex({ users, roles, pagination }: UsersIndexProps) {
 
   const columns: ProColumns<UserRecord>[] = [
     { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
-    { title: '邮箱', dataIndex: 'email', key: 'email' },
-    { title: '用户名', dataIndex: 'username', key: 'username' },
-    { title: '姓名', dataIndex: 'name', key: 'name' },
+    {
+      title: '用户',
+      key: 'user',
+      render: (_, record) => (
+        <Space>
+          <Avatar
+            size={32}
+            src={record.avatar}
+            icon={!record.avatar ? <UserOutlined /> : undefined}
+            style={{ backgroundColor: record.avatar ? 'transparent' : 'var(--ant-color-primary)' }}
+          />
+          <div>
+            <div>{record.name || record.username}</div>
+            <div style={{ fontSize: 12, color: 'var(--ant-color-text-secondary)' }}>{record.email}</div>
+          </div>
+        </Space>
+      ),
+    },
+    {
+      title: '手机号码',
+      dataIndex: 'phone',
+      key: 'phone',
+      render: (_, record) => record.phone || '-',
+    },
     {
       title: '角色',
       dataIndex: 'roles',

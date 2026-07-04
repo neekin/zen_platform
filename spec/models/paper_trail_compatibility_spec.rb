@@ -75,11 +75,29 @@ RSpec.describe "PaperTrail Compatibility" do
 
     version = PaperTrail::Version.where(item_type: "User", event: "destroy").last
     # reify may fail with Psych::DisallowedClass for TimeWithZone
-    # Use safe_parse fallback
+    # Use safe_load fallback
     begin
       restored = version.reify
     rescue Psych::DisallowedClass
-      object = YAML.unsafe_load(version.object)
+      # 使用 safe_load 并传入允许的类列表
+      permitted_classes = [
+        ActiveSupport::TimeWithZone,
+        ActiveSupport::TimeZone,
+        Symbol,
+        Time,
+        Date,
+        DateTime,
+        Hash,
+        Array,
+        String,
+        Integer,
+        Float,
+        BigDecimal,
+        TrueClass,
+        FalseClass,
+        NilClass
+      ]
+      object = YAML.safe_load(version.object, permitted_classes: permitted_classes, aliases: true)
       restored = User.new(object.except("id", "created_at", "updated_at"))
     end
     expect(restored).to be_a(User)

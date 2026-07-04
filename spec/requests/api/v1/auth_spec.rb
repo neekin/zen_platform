@@ -79,7 +79,8 @@ RSpec.describe "Api::V1::Auth", type: :request do
           }
 
         let(:user) { User.create!(username: "testuser", email: "test@example.com", password: "password123", name: "Test User") }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base, 'HS256')}" }
+        let(:jwt_secret) { Rails.application.credentials.jwt_secret || Rails.application.secret_key_base }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, jwt_secret, 'HS256')}" }
 
         run_test!
       end

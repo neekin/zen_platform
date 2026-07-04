@@ -22,6 +22,7 @@ export default defineConfig({
             { text: '介绍', link: '/guide/' },
             { text: '快速上手', link: '/guide/quick-start' },
             { text: '安装配置', link: '/guide/installation' },
+            { text: '配置参考', link: '/guide/configuration' },
           ],
         },
       ],
@@ -34,6 +35,7 @@ export default defineConfig({
             { text: '关联定义', link: '/dsl/associations' },
             { text: '展示配置', link: '/dsl/display' },
             { text: '产品形态', link: '/dsl/products' },
+            { text: 'API 参考', link: '/dsl/api-reference' },
           ],
         },
       ],
@@ -86,6 +88,7 @@ export default defineConfig({
           items: [
             { text: '概述', link: '/deployment/' },
             { text: 'Docker 部署', link: '/deployment/docker' },
+            { text: '数据库配置', link: '/deployment/database' },
           ],
         },
       ],

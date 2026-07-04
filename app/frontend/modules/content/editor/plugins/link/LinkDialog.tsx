@@ -4,7 +4,8 @@
  * 使用 Ant Design Modal 输入链接 URL
  */
 import { useState, useEffect } from 'react'
-import { Modal, Input, Space } from 'antd'
+import { DslModal } from '../../../../dsl'
+import { Input, Space } from 'antd'
 
 export interface LinkDialogProps {
   /** 是否显示 */
@@ -37,13 +38,14 @@ export function LinkDialog({ open, initialUrl = '', initialText = '', onConfirm,
   }
 
   return (
-    <Modal
+    <DslModal
       title="插入链接"
       open={open}
       onOk={handleOk}
       onCancel={onCancel}
       okButtonProps={{ disabled: !url.trim() }}
       destroyOnHidden
+      maxBodyHeight="calc(100vh - 300px)"
     >
       <Space direction="vertical" style={{ width: '100%' }} size="middle">
         <div>
@@ -66,6 +68,6 @@ export function LinkDialog({ open, initialUrl = '', initialText = '', onConfirm,
           />
         </div>
       </Space>
-    </Modal>
+    </DslModal>
   )
 }

@@ -7,10 +7,14 @@
     "sass": "^1.101.0",
     "typescript": "^6.0.3",
     "vite": "^8.1.2",
-    "vite-plugin-ruby": "^5.2.2"
+    "vite-plugin-ruby": "^5.2.2",
+    "vitepress": "^1.6.4"
   },
   "scripts": {
-    "check": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json"
+    "check": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",

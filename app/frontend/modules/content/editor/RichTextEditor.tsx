@@ -73,6 +73,7 @@ import { AttachmentPluginComponent } from './plugins/attachment'
 import { MentionNode } from './plugins/mention'
 import { MentionPluginComponent } from './plugins/mention'
 import { EmojiPluginComponent } from './plugins/emoji'
+import { ExtendedTextNode } from './nodes/ExtendedTextNode'
 
 // ==================== 内部插件 ====================
 
@@ -216,6 +217,7 @@ export default function RichTextEditor({
       HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode,
       TableNode, TableRowNode, TableCellNode, CodeNode,
       MermaidNode, MathNode, VideoNode, AttachmentNode, MentionNode,
+      ExtendedTextNode,
     ],
     editable: !readOnly,
     editorState: value ? undefined : EMPTY_STATE,

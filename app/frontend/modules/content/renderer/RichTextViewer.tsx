@@ -15,6 +15,7 @@ import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { LinkNode } from '@lexical/link'
 import { ImageNode } from '../editor/plugins/image/ImageNode'
+import { ExtendedTextNode } from '../editor/nodes/ExtendedTextNode'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useEffect, useRef } from 'react'
 import type { EditorContent, EditorTheme } from '../types'
@@ -92,7 +93,7 @@ export default function RichTextViewer({
         code: 'zen-text-code',
       },
     },
-    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode],
+    nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, LinkNode, ImageNode, ExtendedTextNode],
     editable: false,
     onError: (error: Error) => {
       console.error('Lexical viewer error:', error)

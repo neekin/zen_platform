@@ -3,8 +3,8 @@ import { router } from '@inertiajs/react'
 import { ProTable, ProForm, ProFormText, ProFormSelect, type ProColumns } from '@ant-design/pro-components'
 import { App, Button, Space, Tag, Modal } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
-import DslModal from '../../../modules/dsl/DslModal'
+import AdminLayout from '@/layouts/AdminLayout'
+import DslModal from '@/modules/dsl/DslModal'
 import type { ReactNode } from 'react'
 
 interface UserRecord {

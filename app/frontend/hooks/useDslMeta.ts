@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { DslMeta } from '../types/dsl'
+import type { DslMeta } from '@/types/dsl'
 
 interface UseDslMetaOptions {
   /** 如果已有 meta（从 Inertia prop 传入），直接使用 */

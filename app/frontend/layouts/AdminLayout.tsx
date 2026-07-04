@@ -9,11 +9,11 @@ import {
   DesktopOutlined,
 } from '@ant-design/icons'
 import { Dropdown, Tooltip } from 'antd'
-import NotificationBell from '../components/admin/NotificationBell'
-import { useTheme } from '../hooks/useTheme'
+import NotificationBell from '@/components/admin/NotificationBell'
+import { useTheme } from '@/hooks/useTheme'
 import type { ReactNode } from 'react'
 import '../styles/admin.css'
-import { menuRoutes } from '../config/adminMenus'
+import { menuRoutes } from '@/config/adminMenus'
 
 const darkTheme = {
   algorithm: theme.darkAlgorithm,

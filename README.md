@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://github.com/yourusername/zen_platform/actions"><img src="https://github.com/yourusername/zen_platform/workflows/CI/badge.svg" alt="CI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/yourusername/zen_platform" alt="License"></a>
-  <img src="https://img.shields.io/badge/ruby-3.4-red" alt="Ruby">
+  <img src="https://img.shields.io/badge/ruby-4.0-red" alt="Ruby">
   <img src="https://img.shields.io/badge/rails-8.1-red" alt="Rails">
   <img src="https://img.shields.io/badge/react-19-blue" alt="React">
 </p>
@@ -100,7 +100,7 @@ rails generate zen:admin Article title:string body:text status:enum --enums='{"s
 │  Pro Components · Inertia.js 3 · Vite 8     │
 ├─────────────────────────────────────────────┤
 │  Backend                                     │
-│  Rails 8.1 · Ruby 3.4 · SQLite3             │
+│  Rails 8.1 · Ruby 4.0 · SQLite3             │
 │  Solid Queue · Solid Cache · Solid Cable     │
 ├─────────────────────────────────────────────┤
 │  Rich Text                                   │

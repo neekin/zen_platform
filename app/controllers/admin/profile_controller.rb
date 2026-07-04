@@ -8,7 +8,7 @@ module Admin
     # GET /admin/profile
     def show
       render inertia: "admin/profile/Show", props: {
-        user: current_user.as_json(only: %i[id username email name phone note created_at]),
+        user: current_user.as_json(only: %i[id username email name phone note avatar created_at]),
       }
     end
 
@@ -79,7 +79,7 @@ module Admin
     private
 
     def profile_params
-      params.permit(:name, :note)
+      params.permit(:name, :note, :avatar)
     end
   end
 end

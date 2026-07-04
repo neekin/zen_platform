@@ -280,7 +280,7 @@ const Page = () => {
             <ProFormCheckbox noStyle name="autoLogin">
               <span style={{ color: 'rgba(255, 255, 255, 0.65)' }}>自动登录</span>
             </ProFormCheckbox>
-            <a style={{ float: 'right', color: 'rgba(240, 208, 96, 0.85)' }}>
+            <a href="/admin/password/new" style={{ float: 'right', color: 'rgba(240, 208, 96, 0.85)' }}>
               忘记密码
             </a>
           </div>

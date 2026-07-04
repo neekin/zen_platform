@@ -245,6 +245,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
                 <Form.Item
                   label="新手机号码"
                   name="phone"
+                  validateTrigger={['onBlur']}
                   rules={[
                     { required: true, message: '请输入手机号码' },
                     { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确' },

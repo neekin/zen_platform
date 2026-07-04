@@ -10,8 +10,8 @@ RSpec.describe ExportJob, type: :job do
       expect(Export::ALLOWED_RESOURCES).to be_an(Array)
     end
 
-    it "includes Article and Comment" do
-      expect(Export::ALLOWED_RESOURCES).to include("Article", "Comment")
+    it "includes User and Role" do
+      expect(Export::ALLOWED_RESOURCES).to include("User", "Role")
     end
   end
 

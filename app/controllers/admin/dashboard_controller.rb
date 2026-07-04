@@ -23,11 +23,9 @@ module Admin
     def build_stats
       # 在这里添加你的统计卡片
       # 每个 stat: { label:, value:, icon: }
-      # icon 可选: user, article, comment, rise, database
+      # icon 可选: user, rise, database
       [
         { label: "用户总数", value: User.count, icon: "user" },
-        # { label: "文章总数", value: Article.count, icon: "article" },
-        # { label: "今日新增", value: User.where("created_at > ?", Date.today).count, icon: "rise" },
       ]
     end
 

@@ -9,8 +9,6 @@ import {
   AuditOutlined,
   SafetyCertificateOutlined,
   KeyOutlined,
-  FileTextOutlined,
-  CommentOutlined,
 } from '@ant-design/icons'
 
 export const menuRoutes = {

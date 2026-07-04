@@ -53,12 +53,16 @@ module Zen
     end
 
     def create_page_files
-      return if use_modal?
       return if kanban?
 
-      template "page/show.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Show.tsx"
-      template "page/new.tsx.tt", "app/frontend/pages/admin/#{plural_name}/New.tsx"
-      template "page/edit.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Edit.tsx"
+      # Show 页面两种模式都需要
+      if use_modal?
+        template "modal/show.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Show.tsx"
+      else
+        template "page/show.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Show.tsx"
+        template "page/new.tsx.tt", "app/frontend/pages/admin/#{plural_name}/New.tsx"
+        template "page/edit.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Edit.tsx"
+      end
     end
 
     def add_routes

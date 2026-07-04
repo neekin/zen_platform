@@ -1,14 +1,16 @@
 import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components'
-import { Row, Col, Space, Tag, Typography } from 'antd'
+import { Row, Col, Space, Tag, Typography, Table, Badge } from 'antd'
+import { Line } from '@ant-design/charts'
 import {
   UserOutlined,
-  TeamOutlined,
-  ApiOutlined,
+  FileTextOutlined,
+  CommentOutlined,
+  RiseOutlined,
   CodeOutlined,
   SafetyCertificateOutlined,
   AuditOutlined,
   ThunderboltOutlined,
-  FileTextOutlined,
+  ApiOutlined,
 } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
@@ -20,8 +22,19 @@ Dashboard.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
 interface DashboardProps {
   stats: {
     user_count: number
-    role_count: number
+    article_count: number
+    comment_count: number
+    today_count: number
   }
+  chart_data: Array<{ date: string; count: number }>
+  recent_activities: Array<{
+    id: number
+    event: string
+    item_type: string
+    item_id: number
+    whodunnit: string | null
+    created_at: string
+  }>
   framework: {
     name: string
     version: string
@@ -30,21 +43,36 @@ interface DashboardProps {
   }
 }
 
-const features = [
-  { icon: <CodeOutlined />, title: 'Model DSL', desc: '声明式定义字段、关联和展示配置' },
-  { icon: <ThunderboltOutlined />, title: '脚手架生成', desc: '一键生成 CRUD 控制器、前端页面和路由' },
-  { icon: <SafetyCertificateOutlined />, title: 'RBAC 权限', desc: 'Pundit + Rolify 四级角色权限控制' },
-  { icon: <AuditOutlined />, title: '审计日志', desc: 'PaperTrail 全量变更追踪与数据还原' },
-  { icon: <ApiOutlined />, title: 'REST API', desc: 'JWT 认证 + rswag 自动生成文档' },
-  { icon: <FileTextOutlined />, title: '富文本编辑器', desc: 'Lexical 插件化架构，支持自定义' },
-]
+const eventColors: Record<string, string> = {
+  create: 'green',
+  update: 'blue',
+  destroy: 'red',
+}
 
-export default function Dashboard({ stats, framework }: DashboardProps) {
+const eventLabels: Record<string, string> = {
+  create: '创建',
+  update: '更新',
+  destroy: '删除',
+}
+
+export default function Dashboard({ stats, chart_data, recent_activities, framework }: DashboardProps) {
+  const chartConfig = {
+    data: chart_data,
+    xField: 'date',
+    yField: 'count',
+    height: 250,
+    smooth: true,
+    point: { size: 3, shape: 'circle' as const },
+    color: '#D4A537',
+    areaStyle: { fill: 'rgba(212, 165, 55, 0.15)' },
+    axis: {
+      x: { labelAutoRotate: false, labelFormatter: (v: string) => v.slice(5) },
+      y: { min: 0 },
+    },
+  }
+
   return (
-    <PageContainer
-      title="仪表盘"
-      subTitle={`${framework.name} v${framework.version}`}
-    >
+    <PageContainer title="仪表盘" subTitle={`${framework.name} v${framework.version}`}>
       {/* 统计卡片 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
@@ -61,9 +89,9 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
           <StatisticCard
             className="glass-card"
             statistic={{
-              title: '角色数量',
-              value: stats.role_count,
-              prefix: <TeamOutlined style={{ color: 'var(--ant-color-primary)' }} />,
+              title: '文章总数',
+              value: stats.article_count,
+              prefix: <FileTextOutlined style={{ color: '#52c41a' }} />,
             }}
           />
         </Col>
@@ -71,9 +99,9 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
           <StatisticCard
             className="glass-card"
             statistic={{
-              title: 'Rails 版本',
-              value: framework.rails_version,
-              prefix: <ThunderboltOutlined style={{ color: 'var(--ant-color-success)' }} />,
+              title: '评论总数',
+              value: stats.comment_count,
+              prefix: <CommentOutlined style={{ color: '#faad14' }} />,
             }}
           />
         </Col>
@@ -81,44 +109,61 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
           <StatisticCard
             className="glass-card"
             statistic={{
-              title: 'Ruby 版本',
-              value: framework.ruby_version,
-              prefix: <CodeOutlined style={{ color: 'var(--ant-color-warning)' }} />,
+              title: '今日新增',
+              value: stats.today_count,
+              prefix: <RiseOutlined style={{ color: '#eb2f96' }} />,
             }}
           />
         </Col>
       </Row>
 
-      {/* 框架特性 */}
-      <ProCard
-        title="框架特性"
-        variant="borderless"
-        className="glass-card"
-        style={{ marginTop: 16 }}
-      >
-        <Row gutter={[16, 16]}>
-          {features.map((f) => (
-            <Col xs={24} sm={12} lg={8} key={f.title}>
-              <ProCard
-                variant="borderless"
-                style={{ background: 'transparent' }}
-              >
-                <Space align="start" size={12}>
-                  <div style={{ fontSize: 24, color: 'var(--ant-color-primary)' }}>
-                    {f.icon}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 600, marginBottom: 4 }}>{f.title}</div>
-                    <Text type="secondary" style={{ fontSize: 13 }}>{f.desc}</Text>
-                  </div>
-                </Space>
-              </ProCard>
-            </Col>
-          ))}
-        </Row>
-      </ProCard>
+      {/* 图表 + 最近活动 */}
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={14}>
+          <ProCard title="文章发布趋势（近 30 天）" variant="borderless" className="glass-card">
+            {chart_data.length > 0 ? (
+              <Line {...chartConfig} />
+            ) : (
+              <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Text type="secondary">暂无数据</Text>
+              </div>
+            )}
+          </ProCard>
+        </Col>
+        <Col xs={24} lg={10}>
+          <ProCard title="最近活动" variant="borderless" className="glass-card">
+            <Table
+              size="small"
+              dataSource={recent_activities}
+              rowKey="id"
+              pagination={false}
+              columns={[
+                {
+                  title: '事件',
+                  dataIndex: 'event',
+                  width: 80,
+                  render: (event: string) => (
+                    <Badge color={eventColors[event] || 'default'} text={eventLabels[event] || event} />
+                  ),
+                },
+                {
+                  title: '对象',
+                  dataIndex: 'item_type',
+                  width: 100,
+                  render: (type: string, record: any) => `${type} #${record.item_id}`,
+                },
+                {
+                  title: '时间',
+                  dataIndex: 'created_at',
+                  render: (time: string) => new Date(time).toLocaleString('zh-CN'),
+                },
+              ]}
+            />
+          </ProCard>
+        </Col>
+      </Row>
 
-      {/* 快速开始 */}
+      {/* 快速开始 + 文档 */}
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={12}>
           <ProCard title="快速开始" variant="borderless" className="glass-card">
@@ -130,20 +175,16 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
               <div>
                 <Tag color="blue">2</Tag>
                 <Text>生成 CRUD — </Text>
-                <Link href="https://neekin.github.io/zen_platform/scaffolding/admin" target="_blank">
+                <Link href="https://zen.justfunit.net/scaffolding/admin" target="_blank">
                   rails generate zen:admin Post
                 </Link>
               </div>
               <div>
                 <Tag color="blue">3</Tag>
                 <Text>生成 API — </Text>
-                <Link href="https://neekin.github.io/zen_platform/scaffolding/api" target="_blank">
+                <Link href="https://zen.justfunit.net/scaffolding/api" target="_blank">
                   rails generate zen:api Post
                 </Link>
-              </div>
-              <div>
-                <Tag color="blue">4</Tag>
-                <Text>配置权限 — 在系统设置中管理角色和权限</Text>
               </div>
             </Space>
           </ProCard>
@@ -151,30 +192,9 @@ export default function Dashboard({ stats, framework }: DashboardProps) {
         <Col xs={24} lg={12}>
           <ProCard title="文档" variant="borderless" className="glass-card">
             <Space orientation="vertical" size={12} style={{ width: '100%' }}>
-              <div>
-                <Link href="https://zen.justfunit.net" target="_blank">
-                  使用文档
-                </Link>
-                <Text type="secondary"> — 安装、配置、DSL、脚手架、部署</Text>
-              </div>
-              <div>
-                <Link href="/api-docs">
-                  API 文档
-                </Link>
-                <Text type="secondary"> — Swagger UI，JWT 认证 + rswag 自动生成</Text>
-              </div>
-              <div>
-                <Link href="https://zen.justfunit.net/dsl/" target="_blank">
-                  Model DSL
-                </Link>
-                <Text type="secondary"> — 字段定义、关联、展示配置</Text>
-              </div>
-              <div>
-                <Link href="https://github.com/neekin/zen_platform" target="_blank">
-                  GitHub 仓库
-                </Link>
-                <Text type="secondary"> — 源码、Issues、贡献指南</Text>
-              </div>
+              <Link href="https://zen.justfunit.net" target="_blank">使用文档</Link>
+              <Link href="/api-docs">API 文档（Swagger）</Link>
+              <Link href="https://github.com/neekin/zen_platform" target="_blank">GitHub 仓库</Link>
             </Space>
           </ProCard>
         </Col>

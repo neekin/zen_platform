@@ -1,2 +1,335 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<div class="landing">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <div class="hero-badge">⚡ v0.3.0 — Open Source</div>
+      <h1>Zen Platform</h1>
+      <p class="hero-subtitle">声明式全栈应用生成平台</p>
+      <p class="hero-desc">在 Model 中用 DSL 声明字段、关联、展示方式，自动生成完整的管理后台 + API。一行代码，一个页面。</p>
+      <div class="hero-actions">
+        <a href="/admin" class="btn btn-primary">进入后台</a>
+        <a href="/api-docs" class="btn btn-outline">API 文档</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-value">20+</span><span class="stat-label">富文本插件</span></div>
+        <div class="stat"><span class="stat-value">5</span><span class="stat-label">产品形态</span></div>
+        <div class="stat"><span class="stat-value">4</span><span class="stat-label">认证方式</span></div>
+        <div class="stat"><span class="stat-value">0</span><span class="stat-label">前端配置</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Example -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">声明即所得</h2>
+      <p class="section-desc">在 Model 中声明一次，前端自动渲染</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+          <span class="code-filename">app/models/article.rb</span>
+        </div>
+        <pre><code><span class="kw">class</span> <span class="cls">Article</span> &lt; <span class="cls">ApplicationRecord</span>
+  <span class="kw">include</span> <span class="mod">Zen::ModelDsl</span>
+
+  <span class="fn">field</span> <span class="sym">:title</span>, <span class="sym">:string</span>, <span class="key">required:</span> <span class="bool">true</span>
+  <span class="fn">field</span> <span class="sym">:body</span>,  <span class="sym">:rich_text</span>
+  <span class="fn">field</span> <span class="sym">:status</span>, <span class="sym">:enum</span>, <span class="key">values:</span> <span class="val">%w[draft published archived]</span>
+
+  <span class="fn">belongs_to</span> <span class="sym">:category</span>
+
+  <span class="fn">display</span> <span class="kw">do</span>
+    <span class="fn">list</span> <span class="kw">do</span>
+      <span class="fn">column</span> <span class="sym">:title</span>, <span class="key">link:</span> <span class="bool">true</span>
+      <span class="fn">column</span> <span class="sym">:status</span>, <span class="key">badge:</span> <span class="bool">true</span>
+    <span class="kw">end</span>
+    <span class="fn">form</span> <span class="kw">do</span>
+      <span class="fn">field</span> <span class="sym">:title</span>, <span class="key">required:</span> <span class="bool">true</span>
+      <span class="fn">field</span> <span class="sym">:body</span>, <span class="key">as:</span> <span class="sym">:rich_text</span>
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section section-dark">
+    <div class="container">
+      <h2 class="section-title">核心特性</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>Model DSL</h3>
+          <p>声明字段、关联、展示配置，自动生成 JSON Schema 驱动前端渲染</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">✏️</div>
+          <h3>富文本引擎</h3>
+          <p>Lexical 驱动，20 个插件：Mermaid 图表、KaTeX 公式、代码高亮、视频嵌入</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>多产品形态</h3>
+          <p>CRUD 表格、看板拖拽、日历视图、画廊网格 — 一行 DSL 切换</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔐</div>
+          <h3>企业级权限</h3>
+          <p>Pundit + Rolify RBAC，动态权限矩阵，资源级授权控制</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>审计日志</h3>
+          <p>PaperTrail 全量追踪，支持一键还原，操作历史可追溯</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🚀</div>
+          <h3>一键生成</h3>
+          <p>rails generate zen:admin 自动生成 Controller + 页面 + 路由 + Policy</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">技术栈</h2>
+      <div class="stack-grid">
+        <div class="stack-item">
+          <div class="stack-label">Backend</div>
+          <div class="stack-tech">Rails 8.1 · Ruby 3.4 · SQLite3 · Solid Queue</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-label">Frontend</div>
+          <div class="stack-tech">React 19 · TypeScript · Ant Design 6 · Pro Components · Vite 8</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-label">Rich Text</div>
+          <div class="stack-tech">Lexical 0.46 · 20 Plugins · Mermaid · KaTeX</div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-label">Auth</div>
+          <div class="stack-tech">Session · JWT · API Key · HMAC Signature</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section section-cta">
+    <div class="container cta-content">
+      <h2>开始构建</h2>
+      <p>3 条命令，30 秒上手</p>
+      <div class="code-terminal">
+        <span class="terminal-prompt">$</span> git clone https://github.com/neekin/zen_platform.git<br>
+        <span class="terminal-prompt">$</span> bin/setup<br>
+        <span class="terminal-prompt">$</span> bin/dev
+      </div>
+      <div class="hero-actions" style="margin-top: 2rem;">
+        <a href="/admin" class="btn btn-primary">进入后台</a>
+        <a href="/api-docs" class="btn btn-outline">API 文档</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <span>Zen Platform &copy; 2026</span>
+      <span>Built with Rails + React + Inertia.js</span>
+    </div>
+  </footer>
+</div>
+
+<style>
+  :root {
+    --bg: #0a0f1e;
+    --bg-card: rgba(20, 27, 45, 0.7);
+    --bg-glass: rgba(20, 27, 45, 0.6);
+    --border: rgba(100, 140, 200, 0.15);
+    --text: rgba(255, 255, 255, 0.85);
+    --text-secondary: rgba(255, 255, 255, 0.55);
+    --primary: #1677FF;
+    --primary-glow: rgba(22, 119, 255, 0.3);
+    --success: #52c41a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  .landing {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 120px 0 80px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(22,119,255,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(100,60,255,0.1) 0%, transparent 60%);
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    padding: 4px 16px;
+    background: rgba(22,119,255,0.15);
+    border: 1px solid rgba(22,119,255,0.3);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--primary);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #fff 0%, #1677FF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-size: 22px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto 32px;
+  }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; margin-bottom: 48px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px; border-radius: 8px; font-size: 15px;
+    font-weight: 500; text-decoration: none; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--primary); color: #fff;
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+  .hero-stats {
+    display: flex; gap: 48px; justify-content: center;
+  }
+  .stat { text-align: center; }
+  .stat-value { display: block; font-size: 28px; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 13px; color: var(--text-secondary); }
+
+  /* Sections */
+  .section { padding: 80px 0; }
+  .section-dark { background: rgba(15, 20, 35, 0.5); }
+  .section-title {
+    font-size: 32px; font-weight: 600; text-align: center;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    text-align: center; color: var(--text-secondary);
+    margin-bottom: 48px; font-size: 16px;
+  }
+
+  /* Code Block */
+  .code-block {
+    background: #0d1117; border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; max-width: 700px; margin: 0 auto;
+  }
+  .code-header {
+    padding: 12px 16px; background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px;
+  }
+  .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .code-dot.red { background: #ff5f57; }
+  .code-dot.yellow { background: #febc2e; }
+  .code-dot.green { background: #28c840; }
+  .code-filename { margin-left: 12px; font-size: 13px; color: var(--text-secondary); }
+  .code-block pre { padding: 20px; margin: 0; overflow-x: auto; }
+  .code-block code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; line-height: 1.7; }
+  .kw { color: #ff7b72; }
+  .cls { color: #ffa657; }
+  .fn { color: #d2a8ff; }
+  .sym { color: #79c0ff; }
+  .key { color: #7ee787; }
+  .bool { color: #79c0ff; }
+  .val { color: #a5d6ff; }
+  .mod { color: #ffa657; }
+  .str { color: #a5d6ff; }
+
+  /* Features */
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .feature-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px; transition: all 0.2s;
+  }
+  .feature-card:hover {
+    border-color: rgba(22,119,255,0.3);
+    box-shadow: 0 0 30px rgba(22,119,255,0.08);
+    transform: translateY(-2px);
+  }
+  .feature-icon { font-size: 32px; margin-bottom: 16px; }
+  .feature-card h3 { font-size: 18px; margin-bottom: 8px; }
+  .feature-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+  /* Tech Stack */
+  .stack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .stack-item {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px;
+  }
+  .stack-label { font-size: 12px; color: var(--primary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stack-tech { font-size: 15px; color: var(--text); }
+
+  /* CTA */
+  .section-cta { text-align: center; }
+  .cta-content h2 { font-size: 36px; margin-bottom: 8px; }
+  .cta-content p { color: var(--text-secondary); margin-bottom: 24px; }
+  .code-terminal {
+    display: inline-block; background: #0d1117; border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 28px; text-align: left;
+    font-family: 'SF Mono', monospace; font-size: 14px; line-height: 2;
+    color: var(--success);
+  }
+  .terminal-prompt { color: var(--primary); margin-right: 8px; }
+
+  /* Footer */
+  .footer {
+    padding: 24px 0; border-top: 1px solid var(--border);
+  }
+  .footer-content {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--text-secondary);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 36px; }
+    .hero-stats { gap: 24px; flex-wrap: wrap; }
+    .features-grid { grid-template-columns: 1fr; }
+    .stack-grid { grid-template-columns: 1fr; }
+    .footer-content { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>

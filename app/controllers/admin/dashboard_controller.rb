@@ -14,7 +14,7 @@ module Admin
         },
         framework: {
           name: "Zen Platform",
-          version: "0.3.0",
+          version: File.read(Rails.root.join("VERSION")).strip,
           rails_version: Rails::VERSION::STRING,
           ruby_version: RUBY_VERSION
         }

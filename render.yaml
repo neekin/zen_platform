@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: zen-platform
+    env: ruby
+    plan: free
+    buildCommand: ./bin/render-build.sh
+    startCommand: bundle exec puma -C config/puma.rb
+    envVars:
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: RAILS_LOG_LEVEL
+        value: info
+
+databases:
+  - name: zen-platform-db
+    plan: free
+    databaseName: zen_platform_production

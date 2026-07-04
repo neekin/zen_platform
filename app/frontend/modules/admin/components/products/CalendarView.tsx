@@ -1,4 +1,5 @@
-import { Calendar, Badge, Card, List } from 'antd'
+import { Calendar, Badge, List } from 'antd'
+import { ProCard } from '@ant-design/pro-components'
 import { useState } from 'react'
 import type { Dayjs } from 'dayjs'
 
@@ -84,7 +85,7 @@ export default function CalendarView({
       <Calendar cellRender={(date, info) => info.type === 'date' ? dateCellRender(date) : null} onSelect={handleSelect} />
 
       {selectedDate && selectedItems.length > 0 && (
-        <Card
+        <ProCard
           title={`${selectedDate.format('YYYY-MM-DD')} 的事件 (${selectedItems.length})`}
           style={{ marginTop: 16 }}
           size="small"
@@ -104,7 +105,7 @@ export default function CalendarView({
               </List.Item>
             )}
           />
-        </Card>
+        </ProCard>
       )}
     </div>
   )

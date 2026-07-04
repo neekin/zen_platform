@@ -1,4 +1,5 @@
-import { Card, Row, Col, Empty, Typography, Tag } from 'antd'
+import { Row, Col, Empty, Typography, Tag } from 'antd'
+import { ProCard } from '@ant-design/pro-components'
 import { EyeOutlined } from '@ant-design/icons'
 
 const { Text, Paragraph } = Typography
@@ -40,55 +41,47 @@ export default function GalleryView({
     <Row gutter={[16, 16]}>
       {data.map((item, index) => (
         <Col key={item.id || index} span={span}>
-          <Card
+          <ProCard
             hoverable
             onClick={() => onItemClick?.(item)}
-            cover={
-              item[imageField] ? (
-                <div style={{ height: 200, overflow: 'hidden', background: '#f0f0f0' }}>
-                  <img
-                    alt={item[titleField]}
-                    src={item[imageField]}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-              ) : (
-                <div style={{
-                  height: 200,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: 'var(--ant-color-fill-tertiary)',
-                  color: 'var(--ant-color-text-tertiary)',
-                }}>
-                  <EyeOutlined style={{ fontSize: 32 }} />
-                </div>
-              )
-            }
-            actions={onItemClick ? [
-              <span key="view" onClick={() => onItemClick(item)}>查看详情</span>,
-            ] : undefined}
+            layout="center"
+            bordered
           >
-            <Card.Meta
-              title={
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Text ellipsis style={{ flex: 1 }}>{item[titleField]}</Text>
-                  {statusField && item[statusField] && (
-                    <Tag color={STATUS_COLORS[item[statusField]] || 'default'} style={{ marginLeft: 8 }}>
-                      {item[statusField]}
-                    </Tag>
-                  )}
-                </div>
-              }
-              description={
-                descriptionField && item[descriptionField] ? (
-                  <Paragraph ellipsis={{ rows: 2 }} style={{ margin: 0, fontSize: 12 }}>
-                    {item[descriptionField]}
-                  </Paragraph>
-                ) : null
-              }
-            />
-          </Card>
+            {item[imageField] ? (
+              <div style={{ height: 200, overflow: 'hidden', background: '#f0f0f0', marginBottom: 12 }}>
+                <img
+                  alt={item[titleField]}
+                  src={item[imageField]}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </div>
+            ) : (
+              <div style={{
+                height: 200,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--ant-color-fill-tertiary)',
+                color: 'var(--ant-color-text-tertiary)',
+                marginBottom: 12,
+              }}>
+                <EyeOutlined style={{ fontSize: 32 }} />
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <Text ellipsis style={{ flex: 1 }}>{item[titleField]}</Text>
+              {statusField && item[statusField] && (
+                <Tag color={STATUS_COLORS[item[statusField]] || 'default'} style={{ marginLeft: 8 }}>
+                  {item[statusField]}
+                </Tag>
+              )}
+            </div>
+            {descriptionField && item[descriptionField] && (
+              <Paragraph ellipsis={{ rows: 2 }} style={{ margin: 0, fontSize: 12 }}>
+                {item[descriptionField]}
+              </Paragraph>
+            )}
+          </ProCard>
         </Col>
       ))}
     </Row>

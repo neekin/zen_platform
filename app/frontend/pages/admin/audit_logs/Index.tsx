@@ -1,7 +1,8 @@
 import React from 'react'
 import { usePage } from '@inertiajs/react'
 import { ProTable, type ProColumns } from '@ant-design/pro-components'
-import { Tag, Typography, Space, Button, Drawer, Descriptions } from 'antd'
+import { Tag, Typography, Space, Button, Drawer } from 'antd'
+import { ProDescriptions } from '@ant-design/pro-components'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -128,19 +129,19 @@ export default function AuditLogsIndex() {
       >
         {selectedLog && (
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <Descriptions column={1} bordered size="small">
-              <Descriptions.Item label="时间">
+            <ProDescriptions column={1} bordered size="small">
+              <ProDescriptions.Item label="时间">
                 {new Date(selectedLog.created_at).toLocaleString('zh-CN')}
-              </Descriptions.Item>
-              <Descriptions.Item label="操作">
+              </ProDescriptions.Item>
+              <ProDescriptions.Item label="操作">
                 <Tag color={eventColors[selectedLog.event] || 'default'}>
                   {selectedLog.event.toUpperCase()}
                 </Tag>
-              </Descriptions.Item>
-              <Descriptions.Item label="模型">{selectedLog.item_type}</Descriptions.Item>
-              <Descriptions.Item label="记录 ID">{selectedLog.item_id}</Descriptions.Item>
-              <Descriptions.Item label="操作人">{selectedLog.whodunnit || '-'}</Descriptions.Item>
-            </Descriptions>
+              </ProDescriptions.Item>
+              <ProDescriptions.Item label="模型">{selectedLog.item_type}</ProDescriptions.Item>
+              <ProDescriptions.Item label="记录 ID">{selectedLog.item_id}</ProDescriptions.Item>
+              <ProDescriptions.Item label="操作人">{selectedLog.whodunnit || '-'}</ProDescriptions.Item>
+            </ProDescriptions>
 
             {selectedLog.object_changes && (
               <>
@@ -173,13 +174,13 @@ export default function AuditLogsIndex() {
             {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
               <>
                 <Typography.Text strong>元数据</Typography.Text>
-                <Descriptions column={1} bordered size="small">
+                <ProDescriptions column={1} bordered size="small">
                   {Object.entries(selectedLog.metadata).map(([key, value]) => (
-                    <Descriptions.Item key={key} label={key}>
+                    <ProDescriptions.Item key={key} label={key}>
                       {String(value)}
-                    </Descriptions.Item>
+                    </ProDescriptions.Item>
                   ))}
-                </Descriptions>
+                </ProDescriptions>
               </>
             )}
           </Space>

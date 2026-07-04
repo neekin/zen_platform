@@ -1,5 +1,5 @@
-import { PageContainer, StatisticCard } from '@ant-design/pro-components'
-import { Col, Row, Card, Table, Tag, Space } from 'antd'
+import { PageContainer, StatisticCard, ProCard, ProTable, type ProColumns } from '@ant-design/pro-components'
+import { Col, Row, Tag, Space } from 'antd'
 import {
   UserOutlined,
   ShoppingCartOutlined,
@@ -44,33 +44,21 @@ const recentActivity = [
   },
 ]
 
-const columns = [
-  {
-    title: '用户',
-    dataIndex: 'user',
-    key: 'user',
-  },
-  {
-    title: '操作',
-    dataIndex: 'action',
-    key: 'action',
-  },
-  {
-    title: '时间',
-    dataIndex: 'time',
-    key: 'time',
-  },
+const columns: ProColumns[] = [
+  { title: '用户', dataIndex: 'user', key: 'user' },
+  { title: '操作', dataIndex: 'action', key: 'action' },
+  { title: '时间', dataIndex: 'time', key: 'time' },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    render: (status: string) => {
+    render: (_: any, record: any) => {
       const colorMap: Record<string, string> = {
         success: 'green',
         processing: 'blue',
         error: 'red',
       }
-      return <Tag color={colorMap[status]}>{status}</Tag>
+      return <Tag color={colorMap[record.status]}>{record.status}</Tag>
     },
   },
 ]
@@ -158,17 +146,19 @@ export default function Dashboard() {
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} lg={16}>
-          <Card title="最近活动" variant="borderless" className="glass-card">
-            <Table
+          <ProCard title="最近活动" variant="borderless" className="glass-card">
+            <ProTable
               columns={columns}
               dataSource={recentActivity}
+              search={false}
               pagination={false}
+              toolBarRender={false}
               size="small"
             />
-          </Card>
+          </ProCard>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="快速操作" variant="borderless" className="glass-card">
+          <ProCard title="快速操作" variant="borderless" className="glass-card">
             <Space orientation="vertical" style={{ width: '100%' }}>
               <div style={{ padding: '12px 0', borderBottom: '1px solid rgba(100, 140, 200, 0.1)' }}>
                 <a href="/admin/users" style={{ color: 'var(--ant-color-primary)' }}>管理用户</a>
@@ -180,7 +170,7 @@ export default function Dashboard() {
                 <a href="/admin/logs" style={{ color: 'var(--ant-color-primary)' }}>查看日志</a>
               </div>
             </Space>
-          </Card>
+          </ProCard>
         </Col>
       </Row>
     </PageContainer>

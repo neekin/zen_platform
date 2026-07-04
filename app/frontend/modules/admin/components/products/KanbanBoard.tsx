@@ -4,7 +4,8 @@
  * 支持拖拽排序、分组显示
  */
 import { useState, useCallback } from 'react'
-import { Card, Tag, Space, Button, Dropdown } from 'antd'
+import { Tag, Space, Button, Dropdown } from 'antd'
+import { ProCard } from '@ant-design/pro-components'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons'
 
 export interface KanbanColumn {
@@ -139,7 +140,7 @@ export default function KanbanBoard({
 
   // 默认卡片渲染
   const defaultRenderCard = (card: KanbanCard) => (
-    <Card
+    <ProCard
       size="small"
       style={{
         marginBottom: 8,
@@ -191,7 +192,7 @@ export default function KanbanBoard({
           </Dropdown>
         )}
       </div>
-    </Card>
+    </ProCard>
   )
 
   return (

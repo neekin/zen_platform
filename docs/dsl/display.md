@@ -29,7 +29,7 @@ end
 ```ruby
 display do
   list do
-    paginate enabled: true          # 启用分页（Pagy）
+    paginate true                   # 启用分页（Pagy），默认每页 20 条
     searchable :email, :username    # 可搜索字段（Ransack）
     filterable :role                # 可过滤字段
     column :email
@@ -41,9 +41,18 @@ end
 
 #### paginate（分页）
 
+```ruby
+paginate true                              # 启用分页，使用默认配置（每页 20，最大 100）
+paginate false                             # 关闭分页
+paginate per_page: 15, max_per_page: 50    # 自定义每页条数和上限
+```
+
 | 选项 | 说明 | 默认值 |
 |------|------|--------|
-| `enabled: true` | 启用分页 | `false` |
+| `true` | 启用分页（使用默认配置） | - |
+| `false` | 关闭分页 | - |
+| `per_page:` | 每页条数 | `20` |
+| `max_per_page:` | 每页上限 | `100` |
 
 启用后：
 - 后端使用 Pagy 计算分页元数据（`page`、`per_page`、`total`、`pages`）
@@ -178,11 +187,11 @@ class Article < ApplicationRecord
     end
     detail do
       section "基本信息" do
-        field :title, as: :heading
-        field :status, as: :badge
+        field :title
+        field :status, badge: true
       end
       section "内容" do
-        field :body, as: :rich_text_viewer
+        field :body, as: :rich_text
       end
     end
   end

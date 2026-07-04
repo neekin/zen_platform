@@ -20,7 +20,7 @@ Zen Platform API 支持 4 种认证方式，按安全级别从低到高：
 调用登录接口，用账号密码换取 JWT token：
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/login \
+curl -X POST http://localhost:3100/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"account": "admin@example.com", "password": "password123"}'
 ```
@@ -41,7 +41,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 ### 使用 Token
 
 ```bash
-curl http://localhost:3000/api/v1/users \
+curl http://localhost:3100/api/v1/users \
   -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9..."
 ```
 
@@ -56,7 +56,7 @@ curl http://localhost:3000/api/v1/users \
 ### 验证当前用户
 
 ```bash
-curl http://localhost:3000/api/v1/auth/me \
+curl http://localhost:3100/api/v1/auth/me \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -74,7 +74,7 @@ curl http://localhost:3000/api/v1/auth/me \
 
 管理员可以为任意用户创建 Key：
 
-1. 登录 Admin 后台（`http://localhost:3000/admin`）
+1. 登录 Admin 后台（`http://localhost:3100/admin`）
 2. 进入 **系统设置 → API Key**
 3. 点击「新建 API Key」
 4. 填写信息：
@@ -89,12 +89,12 @@ curl http://localhost:3000/api/v1/auth/me \
 
 ```bash
 # 先登录获取 JWT token
-curl -X POST http://localhost:3000/api/v1/auth/login \
+curl -X POST http://localhost:3100/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"account": "admin@example.com", "password": "password123"}'
 
 # 用 token 创建 API Key
-curl -X POST http://localhost:3000/api/v1/api_keys \
+curl -X POST http://localhost:3100/api/v1/api_keys \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"api_key": {"name": "我的移动端Key"}}'
@@ -119,7 +119,7 @@ curl -X POST http://localhost:3000/api/v1/api_keys \
 ### 使用 API Key
 
 ```bash
-curl http://localhost:3000/api/v1/users \
+curl http://localhost:3100/api/v1/users \
   -H "X-Api-Key: a1b2c3d4e5f6..."
 ```
 
@@ -129,17 +129,17 @@ curl http://localhost:3000/api/v1/users \
 
 ```bash
 # 查看自己的 Key 列表（掩码显示，不含完整 Key）
-curl http://localhost:3000/api/v1/api_keys \
+curl http://localhost:3100/api/v1/api_keys \
   -H "Authorization: Bearer <token>"
 
 # 创建新 Key（设置过期时间）
-curl -X POST http://localhost:3000/api/v1/api_keys \
+curl -X POST http://localhost:3100/api/v1/api_keys \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"api_key": {"name": "临时Key", "expires_at": "2026-08-01T00:00:00Z"}}'
 
 # 删除自己的 Key（立即生效）
-curl -X DELETE http://localhost:3000/api/v1/api_keys/1 \
+curl -X DELETE http://localhost:3100/api/v1/api_keys/1 \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -162,12 +162,11 @@ curl -X DELETE http://localhost:3000/api/v1/api_keys/1 \
 
 ## Bearer Token
 
-与 JWT 完全相同，复用 JWT 解码逻辑。两种说法指的是同一个 token：
+与 JWT 完全相同，复用 JWT 解码逻辑。"Bearer Token" 和 "JWT" 指的是同一个 token：
 
 ```bash
-# 以下两种写法等价
-curl -H "Authorization: Bearer <jwt-token>" /api/v1/users
-curl -H "Authorization: Bearer <jwt-token>" /api/v1/users
+# 获取的 JWT token 就是用 Bearer 方式传递的
+curl -H "Authorization: Bearer <jwt-token>" http://localhost:3100/api/v1/users
 ```
 
 Bearer Token 存在的意义是：在 `authenticate_with` 中可以与其他认证方式组合使用，例如 `authenticate_with :api_key, :jwt, :bearer_token` 允许客户端用任意一种方式认证。
@@ -213,7 +212,7 @@ body       = '{"amount": 100, "currency": "CNY"}'
 
 signature = OpenSSL::HMAC.hexdigest("SHA256", api_secret, "#{timestamp}\n#{body}")
 
-uri = URI("http://localhost:3000/api/v1/payment")
+uri = URI("http://localhost:3100/api/v1/payment")
 http = Net::HTTP.new(uri.host, uri.port)
 request = Net::HTTP::Post.new(uri, "Content-Type" => "application/json")
 request["X-App-Id"]      = app_id
@@ -246,7 +245,7 @@ signature = hmac.new(
 ).hexdigest()
 
 response = requests.post(
-    "http://localhost:3000/api/v1/payment",
+    "http://localhost:3100/api/v1/payment",
     data=body,
     headers={
         "X-App-Id": app_id,
@@ -273,7 +272,7 @@ const signature = crypto
   .update(`${timestamp}\n${body}`)
   .digest('hex')
 
-const response = await fetch('http://localhost:3000/api/v1/payment', {
+const response = await fetch('http://localhost:3100/api/v1/payment', {
   method: 'POST',
   headers: {
     'X-App-Id': appId,

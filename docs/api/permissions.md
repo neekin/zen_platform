@@ -33,7 +33,7 @@ class Api::V1::ArticlesController < ApiController
 
   def create
     # 只有 admin 和 editor 可以创建
-    unless @current_api_user.has_role?(:super_admin, :admin, :editor)
+    unless @current_api_user.has_any_role?(:super_admin, :admin, :editor)
       return render_error(message: "无权限", status: :forbidden)
     end
 
@@ -47,7 +47,7 @@ class Api::V1::ArticlesController < ApiController
 
   def destroy
     # 只有 admin 以上可以删除
-    unless @current_api_user.has_role?(:super_admin, :admin)
+    unless @current_api_user.has_any_role?(:super_admin, :admin)
       return render_error(message: "无权限", status: :forbidden)
     end
 
@@ -193,7 +193,7 @@ class Api::V1::ArticlesController < ApiController
 
   # 数据范围：admin 看全部，其他只看自己的
   def scoped_articles
-    if @current_api_user.has_role?(:super_admin, :admin)
+    if @current_api_user.has_any_role?(:super_admin, :admin)
       Article.all
     else
       Article.where(user_id: @current_api_user.id)
@@ -314,7 +314,7 @@ class ArticlePolicy < ApplicationPolicy
   # 数据范围：admin 看全部，其他只看自己的
   class Scope < Scope
     def resolve
-      if user.has_role?(:super_admin, :admin)
+      if user.has_any_role?(:super_admin, :admin)
         scope.all
       else
         scope.where(user_id: user.id)
@@ -377,8 +377,7 @@ class Api::V1::ArticlesController < ApiController
 
   swagger_tag "文章管理"
 
-  # 公开接口：不需要认证
-  skip_before_action :check_api_version, only: [:index, :show]
+  # 公开接口不需要认证，写操作需要 JWT 或 API Key
   before_action { authenticate_with :jwt, :api_key }, except: [:index, :show]
 
   def index

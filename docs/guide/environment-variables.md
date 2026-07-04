@@ -21,7 +21,7 @@ title: 环境变量参考
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| ALLOWED_ORIGINS | `http://localhost:3000,http://localhost:5173` | CORS 允许的源 |
+| ALLOWED_ORIGINS | `http://localhost:3100,http://localhost:3036` | CORS 允许的源 |
 
 ## 部署
 

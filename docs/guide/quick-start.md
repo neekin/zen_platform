@@ -3,7 +3,7 @@
 ## 环境要求
 
 - Ruby 4.0+
-- Node.js 20+
+- Node.js 24+
 - SQLite3
 
 ## 安装
@@ -17,7 +17,7 @@ cd zen_platform
 bin/setup
 ```
 
-打开 `http://localhost:3000/admin`，登录 `admin@example.com` / `password123`
+打开 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
 
 ## 创建你的第一个模型
 

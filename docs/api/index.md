@@ -8,7 +8,7 @@ Zen Platform 提供 RESTful JSON API，自动根据 Model DSL 生成端点。
 
 ## Base URL
 
-- 开发：`http://localhost:3000/api/v1`
+- 开发：`http://localhost:3100/api/v1`
 - 生产：配置 `API_BASE_URL` 环境变量
 
 ## 认证
@@ -58,14 +58,21 @@ Zen Platform 提供 RESTful JSON API，自动根据 Model DSL 生成端点。
 | GET | `/api/v1/health` | 健康检查 | 无 |
 | POST | `/api/v1/auth/login` | JWT 登录 | 无 |
 | GET | `/api/v1/auth/me` | 当前用户 | JWT |
-| GET | `/api/v1/meta/:model` | 模型元数据 | 无 |
+| GET | `/api/v1/meta/:model` | 模型元数据 | JWT/API Key |
 | GET | `/api/v1/users` | 用户列表 | API Key/JWT |
 | GET | `/api/v1/users/:id` | 用户详情 | API Key/JWT |
+| GET | `/api/v1/api_keys` | API Key 列表（当前用户） | JWT |
+| POST | `/api/v1/api_keys` | 创建 API Key（当前用户） | JWT |
+| DELETE | `/api/v1/api_keys/:id` | 删除 API Key（当前用户） | JWT |
 
 ## 分页
 
+脚手架生成的 API 控制器默认不分页。如需分页，参考 [Admin 生成器](../scaffolding/admin#分页搜索过滤) 中的 Pagy + Ransack 集成方案。
+
+Admin 后台 API 支持 `page` 和 `per_page` 参数：
+
 ```bash
-GET /api/v1/articles?page=2&per_page=20
+GET /admin/users?page=2&per_page=20
 ```
 
 ## 状态码

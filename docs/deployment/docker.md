@@ -11,7 +11,7 @@ title: Docker 部署
 docker compose up --build
 
 # 访问
-open http://localhost:3000/admin
+open http://localhost:3100/admin
 ```
 
 `docker-compose.yml` 包含：

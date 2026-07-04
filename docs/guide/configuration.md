@@ -8,7 +8,7 @@ title: 配置参考
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `ALLOWED_ORIGINS` | `http://localhost:3000,http://localhost:5173` | CORS 允许的源 |
+| `ALLOWED_ORIGINS` | `http://localhost:3100,http://localhost:3036` | CORS 允许的源 |
 | `RAILS_LOG_LEVEL` | `info` | 日志级别 |
 | `RAILS_MAX_THREADS` | `5` | 最大线程数 |
 | `DB_HOST` | `localhost` | PostgreSQL 主机 |

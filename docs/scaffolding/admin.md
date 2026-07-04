@@ -9,7 +9,7 @@ title: Admin 生成器
 ## 基本用法
 
 ```bash
-rails generate zen:admin Article title:string body:text status:enum --rich-text=body
+rails generate zen:admin Article title:string body:text status:enum --rich_text=body
 ```
 
 ## 模式
@@ -40,7 +40,7 @@ rails generate zen:admin Article --page
 |------|------|------|
 | `--modal` | Modal 模式（默认） | `--modal` |
 | `--page` | Page 模式 | `--page` |
-| `--rich_text` | 富文本字段 | `--rich-text=body` |
+| `--rich_text` | 富文本字段 | `--rich_text=body` |
 | `--image` | 图片上传字段 | `--image=cover` |
 | `--file` | 文件上传字段 | `--file=attachment` |
 | `--tags` | 标签字段 | `--tags=keywords` |
@@ -111,7 +111,7 @@ class User < ApplicationRecord
 
   display do
     list do
-      paginate enabled: true          # 启用分页
+      paginate true                  # 启用分页
       searchable :email, :username    # 启用搜索
       filterable :role                # 启用过滤
       column :email
@@ -162,31 +162,32 @@ class Admin::UsersController < AdminController
 end
 ```
 
-#### 前端（ProTable）
+#### 前端（DslTable）
+
+生成器生成的前端页面使用 `DslTable` 组件，自动读取 `zen_meta` 渲染表格、搜索、过滤、分页：
 
 ```tsx
 // app/frontend/pages/admin/users/Index.tsx
-<ProTable
-  headerTitle="用户列表"
-  search={{ placeholder: "搜索邮箱、用户名..." }}
-  onChange={(pagination) => {
-    router.get('/admin/users', {
-      page: pagination.current,
-      per_page: pagination.pageSize
+import { DslTable } from '@/modules/dsl/DslTable'
+
+<DslTable
+  meta={meta}                        // zen_meta（由 zen_props 自动注入）
+  data={users}                       // 列表数据
+  basePath="/admin/users"            // 资源路径
+  serverSide                         // 服务端分页模式
+  pagination={pagination}            // 分页元数据（page/per_page/total）
+  onServerChange={(params) => {
+    // 分页/搜索/过滤变化时，通过 Inertia 重新请求（保留页面状态）
+    router.visit('/admin/users', {
+      data: params,
+      preserveState: true,
+      preserveScroll: true,
     })
   }}
-  columns={[
-    {
-      title: '角色',
-      dataIndex: 'roles',
-      filters: [
-        { text: '管理员', value: 'admin' },
-        { text: '编辑', value: 'editor' }
-      ]
-    }
-  ]}
 />
 ```
+
+> **提示**：`DslTable` 会根据 `meta.display.list` 自动渲染列、搜索框、过滤菜单。分页参数（`page`、`per_page`）和搜索参数（`q[email_cont]` 等）会通过 `onServerChange` 回调传给后端。
 
 ### Ransack 谓词
 

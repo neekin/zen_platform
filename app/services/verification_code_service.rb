@@ -14,7 +14,11 @@ class VerificationCodeService
 
       Rails.cache.write(cache_key, code, expires_in: EXPIRY)
 
-      # TODO: 发送验证码邮件，目前先输出到控制台
+      # TODO: 发送验证码，由开发者自行决定发送方式：
+      #   - 邮件: VerificationMailer.verification_code(user, code, purpose).deliver_later
+      #   - 短信: 调用第三方短信 API（如阿里云、腾讯云）
+      #   - 其他: WebSocket 推送等
+      # 目前先输出到控制台，方便开发调试
       puts "========================================="
       puts "  验证码 [#{purpose}]: #{code}"
       puts "  用户: #{user.email}"

@@ -83,15 +83,24 @@ module Admin
         end
 
       when "update"
-        # 更新事件 → 手动还原到该版本
-        object = YAML.unsafe_load(version.object)
+        # 更新事件 → 还原到该版本
+        if version.object.present?
+          object = YAML.unsafe_load(version.object)
+        elsif version.object_changes.present?
+          # object 为空时，用 object_changes 反推
+          changes = YAML.unsafe_load(version.object_changes)
+          object = {}
+          changes.each { |key, (old_val, _)| object[key] = old_val }
+        else
+          render json: { code: 1, message: "无法还原：版本数据为空" }, status: :unprocessable_entity
+          return
+        end
+
         record = version.item_type.constantize.find_by(id: version.item_id)
         if record
-          # 移除不能更新的字段
           object.delete("id")
           object.delete("created_at")
           object.delete("updated_at")
-
           if record.update(object)
             render json: { code: 0, message: "已还原到该版本" }
           else
@@ -102,7 +111,11 @@ module Admin
         end
 
       when "destroy"
-        # 删除事件 → 手动重新创建
+        # 删除事件 → 重新创建
+        if version.object.blank?
+          render json: { code: 1, message: "无法还原：版本数据为空" }, status: :unprocessable_entity
+          return
+        end
         object = YAML.unsafe_load(version.object)
         record = version.item_type.constantize.new(object)
         record.id = version.item_id  # 恢复原始 ID
@@ -131,7 +144,8 @@ module Admin
       end
     end
 
-    # PaperTrail 存储格式可能是 YAML 或 JSON，统一解析为 Hash
+    # PaperTrail 存储格式为 YAML（可能包含 Ruby 对象）
+    # 使用 unsafe_load 因为我们信任数据来源（自己的数据库）
     def safe_parse(data)
       return nil if data.blank?
 

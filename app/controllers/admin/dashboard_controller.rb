@@ -8,7 +8,6 @@ module Admin
     def index
       render inertia: "admin/Dashboard", props: {
         stats: build_stats,
-        chart_data: build_chart_data,
         recent_activities: recent_activities,
         framework: {
           name: "Zen Platform",
@@ -22,50 +21,14 @@ module Admin
     private
 
     def build_stats
-      stats = [{ label: "用户总数", value: User.count, icon: "user" }]
-
-      dsl_models.each do |model|
-        stats << {
-          label: "#{model.model_name.human}总数",
-          value: model.count,
-          icon: model_icon(model),
-        }
-      end
-
-      stats << { label: "今日新增", value: today_count, icon: "rise" }
-      stats
-    end
-
-    def dsl_models
-      @dsl_models ||= ApplicationRecord.descendants.select do |m|
-        m.respond_to?(:zen_display_config) && m.table_exists?
-      end
-    end
-
-    def model_icon(model)
-      case model.name
-      when "Article" then "article"
-      when "Comment" then "comment"
-      else "database"
-      end
-    end
-
-    def today_count
-      count = User.where("created_at > ?", Date.today).count
-      dsl_models.each { |m| count += m.where("created_at > ?", Date.today).count }
-      count
-    end
-
-    def build_chart_data
-      model = dsl_models.first
-      return [] unless model
-
-      30.days.ago.to_date.upto(Date.today).map do |date|
-        {
-          date: date.iso8601,
-          count: model.where("DATE(created_at) = ?", date).count,
-        }
-      end
+      # 在这里添加你的统计卡片
+      # 每个 stat: { label:, value:, icon: }
+      # icon 可选: user, article, comment, rise, database
+      [
+        { label: "用户总数", value: User.count, icon: "user" },
+        # { label: "文章总数", value: Article.count, icon: "article" },
+        # { label: "今日新增", value: User.where("created_at > ?", Date.today).count, icon: "rise" },
+      ]
     end
 
     def recent_activities

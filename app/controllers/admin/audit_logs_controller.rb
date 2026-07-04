@@ -4,6 +4,7 @@ module Admin
   class AuditLogsController < AdminController
     skip_after_action :verify_authorized
     skip_after_action :verify_policy_scoped
+    before_action :authorize_restore, only: [:restore]
 
     # GET /admin/audit_logs
     def index
@@ -59,7 +60,55 @@ module Admin
         }
     end
 
+    # POST /admin/audit_logs/:id/restore
+    def restore
+      version = PaperTrail::Version.find(params[:id])
+
+      case version.event
+      when "create"
+        # 创建事件 → 删除记录（撤销创建）
+        record = version.item_type.constantize.find_by(id: version.item_id)
+        if record
+          record.destroy!
+          render json: { code: 0, message: "已删除该记录（还原创建操作）" }
+        else
+          render json: { code: 1, message: "记录已不存在" }, status: :unprocessable_entity
+        end
+
+      when "update"
+        # 更新事件 → 还原到该版本
+        reified = version.reify
+        if reified.save
+          render json: { code: 0, message: "已还原到该版本" }
+        else
+          render json: { code: 1, message: reified.errors.full_messages.join(", ") }, status: :unprocessable_entity
+        end
+
+      when "destroy"
+        # 删除事件 → 重新创建
+        reified = version.reify
+        if reified.save
+          render json: { code: 0, message: "已重新创建该记录" }
+        else
+          render json: { code: 1, message: reified.errors.full_messages.join(", ") }, status: :unprocessable_entity
+        end
+
+      else
+        render json: { code: 1, message: "不支持的操作类型" }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { code: 1, message: "版本记录不存在" }, status: :not_found
+    rescue StandardError => e
+      render json: { code: 1, message: e.message }, status: :internal_server_error
+    end
+
     private
+
+    def authorize_restore
+      unless current_user.has_role?(:super_admin) || current_user.has_role?(:admin)
+        render json: { code: 1, message: "没有权限执行还原操作" }, status: :forbidden
+      end
+    end
 
     # PaperTrail 存储格式可能是 YAML 或 JSON，统一解析为 Hash
     def safe_parse(data)

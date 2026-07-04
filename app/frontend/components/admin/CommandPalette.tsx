@@ -108,7 +108,7 @@ export default function CommandPalette({ open, onClose }: CommandPaletteProps) {
       width={600}
       styles={{ body: { padding: 0 } }}
       closable={false}
-      maskClosable
+      mask={{ closable: true }}
       style={{ top: 100 }}
     >
       <div onKeyDown={handleKeyDown}>

@@ -69,7 +69,7 @@ module Zen
     def searchable(*fields)
       if fields.empty?
         @searchable_fields = true  # 自动检测
-      elsif fields == [false]
+      elsif fields == [ false ]
         @searchable_fields = []
       else
         @searchable_fields = fields.map(&:to_sym)
@@ -84,7 +84,7 @@ module Zen
     def filterable(*fields)
       if fields.empty?
         @filterable_fields = true  # 自动检测
-      elsif fields == [false]
+      elsif fields == [ false ]
         @filterable_fields = []
       else
         @filterable_fields = fields.map(&:to_sym)

@@ -4,7 +4,7 @@
 
 Please **do not** open a public issue for security vulnerabilities.
 
-Email: security@example.com
+Report via [GitHub Security Advisories](https://github.com/neekin/zen_platform/security/advisories/new).
 
 Response time: 48 hours.
 

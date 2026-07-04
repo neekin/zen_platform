@@ -18,9 +18,9 @@
 - **NProgress** — Inertia 页面加载进度条
 - **权限管理页面** — 角色列表 + Drawer 内权限矩阵配置
 - **系统设置菜单** — 用户管理、角色管理、权限管理、API Key、审计日志
-- **VitePress 文档站点** — 19 篇文档
-- **前端测试** — Vitest 83 tests
-- **后端测试** — RSpec 140 examples
+- **VitePress 文档站点** — 36 篇文档
+- **前端测试** — Vitest 82 tests
+- **后端测试** — RSpec 142 examples
 
 ### Security
 - constantize RCE 白名单防护

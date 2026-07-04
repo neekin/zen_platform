@@ -124,11 +124,11 @@ module Zen
       #   where(id: ids).update_all(status: "published")
       # end
       def batch_action(name, label: nil, confirm: nil, &block)
-        self.zen_batch_actions = zen_batch_actions + [{
+        self.zen_batch_actions = zen_batch_actions + [ {
           name: name.to_s,
           label: label || name.to_s.humanize,
-          confirm: confirm,
-        }]
+          confirm: confirm
+        } ]
 
         define_method("batch_#{name}") do |ids|
           instance_exec(ids, &block)
@@ -144,7 +144,7 @@ module Zen
           associations: zen_associations.transform_values(&:to_h),
           display: zen_display_config,
           products: zen_product_configs,
-          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } },
+          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } }
         }
       end
     end

@@ -3,6 +3,7 @@
 class ApiController < ActionController::API
   before_action :set_request_start
   before_action :check_api_version
+  before_action :require_authentication
   after_action :track_api_metrics
 
   private
@@ -54,6 +55,13 @@ class ApiController < ActionController::API
       duration_ms: ((Time.current - @_request_start) * 1000).round(2),
       auth_strategy: @_auth_strategy
     }.to_json)
+  end
+
+  # 默认要求认证，子类可 skip_before_action :require_authentication
+  def require_authentication
+    return if @current_user || @current_api_user
+
+    render_unauthorized
   end
 
   def render_unauthorized(message: "未授权")

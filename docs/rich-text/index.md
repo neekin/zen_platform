@@ -143,6 +143,46 @@ const fileUploader = new ActiveStorageUploader({
 <RichTextViewer content={content} />
 ```
 
+### 方式五：在 ERB 模板中渲染
+
+如果需要在 ERB（非 Inertia）页面中显示富文本内容，使用 `RichTextHelper`：
+
+#### 1. 在 Layout 中添加样式
+
+```erb
+<!-- app/views/layouts/application.html.erb -->
+<head>
+  <%= rich_text_styles %>
+</head>
+```
+
+#### 2. 在 View 中渲染内容
+
+```erb
+<!-- app/views/articles/show.html.erb -->
+<div class="rich-text-content">
+  <%= rich_text_html(@article.body) %>
+</div>
+```
+
+#### 3. Helper 方法说明
+
+| 方法 | 用途 |
+|------|------|
+| `rich_text_html(content)` | 将 Lexical JSON 渲染为 HTML |
+| `rich_text_styles` | 生成富文本所需的 CSS 样式 |
+
+#### 4. 支持的格式
+
+- 加粗、斜体、下划线、删除线
+- 标题（H1-H3）
+- 列表（有序/无序）
+- 引用
+- 代码块
+- 链接、图片
+- 字体颜色、背景色、字号
+- 文本对齐（居左/居中/居右/平铺）
+
 ## 内容格式
 
 编辑器内容以 **Lexical JSON** 格式存储（不是 HTML），存储在数据库 `text` 类型字段中：

@@ -54,7 +54,7 @@ module Admin
     def destroy
       api_key = ApiKey.find(params[:id])
       api_key.destroy!
-      render json: { code: 0, message: "删除成功" }
+      redirect_to admin_api_keys_path, notice: "删除成功"
     end
 
     private

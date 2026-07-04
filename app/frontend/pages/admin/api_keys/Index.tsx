@@ -40,10 +40,7 @@ function ApiKeysIndex({ api_keys, users, pagination }: ApiKeysIndexProps) {
       okType: 'danger',
       cancelText: '取消',
       onOk: () => {
-        router.delete(`/admin/api_keys/${record.id}`, {
-          onSuccess: () => { message.success('删除成功'); router.reload() },
-          onError: () => message.error('删除失败'),
-        })
+        router.delete(`/admin/api_keys/${record.id}`)
       },
     })
   }

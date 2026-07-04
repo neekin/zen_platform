@@ -10,7 +10,11 @@ module Admin
     # GET /admin/permissions
     def index
       roles = Role.pluck(:name)
-      resources = Permission::RESOURCES
+
+      # 动态发现资源：RESOURCE_ACTIONS 中的 + 数据库中有 Permission 记录的
+      db_resources = Permission.distinct.pluck(:resource)
+      resources = (Permission::RESOURCE_ACTIONS.keys + db_resources).uniq
+
       actions = Permission::ACTIONS
 
       # 加载所有权限记录

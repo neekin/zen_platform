@@ -12,6 +12,7 @@
  *   uploader={activeStorageUploader}
  * />
  */
+import '../styles/editor.css'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'

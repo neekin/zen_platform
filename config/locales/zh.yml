@@ -1,0 +1,20 @@
+zh:
+  activerecord:
+    models:
+      user: "用户"
+      article: "文章"
+      comment: "评论"
+      task: "任务"
+      product: "产品"
+    attributes:
+      user:
+        email: "邮箱"
+        username: "用户名"
+        name: "姓名"
+      article:
+        title: "标题"
+        body: "内容"
+        status: "状态"
+      comment:
+        author_name: "作者"
+        content: "内容"

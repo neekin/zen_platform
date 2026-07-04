@@ -197,17 +197,16 @@ class Api::V1::ArticlesController < ApiController
   swagger_tag "文章管理"
   before_action { authenticate_with :jwt }
 
-  # 从 DSL 定义自动提取 API 可暴露的字段
-  # 排除标记为 internal: true 的字段
+  # 从 DSL 定义自动提取可暴露的字段
   def index
-    fields = Article.zen_fields.reject { |_, opts| opts[:internal] }.keys
+    fields = Article.zen_fields.keys.map(&:to_sym)
     render_success Article.all.as_json(only: fields)
   end
 
   def show
     article = Article.find_by(id: params[:id])
     if article
-      fields = Article.zen_fields.reject { |_, opts| opts[:internal] }.keys
+      fields = Article.zen_fields.keys.map(&:to_sym)
       render_success article.as_json(only: fields)
     else
       render_error(message: "记录不存在", status: :not_found)
@@ -216,15 +215,26 @@ class Api::V1::ArticlesController < ApiController
 end
 ```
 
-模型定义中标记内部字段：
+### 排除特定字段
+
+如果某些字段不想暴露给 API，用减法操作：
 
 ```ruby
-class Article < ApplicationRecord
-  include Zen::ModelDsl
+def index
+  # 排除内部备注
+  fields = Article.zen_fields.keys.map(&:to_sym) - %i[internal_notes]
+  render_success Article.all.as_json(only: fields)
+end
+```
 
-  field :title, :string, required: true
-  field :body, :text
-  field :internal_notes, :text, internal: true  # 不会出现在 API 响应中
+### 按角色动态排除
+
+```ruby
+def index
+  fields = Article.zen_fields.keys.map(&:to_sym)
+  # 非管理员看不到内部备注
+  fields -= %i[internal_notes] unless @current_api_user.has_role?(:admin, :super_admin)
+  render_success Article.all.as_json(only: fields)
 end
 ```
 

@@ -1,61 +1,95 @@
+---
+title: 产品形态
+---
+
 # 产品形态
 
-## 语法
-
-```ruby
-product :type, **options
-```
+Zen Platform 支持在同一模型上声明多种产品形态，一行 DSL 切换展示方式。
 
 ## 支持的形态
 
-### CRUD (默认)
+| 形态 | DSL | 说明 |
+|------|-----|------|
+| `:crud` | 默认 | ProTable 表格（默认） |
+| `:kanban` | `product :kanban` | 看板拖拽 |
+| `:calendar` | `product :calendar` | 日历视图 |
+| `:gallery` | `product :gallery` | 画廊网格 |
+| `:soft_delete` | `product :soft_delete` | 软删除 |
 
-标准的表格 + 表单模式。
-
-```ruby
-product :crud
-```
-
-### Kanban 看板
-
-拖拽式看板视图，按枚举字段分列。
+## kanban（看板）
 
 ```ruby
-field :status, :enum, values: %w[todo doing done]
-product :kanban
+class Task < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :title, :string
+  field :status, :enum, values: %w[todo in_progress done]
+
+  product :kanban,
+    group_by: :status,
+    title_field: :title,
+    order_field: :position
+end
 ```
+
+- `group_by` — 分组的枚举字段
+- `title_field` — 卡片标题字段
+- `order_field` — 排序字段（拖拽后自动更新）
+
+看板支持拖拽排序，列内和跨列均可。
 
 生成器：`rails generate zen:admin Task --product=kanban`
 
-### Calendar 日历
-
-日历视图，按日期字段分组显示。
+## calendar（日历）
 
 ```ruby
-field :start_date, :date
-product :calendar
+class Event < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :title, :string
+  field :starts_at, :datetime
+
+  product :calendar,
+    date_field: :starts_at,
+    title_field: :title
+end
 ```
+
+- `date_field` — 日期字段
+- `title_field` — 事件标题字段
 
 生成器：`rails generate zen:admin Event --product=calendar`
 
-### Gallery 画廊
-
-网格布局图片卡片。
+## gallery（画廊）
 
 ```ruby
-field :cover, :image
-product :gallery
+class Photo < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :name, :string
+  field :cover, :image
+
+  product :gallery,
+    cover_field: :cover,
+    title_field: :name
+end
 ```
+
+- `cover_field` — 封面图片字段
+- `title_field` — 标题字段
 
 生成器：`rails generate zen:admin Photo --product=gallery`
 
-### Soft Delete 软删除
-
-归档而非物理删除。
+## soft_delete（软删除）
 
 ```ruby
-field :archived_at, :datetime
-product :soft_delete, column: :archived_at
+class Article < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :archived_at, :datetime
+
+  product :soft_delete, column: :archived_at
+end
 ```
 
 自动生成：

@@ -1,3 +1,7 @@
+---
+title: 自定义插件
+---
+
 # 自定义插件
 
 ## 插件架构
@@ -28,7 +32,7 @@ export const myPlugin = createPlugin({
 export { MyPluginComponent } from './MyPluginComponent'
 ```
 
-## 创建插件
+## 创建插件步骤
 
 1. 创建目录 `app/frontend/modules/content/editor/plugins/my-plugin/`
 2. 创建 `index.ts` 导出插件定义
@@ -61,4 +65,44 @@ export class MyNode extends DecoratorNode<React.ReactNode> {
     return new MyNode(serializedNode.data)
   }
 }
+```
+
+## 插件接口
+
+```typescript
+interface Plugin {
+  id: string
+  name: string
+  version: string
+  init?: (context: PluginContext) => void
+  destroy?: () => void
+  getToolbarItems?: () => ToolbarItem[]
+  getCommands?: () => Record<string, (context: PluginContext, payload?: any) => void>
+  getShortcuts?: () => Record<string, string>
+  getNodes?: () => Array<typeof DecoratorNode>
+}
+```
+
+## 示例：Mermaid 插件
+
+```typescript
+// app/frontend/modules/content/editor/plugins/mermaid/index.ts
+import { createPlugin } from '../factory'
+import { MermaidNode } from './MermaidNode'
+
+export const mermaidPlugin = createPlugin({
+  id: 'mermaid',
+  name: 'Mermaid',
+  version: '1.0.0',
+  toolbarItems: [
+    { id: 'mermaid', icon: MermaidIcon, label: 'Mermaid 图表', group: 'insert' },
+  ],
+  commands: {
+    'mermaid': (context, payload) => {
+      const node = new MermaidNode(payload?.code || '')
+      $insertNodes([node])
+    },
+  },
+  getNodes: () => [MermaidNode],
+})
 ```

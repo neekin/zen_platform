@@ -51,6 +51,7 @@ const Page = () => {
   const { notification } = App.useApp()
   const [loginType, setLoginType] = useState<LoginType>('account')
   const [loading, setLoading] = useState(false)
+  const [phoneValue, setPhoneValue] = useState('')
   const { flash } = usePage<SharedProps>().props
 
   useEffect(() => {
@@ -205,12 +206,13 @@ const Page = () => {
                   size: 'large',
                   style: { borderRadius: 8 },
                   prefix: <MobileOutlined style={{ color: 'rgba(255, 255, 255, 0.45)' }} className={'prefixIcon'} />,
+                  onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPhoneValue(e.target.value),
                 }}
                 name="mobile"
                 placeholder={'手机号'}
                 rules={[
-                  { required: true, title: '请输入手机号！' },
-                  { pattern: /^1\d{10}$/, title: '手机号格式错误！' },
+                  { required: true, message: '请输入手机号！' },
+                  { pattern: /^1\d{10}$/, message: '手机号格式错误！' },
                 ]}
               />
               <ProFormCaptcha
@@ -230,18 +232,13 @@ const Page = () => {
                 name="captcha"
                 rules={[{ required: true, title: '请输入验证码！' }]}
                 onGetCaptcha={async () => {
-                  // 从表单获取手机号
-                  const form = document.querySelector('form')
-                  const phoneInput = form?.querySelector('input[name="mobile"]') as HTMLInputElement
-                  const phone = phoneInput?.value
-
-                  if (!phone) {
+                  if (!phoneValue || !/^1\d{10}$/.test(phoneValue)) {
                     notification.open({
                       type: 'warning',
-                      title: '请先输入手机号',
+                      title: '请输入正确的手机号',
                       placement: 'bottomRight',
                     })
-                    throw new Error('请先输入手机号')
+                    throw new Error('请输入正确的手机号')
                   }
 
                   try {
@@ -251,7 +248,7 @@ const Page = () => {
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                       },
-                      body: JSON.stringify({ phone }),
+                      body: JSON.stringify({ phone: phoneValue }),
                     })
                     const data = await res.json()
 

@@ -3,7 +3,7 @@
  *
  * 提供创建插件的工具函数
  */
-import type { Plugin, PluginContext, ToolbarItem, PluginCommand, KeyboardShortcut } from '../../types'
+import type { Plugin, PluginContext, ToolbarItem, PluginCommand, KeyboardShortcut } from '@/types'
 
 /** 插件定义 */
 export interface PluginDefinition {

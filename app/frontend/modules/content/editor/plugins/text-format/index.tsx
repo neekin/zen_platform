@@ -12,9 +12,9 @@ import {
   StrikethroughOutlined,
 } from '@ant-design/icons'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../types'
-import { toolbarRegistry } from '../../toolbar/ToolbarRegistry'
-import { $isExtendedTextNode, $createExtendedTextNode } from '../../nodes/ExtendedTextNode'
+import type { PluginContext } from '@/types'
+import { toolbarRegistry } from '@/toolbar/ToolbarRegistry'
+import { $isExtendedTextNode, $createExtendedTextNode } from '@/nodes/ExtendedTextNode'
 
 // 自注册工具栏项
 toolbarRegistry.register({

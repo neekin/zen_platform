@@ -4,7 +4,7 @@
  * 使用 Ant Design Modal 输入链接 URL
  */
 import { useState, useEffect } from 'react'
-import { DslModal } from '../../../../dsl'
+import { DslModal } from '@/../../dsl'
 import { Input, Space } from 'antd'
 
 export interface LinkDialogProps {

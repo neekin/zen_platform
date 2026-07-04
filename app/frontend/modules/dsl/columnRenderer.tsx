@@ -1,7 +1,7 @@
 import type { ProColumns } from '@ant-design/pro-components'
 import { router } from '@inertiajs/react'
 import { Tag, Image } from 'antd'
-import type { DslMeta, ListColumn } from '../../types/dsl'
+import type { DslMeta, ListColumn } from '@/types/dsl'
 
 /**
  * 根据 DSL 元数据构建 ProTable 列定义

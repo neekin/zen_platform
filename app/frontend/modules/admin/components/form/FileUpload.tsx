@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react'
 import { Upload, Button, List, App } from 'antd'
 import { UploadOutlined, DeleteOutlined, FileOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
-import type { UploadAdapter } from '../../content'
+import type { UploadAdapter } from '@/content'
 
 export interface FileUploadProps {
   /** 上传适配器 */

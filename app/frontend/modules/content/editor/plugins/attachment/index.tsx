@@ -12,8 +12,8 @@ import { $insertNodes, createCommand, COMMAND_PRIORITY_LOW } from 'lexical'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { FileOutlined, DownloadOutlined, DeleteOutlined } from '@ant-design/icons'
 import { createPlugin } from '../factory'
-import type { PluginContext, UploadAdapter } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext, UploadAdapter } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** Attachment 节点序列化类型 */
 export type SerializedAttachmentNode = Spread<

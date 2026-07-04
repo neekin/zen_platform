@@ -6,8 +6,8 @@
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from '@lexical/list'
 import { OrderedListOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 // 自注册工具栏项
 toolbarRegistry.register({

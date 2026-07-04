@@ -11,8 +11,8 @@ import { DecoratorNode, DOMExportOutput, LexicalEditor, NodeKey, SerializedLexic
 import { $insertNodes, $getSelection, $isRangeSelection, createCommand, COMMAND_PRIORITY_LOW } from 'lexical'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** Math 节点序列化类型 */
 export type SerializedMathNode = Spread<

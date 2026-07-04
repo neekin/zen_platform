@@ -12,8 +12,8 @@ import { $insertNodes, $getSelection, $isRangeSelection, createCommand, COMMAND_
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { UserOutlined } from '@ant-design/icons'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** 用户数据 */
 export interface MentionUser {

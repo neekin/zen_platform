@@ -13,4 +13,4 @@ export type {
   DslMeta, FieldDefinition, AssociationDefinition,
   DisplayConfig, FormSection, ListColumn, ProductConfig,
   FieldType, AssociationType,
-} from '../../types/dsl'
+} from '@/types/dsl'

@@ -4,7 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-de
 import { router } from '@inertiajs/react'
 import { useState, useCallback } from 'react'
 import type { ProColumns } from '@ant-design/pro-components'
-import type { DslMeta } from '../../types/dsl'
+import type { DslMeta } from '@/types/dsl'
 import { buildColumns } from './columnRenderer'
 
 export interface PaginationConfig {

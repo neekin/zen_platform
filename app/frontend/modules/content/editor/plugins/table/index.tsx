@@ -11,8 +11,8 @@ import { TableNode, TableRowNode, TableCellNode, $createTableNodeWithDimensions,
 import { TableOutlined } from '@ant-design/icons'
 import { useState, useCallback, useEffect } from 'react'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** Table 插件配置 */
 export interface TablePluginConfig {

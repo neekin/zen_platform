@@ -7,8 +7,8 @@
 import { UNDO_COMMAND, REDO_COMMAND } from 'lexical'
 import { UndoOutlined, RedoOutlined } from '@ant-design/icons'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 // 自注册工具栏项
 toolbarRegistry.register({

@@ -57,6 +57,8 @@ function ArticleIndex({ meta, articles, ...props }: ArticleIndexProps) {
         data={articles}
         basePath="/admin/articles"
         createText="新建Article"
+        onCreate={() => { setEditing(null); setModalOpen(true) }}
+        onEdit={(record) => { setEditing(record); setModalOpen(true) }}
       />
 
       <DslModal

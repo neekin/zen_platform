@@ -6,7 +6,7 @@ import { useState, useRef } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
 import { App, Card, Form, Input, Button, Row, Col, Space, Divider, Typography, Statistic } from 'antd'
-import { UserOutlined, LockOutlined, PhoneOutlined, EditOutlined, SafetyOutlined } from '@ant-design/icons'
+import { UserOutlined, LockOutlined, MobileOutlined, EditOutlined, SafetyOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -218,7 +218,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                   <Space>
-                    <PhoneOutlined style={{ fontSize: 24, color: 'var(--ant-color-primary)' }} />
+                    <MobileOutlined style={{ fontSize: 24, color: 'var(--ant-color-primary)' }} />
                     <div>
                       <div style={{ fontSize: 16, fontWeight: 500 }}>{user.phone}</div>
                       <Text type="success" style={{ fontSize: 12 }}>已绑定</Text>
@@ -250,7 +250,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
                     { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确' },
                   ]}
                 >
-                  <Input placeholder="请输入手机号码" prefix={<PhoneOutlined />} />
+                  <Input placeholder="请输入手机号码" prefix={<MobileOutlined />} />
                 </Form.Item>
 
                 <Form.Item
@@ -272,7 +272,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
 
                 <Form.Item>
                   <Space>
-                    <Button type="primary" htmlType="submit" loading={phoneLoading} icon={<PhoneOutlined />}>
+                    <Button type="primary" htmlType="submit" loading={phoneLoading} icon={<MobileOutlined />}>
                       {user.phone ? '确认更换' : '绑定手机号码'}
                     </Button>
                     {user.phone && (

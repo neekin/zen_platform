@@ -6,6 +6,10 @@ import { useNotifications } from '@/hooks/useNotifications'
 
 const { Text } = Typography
 
+interface NotificationBellProps {
+  iconColor?: string
+}
+
 const actionLabels: Record<string, string> = {
   created: '创建了',
   updated: '更新了',
@@ -21,7 +25,7 @@ const actionLabels: Record<string, string> = {
   announcement: '系统公告',
 }
 
-export default function NotificationBell() {
+export default function NotificationBell({ iconColor = 'rgba(255,255,255,0.65)' }: NotificationBellProps) {
   const { notifications, unreadCount, connected, markAsRead, markAllAsRead } = useNotifications()
 
   const dropdownContent = (
@@ -86,7 +90,7 @@ export default function NotificationBell() {
       <Tooltip title={connected ? '实时连接正常' : '正在连接...'} placement="bottom">
         <Badge count={unreadCount} size="small" offset={[-4, 4]}>
           <span style={{ display: 'inline-flex', alignItems: 'center', cursor: 'pointer' }}>
-            <BellOutlined style={{ fontSize: 18, color: 'rgba(255,255,255,0.65)' }} />
+            <BellOutlined style={{ fontSize: 18, color: iconColor }} />
             <span
               style={{
                 display: 'inline-block',

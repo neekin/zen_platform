@@ -193,7 +193,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <QuestionCircleOutlined style={{ fontSize: 16, color: iconColor }} />
               </a>
             </Tooltip>,
-            <NotificationBell key="notification" />,
+            <NotificationBell key="notification" iconColor={iconColor} />,
           ]}
           contentStyle={{ padding: 24 }}
         >

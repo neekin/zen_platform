@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable, ProCard, type ProColumns } from '@ant-design/pro-components'
 import { App, Button, Tag, Switch, Space, Drawer, Modal } from 'antd'
-import {
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
 import AdminLayout from '../../../layouts/AdminLayout'
 import DslModal from '../../../modules/dsl/DslModal'

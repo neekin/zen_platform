@@ -47,6 +47,10 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
         <ProDescriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %> ? '是' : '否'}</ProDescriptions.Item>
 <% elsif association_foreign_key?(a) %>
         <ProDescriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">{<%= singular_name %>.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}</ProDescriptions.Item>
+<% elsif rich_text_fields.include?(a.name.to_sym) %>
+        <ProDescriptions.Item label="<%= a.name %>" span={2}>
+          {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? <RichTextViewer content={<%= singular_name %>.<%= a.name %>} /> : '-'}
+        </ProDescriptions.Item>
 <% else %>
         <ProDescriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %>}</ProDescriptions.Item>
 <% end %>

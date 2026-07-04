@@ -9,7 +9,6 @@ class Permission < ApplicationRecord
   # 每个资源支持的操作（不支持的不显示）
   # 脚手架生成器会自动在此注入新资源
   RESOURCE_ACTIONS = {
-    "Article"      => %w[index show create update destroy],
     "User"      => %w[index show create update destroy],
     "User"         => %w[index show create update destroy],
     "Role"         => %w[index create destroy],

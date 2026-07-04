@@ -22,16 +22,6 @@ export const menuRoutes = {
       icon: <DashboardOutlined />,
     },
     {
-      path: '/admin/articles',
-      name: '文章管理',
-      icon: <FileTextOutlined />,
-    },
-    {
-      path: '/admin/comments',
-      name: '评论管理',
-      icon: <CommentOutlined />,
-    },
-    {
       path: '/admin/settings',
       name: '系统设置',
       icon: <SettingOutlined />,

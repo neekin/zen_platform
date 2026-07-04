@@ -46,6 +46,7 @@ export default defineConfig({
             { text: '概述', link: '/scaffolding/' },
             { text: 'Admin 生成器', link: '/scaffolding/admin' },
             { text: 'API 生成器', link: '/scaffolding/api' },
+            { text: 'Admin 二开指南', link: '/scaffolding/admin-customization' },
           ],
         },
       ],
@@ -79,6 +80,8 @@ export default defineConfig({
           items: [
             { text: '概述', link: '/api/' },
             { text: '认证方式', link: '/api/authentication' },
+            { text: '字段过滤', link: '/api/field-filtering' },
+            { text: '权限控制', link: '/api/permissions' },
           ],
         },
       ],

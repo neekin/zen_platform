@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Admin::AuditLogsController, type: :controller do
-  let(:admin_user) { User.create!(email: "admin@test.com", username: "admin", name: "Admin", password: "password") }
-  let(:editor_user) { User.create!(email: "editor@test.com", username: "editor", name: "Editor", password: "password") }
+  let(:admin_user) { User.create!(email: "admin_audit_logs_controller_spec@test.com", username: "admin_audit_logs_controller_spec", name: "Admin", password: "password") }
+  let(:editor_user) { User.create!(email: "editor_audit_logs_controller_spec@test.com", username: "editor_audit_logs_controller_spec", name: "Editor", password: "password") }
   let(:test_user) { User.create!(email: "target@test.com", username: "target", name: "测试用户", password: "password") }
 
   before do

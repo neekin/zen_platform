@@ -8,52 +8,47 @@ Zen Platform 内置基于 Lexical 的富文本编辑器，开箱即用 20 个插
 
 ## 快速使用
 
-### 第一步：在 Model 中声明字段
+有两种使用方式，根据你的场景选择：
 
-打开你的 Model 文件（例如 `app/models/article.rb`），添加 `rich_text` 类型的字段：
+### 方式一：新模型 — 用脚手架生成器（推荐）
 
-```ruby
-class Article < ApplicationRecord
-  include Zen::ModelDsl
-
-  # 普通文本字段
-  field :title, :string, required: true
-
-  # 富文本字段 — 前端自动渲染为富文本编辑器
-  field :body, :rich_text
-
-  # 普通多行文本字段 — 前端渲染为普通 textarea
-  field :notes, :text
-end
-```
-
-声明 `:rich_text` 后，脚手架生成器会自动：
-- 导入 `RichTextEditor` 和 `RichTextViewer` 组件
-- 表单中渲染富文本编辑器（可编辑）
-- 列表/详情中渲染只读查看器（只读）
-
-### 第二步：运行脚手架生成器
+如果你还没有 Article 模型，用生成器一步到位：
 
 ```bash
-# 生成 Admin CRUD 页面
-rails generate zen:admin Article title:string body:text notes:text --modal
+# 生成模型 + Admin CRUD 页面
+rails generate zen:admin Article title:string body:text --modal
 
 # 运行迁移
 bin/rails db:migrate
 ```
 
-### 第三步：访问页面
+生成器会自动创建 `app/models/article.rb`，其中 `body` 字段会被识别为富文本字段，前端页面自动渲染为富文本编辑器。
 
 打开 `http://localhost:3100/admin/articles`，点击"新建文章"，你会看到：
 - **标题** — 普通文本输入框
 - **内容** — 富文本编辑器（支持加粗、标题、图片、链接等）
-- **备注** — 普通多行文本框
 
-编辑器内容自动保存为 Lexical JSON 格式，存储在数据库 `text` 类型字段中。
+### 方式二：已有模型 — 手动添加字段
 
-### 手动使用（不通过脚手架）
+如果你已经有 Article 模型，只需在 Model 中声明 `rich_text` 类型的字段：
 
-如果你需要在自定义页面中使用编辑器：
+```ruby
+# app/models/article.rb
+class Article < ApplicationRecord
+  include Zen::ModelDsl
+
+  field :title, :string, required: true
+  field :body, :rich_text  # ← 添加这一行
+end
+```
+
+声明 `:rich_text` 后，已有的 CRUD 页面会自动：
+- 表单中渲染富文本编辑器（可编辑）
+- 列表/详情中渲染只读查看器（只读）
+
+### 方式三：在自定义页面中使用
+
+如果你需要在非脚手架页面中使用编辑器：
 
 ```tsx
 import { RichTextEditor, RichTextViewer, ActiveStorageUploader } from '@/modules/content'

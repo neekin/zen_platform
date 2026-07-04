@@ -57,7 +57,7 @@ const Page = () => {
     if (flash?.alert) {
       notification.open({
         type: 'error',
-        message: '登录失败',
+        title: '登录失败',
         description: flash.alert,
         placement: 'bottomRight',
       })
@@ -65,7 +65,7 @@ const Page = () => {
     if (flash?.notice) {
       notification.open({
         type: 'success',
-        message: flash.notice,
+        title: flash.notice,
         placement: 'bottomRight',
       })
     }
@@ -184,7 +184,7 @@ const Page = () => {
                   prefix: <UserOutlined style={{ color: 'rgba(255, 255, 255, 0.45)' }} className={'prefixIcon'} />,
                 }}
                 placeholder={'用户名: admin'}
-                rules={[{ required: true, message: '请输入用户名!' }]}
+                rules={[{ required: true, title: '请输入用户名!' }]}
               />
               <ProFormText.Password
                 name="password"
@@ -194,7 +194,7 @@ const Page = () => {
                   prefix: <LockOutlined style={{ color: 'rgba(255, 255, 255, 0.45)' }} className={'prefixIcon'} />,
                 }}
                 placeholder={'密码: password123'}
-                rules={[{ required: true, message: '请输入密码！' }]}
+                rules={[{ required: true, title: '请输入密码！' }]}
               />
             </>
           )}
@@ -209,8 +209,8 @@ const Page = () => {
                 name="mobile"
                 placeholder={'手机号'}
                 rules={[
-                  { required: true, message: '请输入手机号！' },
-                  { pattern: /^1\d{10}$/, message: '手机号格式错误！' },
+                  { required: true, title: '请输入手机号！' },
+                  { pattern: /^1\d{10}$/, title: '手机号格式错误！' },
                 ]}
               />
               <ProFormCaptcha
@@ -228,7 +228,7 @@ const Page = () => {
                   return '获取验证码'
                 }}
                 name="captcha"
-                rules={[{ required: true, message: '请输入验证码！' }]}
+                rules={[{ required: true, title: '请输入验证码！' }]}
                 onGetCaptcha={async () => {
                   // 从表单获取手机号
                   const form = document.querySelector('form')
@@ -238,7 +238,7 @@ const Page = () => {
                   if (!phone) {
                     notification.open({
                       type: 'warning',
-                      message: '请先输入手机号',
+                      title: '请先输入手机号',
                       placement: 'bottomRight',
                     })
                     throw new Error('请先输入手机号')
@@ -258,14 +258,14 @@ const Page = () => {
                     if (data.code === 0) {
                       notification.open({
                         type: 'success',
-                        message: '验证码已发送',
+                        title: '验证码已发送',
                         description: '请查看控制台获取验证码',
                         placement: 'bottomRight',
                       })
                     } else {
                       notification.open({
                         type: 'error',
-                        message: '发送失败',
+                        title: '发送失败',
                         description: data.message,
                         placement: 'bottomRight',
                       })

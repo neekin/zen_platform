@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type { ToolbarItemId, ToolbarGroup } from '../../types'
 import { parseToolbarConfig } from '../../toolbar/ToolbarPlugin'
 import { toolbarRegistry } from '../../toolbar/ToolbarRegistry'
+import TextFormatToolbar from './TextFormatToolbar'
 
 /** 工具栏属性 */
 interface ToolbarProps {
@@ -101,6 +102,18 @@ export default function Toolbar({ config, disabled }: ToolbarProps) {
           </Space>
         </span>
       ))}
+
+      {/* 文本样式工具栏（颜色、字号） */}
+      <span
+        style={{
+          display: 'inline-block',
+          width: 1,
+          height: 20,
+          margin: '0 4px',
+          background: 'var(--ant-color-border)',
+        }}
+      />
+      <TextFormatToolbar />
     </div>
   )
 }

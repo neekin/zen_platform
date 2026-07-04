@@ -30,11 +30,19 @@ class ApplicationPolicy
   private
 
   # 检查用户是否有权限（数据库优先，回退到默认配置）
+  # 如果资源未注册（新脚手架），默认允许已认证用户访问
   def check_permission(action)
     resource = record.is_a?(Class) ? record.name : record.class.name
-    user.roles.each do |role|
-      return true if Permission.allowed?(role.name, resource, action.to_s)
+
+    # 已注册资源：按 Permission 表/默认配置检查
+    if Permission::RESOURCE_ACTIONS.key?(resource)
+      user.roles.each do |role|
+        return true if Permission.allowed?(role.name, resource, action.to_s)
+      end
+      return false
     end
-    false
+
+    # 未注册资源（新脚手架生成的）：默认允许 admin 以上角色
+    user.has_any_role?(:super_admin, :admin)
   end
 end

@@ -40,6 +40,21 @@ module Zen
       template "#{template_prefix}/controller.rb.tt", "app/controllers/admin/#{plural_name}_controller.rb"
     end
 
+    def create_policy
+      template "#{template_prefix}/policy.rb.tt", "app/policies/#{singular_name}_policy.rb"
+    end
+
+    def register_permissions
+      # 在 Permission::RESOURCE_ACTIONS 中注册新资源的默认操作
+      actions = kanban? ? %w[index show create update destroy] : %w[index show create update destroy]
+      inject_into_file "app/models/permission.rb",
+        after: "RESOURCE_ACTIONS = {" do
+        "\n    \"#{class_name}\"      => %w[#{actions.join(' ')}],"
+      end
+    rescue StandardError
+      # 如果注入失败（文件格式变了），忽略
+    end
+
     def create_index_page
       if kanban?
         template "products/kanban/index.tsx.tt", "app/frontend/pages/admin/#{plural_name}/Kanban.tsx"

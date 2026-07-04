@@ -2,8 +2,8 @@ import { router } from '@inertiajs/react'
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
 import { Button, Space, Tag, Popconfirm, App } from 'antd'
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import AdminLayout from '../../../layouts/AdminLayout'
-import { RichTextViewer } from '../../../modules/content'
+import AdminLayout from '@/layouts/AdminLayout'
+import { RichTextViewer } from '@/modules/content'
 import type { ReactNode } from 'react'
 
 interface Article {

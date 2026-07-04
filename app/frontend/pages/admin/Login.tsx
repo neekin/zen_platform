@@ -16,7 +16,7 @@ import {
 import { router, usePage } from '@inertiajs/react'
 import { App, Button, Divider, Space, Tabs, theme } from 'antd'
 import { useEffect, useState } from 'react'
-import type { SharedProps } from '../../types'
+import type { SharedProps } from '@/types'
 
 type LoginType = 'phone' | 'account'
 

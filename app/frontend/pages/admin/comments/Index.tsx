@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { router } from '@inertiajs/react'
 import { App, Modal } from 'antd'
-import AdminLayout from '../../../layouts/AdminLayout'
-import { DslTable, DslForm } from '../../../modules/dsl'
-import type { DslMeta } from '../../../types/dsl'
+import AdminLayout from '@/layouts/AdminLayout'
+import { DslTable, DslForm } from '@/modules/dsl'
+import type { DslMeta } from '@/types/dsl'
 import type { ReactNode } from 'react'
 
 interface CommentsIndexProps {

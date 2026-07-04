@@ -10,7 +10,7 @@ import {
   ThunderboltOutlined,
   FileTextOutlined,
 } from '@ant-design/icons'
-import AdminLayout from '../../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
 const { Link, Text } = Typography

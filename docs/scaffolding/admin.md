@@ -1,39 +1,45 @@
+---
+title: Admin 生成器
+---
+
 # Admin 生成器
+
+`zen:admin` 生成完整的管理后台 CRUD 页面。
 
 ## 基本用法
 
 ```bash
-rails generate zen:admin ModelName field:type field:type [options]
+rails generate zen:admin Article title:string body:rich_text status:enum
 ```
 
-## 示例
+## 模式
+
+### Modal 模式（默认）
+
+列表和表单在同一个页面，表单以 Modal 弹出。
 
 ```bash
-# 标准 CRUD（modal 模式）
-rails generate zen:admin Article title:string body:text status:enum \
-  --enums='{"status":["draft","published","archived"]}' \
-  --modal
-
-# 看板视图
-rails generate zen:admin Task title:string status:enum \
-  --enums='{"status":["todo","doing","done"]}' \
-  --product=kanban
-
-# 日历视图
-rails generate zen:admin Event name:string start_date:date \
-  --product=calendar
-
-# 画廊视图
-rails generate zen:admin Photo title:string cover:image \
-  --product=gallery
+rails generate zen:admin Article --modal
 ```
+
+适合字段较少（≤8 个）的模型。
+
+### Page 模式
+
+列表和表单是独立页面，表单在单独 URL。
+
+```bash
+rails generate zen:admin Article --page
+```
+
+适合字段较多或需要富文本编辑的模型。
 
 ## 选项
 
 | 选项 | 说明 | 示例 |
 |------|------|------|
-| `--modal` | Modal 表单模式 | `--modal` |
-| `--page` | 独立页面模式 | `--page` |
+| `--modal` | Modal 模式（默认） | `--modal` |
+| `--page` | Page 模式 | `--page` |
 | `--rich_text` | 富文本字段 | `--rich-text=body` |
 | `--image` | 图片上传字段 | `--image=cover` |
 | `--file` | 文件上传字段 | `--file=attachment` |
@@ -43,17 +49,53 @@ rails generate zen:admin Photo title:string cover:image \
 | `--has-many` | has_many 关联 | `--has-many=comments` |
 | `--product` | 产品形态 | `--product=kanban` |
 
-## 生成的文件
+## 枚举处理
 
+```bash
+rails generate zen:admin Article title:string status:enum \
+  --enums='{"status":["draft","published","archived"]}'
 ```
-app/controllers/admin/posts_controller.rb
-app/frontend/pages/admin/posts/Index.tsx
-config/routes.rb (自动插入路由)
+
+生成器会自动在 Model 中添加 enum 声明（通过 DSL `field :status, :enum`）。
+
+## 产品形态
+
+```bash
+rails generate zen:admin Task title:string status:enum \
+  --enums='{"status":["todo","done"]}' \
+  --product=kanban
 ```
 
-## 生成器会自动：
+支持形态：`crud`（默认）、`kanban`、`calendar`、`gallery`。
 
-1. 使用 `zen_props` 传递 DSL 元数据
-2. 使用 `policy_scope` 进行权限过滤
-3. 使用 `authorize` 进行操作授权
-4. 使用 DslTable + DslForm 动态渲染
+## 生成的 Controller
+
+```ruby
+# app/controllers/admin/articles_controller.rb
+module Admin
+  class ArticlesController < AdminController
+    before_action :set_article, only: [:show, :update, :destroy]
+
+    def index
+      @articles = policy_scope(Article)
+      render inertia: "admin/articles/Index",
+        props: zen_props(Article, articles: @articles.as_json)
+    end
+
+    def create
+      @article = Article.new(article_params)
+      authorize @article
+      # ...
+    end
+  end
+end
+```
+
+生成器自动集成 `zen_props`（DSL 元数据）、`policy_scope`（Pundit 权限）、`authorize`。
+
+## 自定义
+
+生成后可直接编辑生成的文件。推荐方式：
+
+1. 修改 Model DSL → 页面自动更新
+2. 如需深度定制，直接编辑 `.tsx` 文件

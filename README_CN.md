@@ -1,46 +1,32 @@
-<p align="center">
-  <h1 align="center">⚡ Zen Platform</h1>
-  <p align="center">声明式全栈应用生成平台 — 一行 DSL，自动生成管理后台 + API</p>
-</p>
+# Zen Platform
 
-<p align="center">
-  <a href="https://github.com/yourusername/zen_platform/actions"><img src="https://github.com/yourusername/zen_platform/workflows/CI/badge.svg" alt="CI"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/yourusername/zen_platform" alt="License"></a>
-  <img src="https://img.shields.io/badge/ruby-3.4-red" alt="Ruby">
-  <img src="https://img.shields.io/badge/rails-8.1-red" alt="Rails">
-  <img src="https://img.shields.io/badge/react-19-blue" alt="React">
-</p>
+[English](./README.md) | 简体中文
 
 ---
 
-## 为什么选择 Zen？
+一行 DSL 声明，自动生成完整管理后台 + API。
 
-| 特性 | 说明 |
-|------|------|
-| 📝 **声明即所得** | 在 Model 中用 DSL 声明字段、关联、展示方式，自动生成管理页面和 API |
-| ✏️ **富文本开箱即用** | 20 个 Lexical 插件：Mermaid 图表、KaTeX 公式、代码块、视频嵌入 |
-| 🎨 **多产品形态** | CRUD 表格、看板拖拽、日历视图、画廊网格 — 一行 DSL 切换 |
-| 🔐 **企业级权限** | Pundit + Rolify RBAC，4 级角色，资源级授权 |
-| 📊 **审计日志** | PaperTrail 追踪所有变更，带 request context |
-| 🚀 **一键生成** | `rails generate zen:admin` 自动生成 Controller + 页面 + 路由 |
+## ✨ 特性
 
-## 30 秒上手
+- **声明即所得** — Model 中声明一次，前端自动渲染
+- **多产品形态** — 表格 / 看板 / 日历 / 画廊，一行 DSL 切换
+- **富文本开箱即用** — 20 个 Lexical 插件（Mermaid/KaTeX/代码块）
+- **企业级权限** — Pundit + Rolify RBAC，4 级角色
+- **审计日志** — PaperTrail 全量追踪
+- **一键生成** — `rails generate zen:admin` 生成全套 CRUD
+
+## 🚀 快速开始
 
 ```bash
-# 1. 克隆
 git clone https://github.com/yourusername/zen_platform.git
 cd zen_platform
-
-# 2. 安装依赖 + 初始化数据库
 bin/setup
-
-# 3. 启动开发服务器
 bin/dev
 ```
 
-打开 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
+访问 `http://localhost:3100/admin`，登录 `admin@example.com` / `password123`
 
-## DSL 示例
+## 📖 DSL 示例
 
 ```ruby
 class Article < ApplicationRecord
@@ -48,7 +34,7 @@ class Article < ApplicationRecord
 
   field :title, :string, required: true
   field :body, :rich_text
-  field :status, :enum, values: %w[draft published archived], default: "draft"
+  field :status, :enum, values: %w[draft published archived]
 
   belongs_to :category
 
@@ -67,32 +53,24 @@ class Article < ApplicationRecord
 end
 ```
 
-## 技术栈
+## 📖 文档
 
-| 层 | 技术 |
-|----|------|
-| Frontend | React 19 · TypeScript · Ant Design 6 · Pro Components · Inertia.js 3 · Vite 8 |
-| Backend | Rails 8.1 · Ruby 3.4 · SQLite3 · Solid Queue/Cache/Cable |
-| Rich Text | Lexical 0.46 · 20 Plugins · Mermaid · KaTeX |
+完整文档：https://yourusername.github.io/zen_platform
 
-## 对比
+## 🆚 对比
 
-| 维度 | Zen Platform | ActiveAdmin | Avo | Administrate |
-|------|-------------|-------------|-----|--------------|
-| 前端框架 | React + Ant Design | Arbre (ERB) | ViewComponent | ERB |
-| DSL 驱动 | ✅ | ✅ | ✅ | ❌ |
-| 富文本 | ✅ 20 插件 | ❌ | ❌ | ❌ |
-| 多形态 | ✅ CRUD/看板/日历/画廊 | ❌ | ❌ | ❌ |
+| 功能 | Zen Platform | ActiveAdmin | Avo | 若依 |
+|------|--------------|-------------|-----|------|
+| DSL 声明 | ✅ | ✅ | ✅ | ❌ |
+| 前端自动渲染 | ✅ React 19 | ❌ ERB | ❌ ERB | ✅ Vue |
+| 多产品形态 | ✅ | ❌ | ❌ | 部分 |
+| 富文本 | ✅ 20 插件 | ❌ | ❌ | 基础 |
 | API 生成 | ✅ Swagger | ❌ | ❌ | ❌ |
-| 实时通知 | ✅ ActionCable | ❌ | ❌ | ❌ |
 
-## 文档
+## 🤝 贡献
 
-- [快速上手](docs/guide/quick-start.md)
-- [Model DSL](docs/dsl/index.md)
-- [脚手架生成器](docs/scaffolding/index.md)
-- [API 文档](docs/api/index.md)
+见 [CONTRIBUTING](./CONTRIBUTING.md)
 
-## 许可证
+## 📄 许可证
 
 [MIT License](LICENSE)

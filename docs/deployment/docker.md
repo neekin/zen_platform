@@ -1,6 +1,25 @@
+---
+title: Docker 部署
+---
+
 # Docker 部署
 
-## 快速启动
+## 使用 docker-compose（推荐用于本地 Demo）
+
+```bash
+# 构建并启动
+docker compose up --build
+
+# 访问
+open http://localhost:3000/admin
+```
+
+`docker-compose.yml` 包含：
+- Rails 应用（Puma）
+- SQLite3 数据库（开发环境）
+- 持久化存储卷
+
+## 生产 Docker 构建
 
 ```bash
 # 构建镜像
@@ -10,21 +29,9 @@ docker build -t zen_platform .
 docker run -d -p 3000:3000 \
   -e RAILS_MASTER_KEY=<your-master-key> \
   -e RAILS_ENV=production \
+  -e DATABASE_URL=postgresql://... \
   --name zen_platform \
   zen_platform
-```
-
-## Docker Compose
-
-```bash
-# 启动
-docker compose up -d
-
-# 查看日志
-docker compose logs -f
-
-# 停止
-docker compose down
 ```
 
 ## 环境变量
@@ -36,6 +43,12 @@ docker compose down
 | `DATABASE_URL` | 数据库连接 | ❌ (默认 SQLite) |
 | `ALLOWED_HOSTS` | 允许的主机 | ❌ |
 
+## Render 一键部署
+
+Fork 仓库后，在 Render 创建 Web Service 连接 GitHub 仓库即可。
+
+配置文件 `render.yaml` 已包含在项目中，Render 会自动识别。
+
 ## 生产环境建议
 
 1. 切换到 PostgreSQL
@@ -43,3 +56,4 @@ docker compose down
 3. 启用 SSL
 4. 配置日志收集
 5. 设置监控告警
+6. 使用 Active Storage + S3 存储文件

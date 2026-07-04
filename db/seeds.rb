@@ -26,7 +26,7 @@ puts "Creating example articles..."
   Article.find_or_create_by!(title: "示例文章 #{i + 1}") do |a|
     a.body = "<p>这是第 #{i + 1} 篇示例文章的内容。</p>"
     a.status = i.zero? ? "published" : "draft"
-    a.category = ["技术", "产品", "设计"][i % 3]
+    a.category = [ "技术", "产品", "设计" ][i % 3]
     a.published_at = i.zero? ? Time.current : nil
     a.user = admin
   end

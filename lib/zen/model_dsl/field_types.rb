@@ -28,7 +28,7 @@ module Zen
       email: { rails: :string, js: "string", component: "ProFormText" },
 
       # 关联类型
-      reference: { rails: :integer, js: "number", component: "ReferenceSelect" },
+      reference: { rails: :integer, js: "number", component: "ReferenceSelect" }
     }.freeze
 
     # 获取 Rails 迁移类型
@@ -48,23 +48,23 @@ module Zen
 
     # 字段类型是否支持搜索
     def self.searchable?(field_type)
-      [:string, :text, :enum, :reference].include?(field_type.to_sym)
+      [ :string, :text, :enum, :reference ].include?(field_type.to_sym)
     end
 
     # 字段类型是否支持排序
     def self.sortable?(field_type)
-      [:string, :integer, :decimal, :float, :date, :datetime, :boolean].include?(field_type.to_sym)
+      [ :string, :integer, :decimal, :float, :date, :datetime, :boolean ].include?(field_type.to_sym)
     end
 
     # 字段类型是否支持过滤
     def self.filterable?(field_type)
-      [:string, :enum, :boolean, :reference, :date, :datetime].include?(field_type.to_sym)
+      [ :string, :enum, :boolean, :reference, :date, :datetime ].include?(field_type.to_sym)
     end
 
     # 获取枚举状态颜色
     def self.enum_color(value, field_def)
       return :default unless field_def.type == :enum
-      
+
       # 默认颜色映射
       color_map = field_def.options[:colors] || {}
       color_map[value.to_sym] || :default

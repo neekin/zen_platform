@@ -11,8 +11,8 @@ module Admin
 
       render inertia: "admin/notifications/Index",
         props: {
-          notifications: notifications.as_json(include: { actor: { only: [:id, :name] } }),
-          unread_count: current_user.notifications.unread.count,
+          notifications: notifications.as_json(include: { actor: { only: [ :id, :name ] } }),
+          unread_count: current_user.notifications.unread.count
         }
     end
 

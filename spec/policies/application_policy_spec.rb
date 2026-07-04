@@ -12,13 +12,13 @@ RSpec.describe ApplicationPolicy, type: :policy do
 
   describe "#index?" do
     it "allows super_admin and admin" do
-      [super_admin, admin].each do |user|
+      [ super_admin, admin ].each do |user|
         expect(ApplicationPolicy.new(user, record).index?).to be true
       end
     end
 
     it "denies editor, viewer and no_role" do
-      [editor, viewer, no_role].each do |user|
+      [ editor, viewer, no_role ].each do |user|
         expect(ApplicationPolicy.new(user, record).index?).to be false
       end
     end
@@ -30,7 +30,7 @@ RSpec.describe ApplicationPolicy, type: :policy do
     end
 
     it "denies admin, editor, viewer and no_role" do
-      [admin, editor, viewer, no_role].each do |user|
+      [ admin, editor, viewer, no_role ].each do |user|
         expect(ApplicationPolicy.new(user, record).create?).to be false
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe ApplicationPolicy, type: :policy do
     end
 
     it "denies admin, editor, viewer and no_role" do
-      [admin, editor, viewer, no_role].each do |user|
+      [ admin, editor, viewer, no_role ].each do |user|
         expect(ApplicationPolicy.new(user, record).destroy?).to be false
       end
     end

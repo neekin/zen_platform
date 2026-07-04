@@ -7,9 +7,9 @@ class InertiaController < ApplicationController
         id: current_user.id,
         name: current_user.name,
         email: current_user.email,
-        roles: current_user.roles.pluck(:name),
+        roles: current_user.roles.pluck(:name)
       } : nil,
-      flash: flash.to_hash.slice("notice", "alert").merge(ts: Time.current.to_f),
+      flash: flash.to_hash.slice("notice", "alert").merge(ts: Time.current.to_f)
     }
   end
 

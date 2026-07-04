@@ -13,7 +13,19 @@ module Api
       before_action { authenticate_with :api_key, :jwt, :bearer_token }
 
       def index
-        render_success User.all.as_json(only: %i[id username email name])
+        page = (params[:page] || 1).to_i
+        per_page = (params[:per_page] || 20).to_i.clamp(1, 100)
+        offset = (page - 1) * per_page
+
+        users = User.offset(offset).limit(per_page)
+        total = User.count
+
+        render json: {
+          code: 0,
+          message: "成功",
+          data: users.as_json(only: %i[id username email name]),
+          meta: { page: page, per_page: per_page, total: total, total_pages: (total.to_f / per_page).ceil },
+        }
       end
 
       def show

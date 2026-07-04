@@ -2,7 +2,7 @@
 
 module Admin
   class SessionsController < AdminController
-    skip_before_action :require_login, only: [:new, :create]
+    skip_before_action :require_login, only: [ :new, :create ]
     skip_after_action :verify_authorized
     skip_after_action :verify_policy_scoped
     layout "admin"

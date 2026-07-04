@@ -28,15 +28,15 @@ module Admin
               user_name: k.user&.name || k.user&.username || k.user&.email,
               expires_at: k.expires_at&.iso8601,
               expired: k.expired?,
-              created_at: k.created_at.iso8601,
+              created_at: k.created_at.iso8601
             }
           },
           users: User.all.map { |u| { id: u.id, label: u.name || u.username || u.email } },
           pagination: {
             page: page,
             per_page: per_page,
-            total: total,
-          },
+            total: total
+          }
         }
     end
 

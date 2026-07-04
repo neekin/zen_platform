@@ -7,7 +7,7 @@ RSpec.describe "Api::V1::ApiKeys", type: :request do
     get "获取当前用户的 API Key 列表" do
       tags "API Key 管理"
       produces "application/json"
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       parameter name: :Authorization, in: :header, type: :string, required: true
 
@@ -44,7 +44,7 @@ RSpec.describe "Api::V1::ApiKeys", type: :request do
       tags "API Key 管理"
       produces "application/json"
       consumes "application/json"
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       parameter name: :Authorization, in: :header, type: :string, required: true
       parameter name: :api_key, in: :body, schema: {
@@ -53,7 +53,7 @@ RSpec.describe "Api::V1::ApiKeys", type: :request do
           name: { type: :string },
           expires_at: { type: :string, nullable: true }
         },
-        required: ["name"]
+        required: [ "name" ]
       }
 
       response "200", "创建成功" do
@@ -86,7 +86,7 @@ RSpec.describe "Api::V1::ApiKeys", type: :request do
     delete "删除 API Key" do
       tags "API Key 管理"
       produces "application/json"
-      security [bearer_auth: []]
+      security [ bearer_auth: [] ]
 
       parameter name: :Authorization, in: :header, type: :string, required: true
       parameter name: :id, in: :path, type: :integer, required: true

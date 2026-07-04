@@ -20,22 +20,22 @@ Rails.application.routes.draw do
     delete "logout", to: "sessions#destroy"
     resources :articles
     resources :comments
-    resources :audit_logs, only: [:index, :show] do
+    resources :audit_logs, only: [ :index, :show ] do
       member do
         post :restore
       end
     end
-    resources :users, except: [:show]
-    resources :roles, except: [:show, :edit, :update]
-    resources :permissions, only: [:index] do
+    resources :users, except: [ :show ]
+    resources :roles, except: [ :show, :edit, :update ]
+    resources :permissions, only: [ :index ] do
       collection do
         patch :update
         post :reset
       end
     end
-    resources :api_keys, only: [:index, :create, :destroy]
-    resources :exports, only: [:create, :show]
-    resources :notifications, only: [:index] do
+    resources :api_keys, only: [ :index, :create, :destroy ]
+    resources :exports, only: [ :create, :show ]
+    resources :notifications, only: [ :index ] do
       member do
         post :mark_as_read
       end

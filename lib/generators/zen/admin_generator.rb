@@ -148,37 +148,37 @@ module Zen
     # ============ 产品形态判断 ============
 
     def kanban?
-      options[:product] == 'kanban'
+      options[:product] == "kanban"
     end
 
     def calendar?
-      options[:product] == 'calendar'
+      options[:product] == "calendar"
     end
 
     def gallery?
-      options[:product] == 'gallery'
+      options[:product] == "gallery"
     end
 
     def crud?
-      options[:product] == 'crud' || options[:product].blank?
+      options[:product] == "crud" || options[:product].blank?
     end
 
     # ============ 看板配置 ============
 
     # 获取看板分组字段（第一个枚举字段）
     def kanban_group_field
-      enum_fields.keys.first || 'status'
+      enum_fields.keys.first || "status"
     end
 
     # 获取看板标题字段（第一个 string 字段）
     def kanban_title_field
-      string_attr = attributes.find { |a| a.type == 'string' && !association_foreign_key?(a) }
-      string_attr&.name || 'title'
+      string_attr = attributes.find { |a| a.type == "string" && !association_foreign_key?(a) }
+      string_attr&.name || "title"
     end
 
     # 获取看板描述字段（第一个 text 字段）
     def kanban_description_field
-      text_attr = attributes.find { |a| a.type == 'text' }
+      text_attr = attributes.find { |a| a.type == "text" }
       text_attr&.name
     end
 
@@ -191,8 +191,8 @@ module Zen
     def kanban_columns
       values = enum_fields[kanban_group_field] || []
       values = values.is_a?(Array) ? values : values.to_s.split(",")
-      
-      colors = ['#1890ff', '#52c41a', '#faad14', '#ff4d4f', '#722ed1', '#13c2c2']
+
+      colors = [ "#1890ff", "#52c41a", "#faad14", "#ff4d4f", "#722ed1", "#13c2c2" ]
       values.each_with_index.map do |value, index|
         {
           id: value,

@@ -48,7 +48,7 @@ module Zen
 
         # 自动集成 ActiveRecord enum
         if type == :enum && options[:values].is_a?(Array) && !options[:values].empty?
-          values_map = options[:values].each_with_index.to_h { |v, i| [v.to_sym, i] }
+          values_map = options[:values].each_with_index.to_h { |v, i| [ v.to_sym, i ] }
           enum name, values_map
         end
       end
@@ -89,7 +89,7 @@ module Zen
         # 保存 DSL 配置
         assoc = Zen::ModelDsl::AssociationDefinition.new(name, :has_many_through, options.merge(through: through))
         self.zen_associations = zen_associations.merge(name.to_sym => assoc)
-        
+
         # 调用 ActiveRecord 的 has_many 创建实际关联
         has_many(name, through: through, **options)
       end
@@ -103,7 +103,7 @@ module Zen
 
       # 产品形态配置
       def product(type, **options)
-        self.zen_product_configs = zen_product_configs + [{ type: type.to_sym, options: options }]
+        self.zen_product_configs = zen_product_configs + [ { type: type.to_sym, options: options } ]
 
         if type.to_sym == :soft_delete
           column = options[:column] || :deleted_at
@@ -124,7 +124,7 @@ module Zen
           fields: zen_fields.transform_values(&:to_h),
           associations: zen_associations.transform_values(&:to_h),
           display: zen_display_config,
-          products: zen_product_configs,
+          products: zen_product_configs
         }
       end
     end

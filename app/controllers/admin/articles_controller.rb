@@ -2,7 +2,7 @@
 
 module Admin
   class ArticlesController < AdminController
-    before_action :set_article, only: [:show, :update, :destroy]
+    before_action :set_article, only: [ :show, :update, :destroy ]
 
     def index
       @articles = policy_scope(Article)

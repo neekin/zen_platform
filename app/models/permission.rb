@@ -4,7 +4,7 @@ class Permission < ApplicationRecord
   validates :role_name, presence: true
   validates :resource, presence: true
   validates :action_name, presence: true
-  validates :role_name, uniqueness: { scope: [:resource, :action_name] }
+  validates :role_name, uniqueness: { scope: [ :resource, :action_name ] }
 
   # 每个资源支持的操作（不支持的不显示）
   # 脚手架生成器会自动在此注入新资源
@@ -13,7 +13,7 @@ class Permission < ApplicationRecord
     "Role"         => %w[index create destroy],
     "AuditLog"     => %w[index show restore],
     "Notification" => %w[index mark_as_read mark_all_as_read],
-    "Export"       => %w[create show],
+    "Export"       => %w[create show]
   }.freeze
 
   # 从 RESOURCE_ACTIONS 动态派生
@@ -29,22 +29,22 @@ class Permission < ApplicationRecord
       "Role" => %w[index],
       "AuditLog" => %w[index show restore],
       "Notification" => %w[index mark_as_read mark_all_as_read],
-      "Export" => %w[create show],
+      "Export" => %w[create show]
     },
     "editor" => {
       "User" => %w[],
       "Role" => %w[],
       "AuditLog" => %w[index show],
       "Notification" => %w[index mark_as_read mark_all_as_read],
-      "Export" => %w[create show],
+      "Export" => %w[create show]
     },
     "viewer" => {
       "User" => %w[],
       "Role" => %w[],
       "AuditLog" => %w[index show],
       "Notification" => %w[index],
-      "Export" => %w[show],
-    },
+      "Export" => %w[show]
+    }
   }.freeze
 
   # 检查角色是否有权限

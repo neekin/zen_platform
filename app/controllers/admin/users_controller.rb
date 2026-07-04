@@ -25,15 +25,15 @@ module Admin
               username: u.username,
               name: u.name,
               roles: u.roles.pluck(:name),
-              created_at: u.created_at.iso8601,
+              created_at: u.created_at.iso8601
             }
           },
           roles: Role.all.map { |r| { name: r.name } },
           pagination: {
             page: page,
             per_page: per_page,
-            total: total,
-          },
+            total: total
+          }
         }
     end
 

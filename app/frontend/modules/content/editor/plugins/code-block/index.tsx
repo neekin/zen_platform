@@ -13,8 +13,8 @@ import { $setBlocksType } from '@lexical/selection'
 import { CodeOutlined } from '@ant-design/icons'
 import { useState, useCallback, useEffect } from 'react'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** Code Block 插件配置 */
 export interface CodeBlockPluginConfig {

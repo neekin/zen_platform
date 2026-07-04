@@ -14,9 +14,9 @@ import { $insertNodes, $getSelection, $isRangeSelection, COMMAND_PRIORITY_LOW, c
 import { PictureOutlined } from '@ant-design/icons'
 import { useEffect, useCallback, useRef } from 'react'
 import { $createImageNode, $isImageNode, ImageNode } from './ImageNode'
-import type { UploadAdapter, PluginContext } from '../../../types'
+import type { UploadAdapter, PluginContext } from '@/../types'
 import { createPlugin } from '../factory'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 
 /** Image 插件配置 */
 export interface ImagePluginConfig {

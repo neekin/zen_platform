@@ -10,9 +10,9 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { Button, Space, Tooltip } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
-import type { ToolbarItemId, ToolbarGroup } from '../../types'
-import { parseToolbarConfig } from '../../toolbar/ToolbarPlugin'
-import { toolbarRegistry } from '../../toolbar/ToolbarRegistry'
+import type { ToolbarItemId, ToolbarGroup } from '@/types'
+import { parseToolbarConfig } from '@/toolbar/ToolbarPlugin'
+import { toolbarRegistry } from '@/toolbar/ToolbarRegistry'
 import TextFormatToolbar from './TextFormatToolbar'
 
 /** 工具栏属性 */

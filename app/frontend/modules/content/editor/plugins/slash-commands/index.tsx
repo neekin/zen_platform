@@ -23,8 +23,8 @@ import {
 } from '@ant-design/icons'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/toolbar/ToolbarRegistry'
 import { INSERT_IMAGE_COMMAND } from '../image'
 
 /** 命令定义 */

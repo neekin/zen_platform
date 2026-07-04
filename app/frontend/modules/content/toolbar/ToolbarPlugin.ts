@@ -6,7 +6,7 @@
  * - 支持分组
  * - 支持自定义项
  */
-import type { ToolbarItemId, ToolbarGroup } from '../../types'
+import type { ToolbarItemId, ToolbarGroup } from '@/types'
 import { toolbarRegistry } from './ToolbarRegistry'
 
 /** 默认工具栏分组 */

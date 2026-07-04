@@ -21,7 +21,7 @@ import { videoPlugin } from './video'
 import { attachmentPlugin } from './attachment'
 import { mentionPlugin } from './mention'
 import { emojiPlugin } from './emoji'
-import type { Plugin } from '../../types'
+import type { Plugin } from '@/types'
 
 /** 内置插件列表 */
 export const builtinPlugins: Plugin[] = [

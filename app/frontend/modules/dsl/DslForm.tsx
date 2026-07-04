@@ -4,7 +4,7 @@ import {
 } from '@ant-design/pro-components'
 import { Form } from 'antd'
 import { lazy, Suspense } from 'react'
-import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '../../types/dsl'
+import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '@/types/dsl'
 
 const LazyRichTextEditor = lazy(() =>
   import('../../modules/content').then(m => ({ default: m.RichTextEditor }))

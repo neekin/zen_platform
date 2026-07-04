@@ -9,8 +9,8 @@ import { TOGGLE_LINK_COMMAND } from '@lexical/link'
 import { LinkOutlined } from '@ant-design/icons'
 import { useState, useCallback, useEffect } from 'react'
 import { createPlugin } from '../factory'
-import type { PluginContext } from '../../../types'
-import { toolbarRegistry } from '../../../toolbar/ToolbarRegistry'
+import type { PluginContext } from '@/../types'
+import { toolbarRegistry } from '@/../toolbar/ToolbarRegistry'
 import { LinkDialog } from './LinkDialog'
 
 /** Link 插件配置 */

@@ -173,7 +173,7 @@ export default function Dashboard({ stats, recent_activities, framework }: Dashb
         <Alert
           type="info"
           showIcon
-          message="自定义 Dashboard 统计"
+          title="自定义 Dashboard 统计"
           description="编辑 DashboardController 的 build_stats 方法即可添加统计卡片"
           style={{ marginBottom: 16 }}
         />

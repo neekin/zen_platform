@@ -24,7 +24,7 @@ module Api
           code: 0,
           message: "成功",
           data: users.as_json(only: %i[id username email name]),
-          meta: { page: page, per_page: per_page, total: total, total_pages: (total.to_f / per_page).ceil },
+          meta: { page: page, per_page: per_page, total: total, total_pages: (total.to_f / per_page).ceil }
         }
       end
 

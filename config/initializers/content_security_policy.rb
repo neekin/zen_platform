@@ -13,8 +13,9 @@ Rails.application.configure do
       policy.frame_ancestors :none
     else
       # Development: allow Vite dev server + HMR
-      policy.script_src :self, :https, :unsafe_inline, :unsafe_eval, :blob:
-      policy.connect_src :self, :https, "http://#{ViteRuby.config.host_with_port}", "ws://#{ViteRuby.config.host_with_port}"
+      vite_host = "http://#{ViteRuby.config.host_with_port}"
+      policy.script_src :self, :https, :unsafe_inline, :unsafe_eval, :blob, vite_host
+      policy.connect_src :self, :https, vite_host, "ws://#{ViteRuby.config.host_with_port}"
     end
   end
 

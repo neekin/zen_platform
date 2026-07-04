@@ -2,7 +2,6 @@ import React from 'react'
 import { router, usePage } from '@inertiajs/react'
 import { ProTable, ProDescriptions, type ProColumns } from '@ant-design/pro-components'
 import { Tag, Typography, Space, Button, Drawer, App, Modal } from 'antd'
-import {
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 

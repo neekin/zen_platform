@@ -26,7 +26,7 @@ function ArticleShow({ article }: { article: Article }) {
 
   return (
     <PageContainer
-      title={article.id || `Article #${article.id}`}
+      title={article.id || 'Article详情'}
       subTitle={<Tag color="blue">ID: {article.id}</Tag>}
       extra={
         <Space>
@@ -39,7 +39,7 @@ function ArticleShow({ article }: { article: Article }) {
       }
     >
       <Row gutter={[16, 16]}>
-        <!-- 基本信息卡片 -->
+        {/* 基本信息卡片 */}
         <Col span={24}>
           <Card title="基本信息" variant="borderless">
             <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered size="middle">
@@ -56,7 +56,7 @@ function ArticleShow({ article }: { article: Article }) {
         </Col>
 
 
-        <!-- body 富文本内容 -->
+        {/* body 富文本内容 */}
         <Col span={24}>
           <Card title="body" variant="borderless">
             {article.body && article.body !== '{}' ? (
@@ -68,7 +68,7 @@ function ArticleShow({ article }: { article: Article }) {
         </Col>
 
 
-        <!-- 时间信息 -->
+        {/* 时间信息 */}
         <Col span={24}>
           <Card variant="borderless" size="small">
             <Space split={<span style={{ color: '#ddd' }}>|</span>}>

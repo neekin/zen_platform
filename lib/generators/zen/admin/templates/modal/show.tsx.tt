@@ -40,7 +40,7 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
       }
     >
       <Row gutter={[16, 16]}>
-        <!-- 基本信息卡片 -->
+        {/* 基本信息卡片 */}
         <Col span={24}>
           <Card title="基本信息" variant="borderless">
             <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered size="middle">
@@ -61,7 +61,7 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
         </Col>
 
 <% rich_text_attributes.each do |a| %>
-        <!-- <%= a.name %> 富文本内容 -->
+        {/* <%= a.name %> 富文本内容 */}
         <Col span={24}>
           <Card title="<%= a.name %>" variant="borderless">
             {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? (
@@ -73,7 +73,7 @@ function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>:
         </Col>
 <% end %>
 
-        <!-- 时间信息 -->
+        {/* 时间信息 */}
         <Col span={24}>
           <Card variant="borderless" size="small">
             <Space split={<span style={{ color: '#ddd' }}>|</span>}>

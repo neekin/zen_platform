@@ -6,7 +6,7 @@ import { router } from '@inertiajs/react'
 import { PageContainer, ProDescriptions } from '@ant-design/pro-components'
 import { App, Button, Space, Popconfirm, Tag } from 'antd'
 import { EditOutlined, DeleteOutlined, ArrowLeftOutlined } from '@ant-design/icons'
-import AdminLayout from '@/../layouts/AdminLayout'
+import AdminLayout from '@/layouts/AdminLayout'
 
 import type { ReactNode } from 'react'
 

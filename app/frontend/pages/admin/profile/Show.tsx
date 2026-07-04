@@ -2,11 +2,11 @@
  * 个人中心页面
  * 路由: /admin/profile
  */
-import { useState } from 'react'
-import { router, usePage } from '@inertiajs/react'
+import { useState, useRef } from 'react'
+import { router } from '@inertiajs/react'
 import { PageContainer } from '@ant-design/pro-components'
-import { App, Card, Form, Input, Button, Row, Col, Space, Divider, Typography } from 'antd'
-import { UserOutlined, LockOutlined, PhoneOutlined, EditOutlined } from '@ant-design/icons'
+import { App, Card, Form, Input, Button, Row, Col, Space, Divider, Typography, Statistic } from 'antd'
+import { UserOutlined, LockOutlined, PhoneOutlined, EditOutlined, SafetyOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import type { ReactNode } from 'react'
 
@@ -27,9 +27,86 @@ function ProfileShow({ user }: { user: UserProfile }) {
   const { message } = App.useApp()
   const [profileForm] = Form.useForm()
   const [passwordForm] = Form.useForm()
+  const [phoneForm] = Form.useForm()
   const [profileLoading, setProfileLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
+  const [phoneLoading, setPhoneLoading] = useState(false)
+  const [codeSending, setCodeSending] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // 发送验证码
+  const handleSendCode = async () => {
+    const phone = phoneForm.getFieldValue('phone')
+    if (!phone) {
+      message.warning('请先输入手机号码')
+      return
+    }
+
+    setCodeSending(true)
+    try {
+      const res = await fetch('/admin/profile/send_code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({ purpose: 'bind_phone' }),
+      })
+      const data = await res.json()
+      if (data.code === 0) {
+        message.success('验证码已发送到邮箱，请查看控制台')
+        // 开始倒计时
+        setCountdown(60)
+        timerRef.current = setInterval(() => {
+          setCountdown(prev => {
+            if (prev <= 1) {
+              if (timerRef.current) clearInterval(timerRef.current)
+              return 0
+            }
+            return prev - 1
+          })
+        }, 1000)
+      } else {
+        message.error(data.message)
+      }
+    } catch {
+      message.error('发送失败')
+    } finally {
+      setCodeSending(false)
+    }
+  }
+
+  // 绑定手机号码
+  const handleBindPhone = async (values: any) => {
+    setPhoneLoading(true)
+    try {
+      const res = await fetch('/admin/profile/bind_phone', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+        },
+        body: JSON.stringify({
+          phone: values.phone,
+          verification_code: values.verification_code,
+        }),
+      })
+      const data = await res.json()
+      if (data.code === 0) {
+        message.success('手机号码已绑定')
+        router.reload()
+      } else {
+        message.error(data.message)
+      }
+    } catch {
+      message.error('绑定失败')
+    } finally {
+      setPhoneLoading(false)
+    }
+  }
+
+  // 更新个人信息
   const handleUpdateProfile = async (values: any) => {
     setProfileLoading(true)
     try {
@@ -55,6 +132,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
     }
   }
 
+  // 修改密码
   const handleUpdatePassword = async (values: any) => {
     if (values.password !== values.password_confirmation) {
       message.error('两次密码输入不一致')
@@ -91,15 +169,15 @@ function ProfileShow({ user }: { user: UserProfile }) {
   return (
     <PageContainer title="个人中心">
       <Row gutter={[16, 16]}>
-        {/* 基本信息 */}
+        {/* 左侧：基本信息 + 手机绑定 */}
         <Col xs={24} lg={12}>
+          {/* 基本信息 */}
           <Card title="基本信息" variant="borderless">
             <Form
               form={profileForm}
               layout="vertical"
               initialValues={{
                 name: user.name,
-                phone: user.phone,
                 note: user.note,
               }}
               onFinish={handleUpdateProfile}
@@ -116,12 +194,8 @@ function ProfileShow({ user }: { user: UserProfile }) {
                 <Input placeholder="请输入姓名" />
               </Form.Item>
 
-              <Form.Item label="手机号码" name="phone">
-                <Input placeholder="请输入手机号码" prefix={<PhoneOutlined />} />
-              </Form.Item>
-
               <Form.Item label="备注" name="note">
-                <TextArea rows={4} placeholder="添加备注信息..." />
+                <TextArea rows={3} placeholder="添加备注信息..." />
               </Form.Item>
 
               <Form.Item>
@@ -131,10 +205,59 @@ function ProfileShow({ user }: { user: UserProfile }) {
               </Form.Item>
             </Form>
           </Card>
+
+          {/* 手机绑定 */}
+          <Card
+            title="手机绑定"
+            variant="borderless"
+            style={{ marginTop: 16 }}
+            extra={user.phone && <Text type="success">已绑定: {user.phone}</Text>}
+          >
+            <Form
+              form={phoneForm}
+              layout="vertical"
+              onFinish={handleBindPhone}
+            >
+              <Form.Item
+                label="手机号码"
+                name="phone"
+                rules={[
+                  { required: true, message: '请输入手机号码' },
+                  { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确' },
+                ]}
+              >
+                <Input placeholder="请输入手机号码" prefix={<PhoneOutlined />} />
+              </Form.Item>
+
+              <Form.Item
+                label="验证码"
+                name="verification_code"
+                rules={[{ required: true, message: '请输入验证码' }]}
+              >
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input placeholder="请输入验证码" prefix={<SafetyOutlined />} style={{ flex: 1 }} />
+                  <Button
+                    onClick={handleSendCode}
+                    loading={codeSending}
+                    disabled={countdown > 0}
+                  >
+                    {countdown > 0 ? `${countdown}秒后重试` : '发送验证码'}
+                  </Button>
+                </Space.Compact>
+              </Form.Item>
+
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={phoneLoading} icon={<PhoneOutlined />}>
+                  {user.phone ? '更换手机号码' : '绑定手机号码'}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
         </Col>
 
-        {/* 修改密码 */}
+        {/* 右侧：修改密码 + 账号信息 */}
         <Col xs={24} lg={12}>
+          {/* 修改密码 */}
           <Card title="修改密码" variant="borderless">
             <Form
               form={passwordForm}
@@ -178,7 +301,7 @@ function ProfileShow({ user }: { user: UserProfile }) {
 
           {/* 账号信息 */}
           <Card title="账号信息" variant="borderless" style={{ marginTop: 16 }}>
-            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+            <Space orientation="vertical" size={12} style={{ width: '100%' }}>
               <div>
                 <Text type="secondary">用户名</Text>
                 <div>{user.username}</div>
@@ -187,6 +310,11 @@ function ProfileShow({ user }: { user: UserProfile }) {
               <div>
                 <Text type="secondary">邮箱</Text>
                 <div>{user.email}</div>
+              </div>
+              <Divider style={{ margin: '8px 0' }} />
+              <div>
+                <Text type="secondary">手机号码</Text>
+                <div>{user.phone || '未绑定'}</div>
               </div>
               <Divider style={{ margin: '8px 0' }} />
               <div>

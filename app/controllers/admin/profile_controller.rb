@@ -40,10 +40,46 @@ module Admin
       end
     end
 
+    # POST /admin/profile/send_code
+    # 发送验证码（控制台输出）
+    def send_code
+      purpose = params[:purpose] || "bind_phone"
+      code = VerificationCodeService.generate(current_user, purpose)
+      render json: { code: 0, message: "验证码已发送" }
+    end
+
+    # PATCH /admin/profile/bind_phone
+    # 绑定手机号码（需要验证码）
+    def bind_phone
+      phone = params[:phone].to_s.strip
+      verification_code = params[:verification_code].to_s.strip
+
+      if phone.blank?
+        render json: { code: 1, message: "手机号码不能为空" }, status: :unprocessable_entity
+        return
+      end
+
+      unless phone.match?(/\A1[3-9]\d{9}\z/)
+        render json: { code: 1, message: "手机号码格式不正确" }, status: :unprocessable_entity
+        return
+      end
+
+      unless VerificationCodeService.verify?(current_user, "bind_phone", verification_code)
+        render json: { code: 1, message: "验证码不正确或已过期" }, status: :unprocessable_entity
+        return
+      end
+
+      if current_user.update(phone: phone)
+        render json: { code: 0, message: "手机号码已绑定" }
+      else
+        render json: { code: 1, message: current_user.errors.full_messages.join(", ") }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def profile_params
-      params.permit(:name, :phone, :note)
+      params.permit(:name, :note)
     end
   end
 end

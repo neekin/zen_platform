@@ -23,8 +23,11 @@ Rails.application.routes.draw do
     get  "profile", to: "profile#show"
     patch "profile", to: "profile#update"
     patch "profile/password", to: "profile#update_password"
+    post "profile/send_code", to: "profile#send_code"
+    patch "profile/bind_phone", to: "profile#bind_phone"
     get  "login", to: "sessions#new"
     post "login", to: "sessions#create"
+    post "send_login_code", to: "sessions#send_login_code"
     delete "logout", to: "sessions#destroy"
     resources :articles do
       collection do

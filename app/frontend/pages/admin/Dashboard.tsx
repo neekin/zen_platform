@@ -1,5 +1,6 @@
+import { router } from '@inertiajs/react'
 import { PageContainer, ProCard, StatisticCard } from '@ant-design/pro-components'
-import { Row, Col, Space, Tag, Typography, Table, Badge, Alert } from 'antd'
+import { Row, Col, Space, Tag, Typography, Table, Badge, Alert, Button } from 'antd'
 import {
   UserOutlined,
   FileTextOutlined,
@@ -7,6 +8,7 @@ import {
   RiseOutlined,
   DatabaseOutlined,
   BookOutlined,
+  DesktopOutlined,
 } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import RealtimeTrendChart from '@/components/admin/RealtimeTrendChart'
@@ -76,7 +78,19 @@ const eventLabels: Record<string, string> = {
 
 export default function Dashboard({ stats, chart_data, recent_activities, framework }: DashboardProps) {
   return (
-    <PageContainer title="仪表盘" subTitle={`${framework.name} v${framework.version}`}>
+    <PageContainer
+      title="仪表盘"
+      subTitle={`${framework.name} v${framework.version}`}
+      extra={[
+        <Button
+          key="bigscreen"
+          icon={<DesktopOutlined />}
+          onClick={() => router.visit('/admin/bigscreen')}
+        >
+          大屏模式
+        </Button>,
+      ]}
+    >
       {/* 统计卡片 */}
       {stats.length > 0 && (
         <Row gutter={[16, 16]}>

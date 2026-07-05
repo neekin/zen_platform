@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   namespace :admin do
     root to: redirect("/admin/dashboard")
     get  "dashboard", to: "dashboard#index"
+    get  "bigscreen", to: "bigscreen#index"
     get  "search", to: "search#index"
     get  "profile", to: "profile#show"
     patch "profile", to: "profile#update"

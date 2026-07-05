@@ -9,6 +9,7 @@ import {
   BookOutlined,
 } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
+import RealtimeTrendChart from '@/components/admin/RealtimeTrendChart'
 import type { ReactNode } from 'react'
 
 const { Link, Text, Paragraph } = Typography
@@ -21,8 +22,14 @@ interface StatItem {
   icon: string
 }
 
+interface ChartDataPoint {
+  time: string
+  value: number
+}
+
 interface DashboardProps {
   stats: StatItem[]
+  chart_data: ChartDataPoint[]
   recent_activities: Array<{
     id: number
     event: string
@@ -67,7 +74,7 @@ const eventLabels: Record<string, string> = {
   destroy: '删除',
 }
 
-export default function Dashboard({ stats, recent_activities, framework }: DashboardProps) {
+export default function Dashboard({ stats, chart_data, recent_activities, framework }: DashboardProps) {
   return (
     <PageContainer title="仪表盘" subTitle={`${framework.name} v${framework.version}`}>
       {/* 统计卡片 */}
@@ -91,6 +98,18 @@ export default function Dashboard({ stats, recent_activities, framework }: Dashb
           ))}
         </Row>
       )}
+
+      {/* 实时趋势图 */}
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col span={24}>
+          <RealtimeTrendChart
+            initialData={chart_data}
+            title="实时数据趋势"
+            yFieldLabel="请求数"
+            color="#D4A537"
+          />
+        </Col>
+      </Row>
 
       {/* 最近活动 */}
       {recent_activities.length > 0 && (

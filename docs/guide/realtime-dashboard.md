@@ -31,8 +31,41 @@ DashboardStatsJob.perform_later
   title="实时数据趋势"        // 图表标题
   yFieldLabel="请求数"        // Y 轴标签
   color="#D4A537"             // 图表颜色
+  filter={(d) => d.value > 0} // 可选：过滤数据
 />
 ```
+
+**Props：**
+
+| 属性 | 说明 | 默认值 |
+|------|------|--------|
+| `initialData` | 初始数据 | `[]` |
+| `title` | 图表标题 | `'实时数据趋势'` |
+| `yFieldLabel` | Y 轴标签 | `'数值'` |
+| `color` | 图表颜色 | `'#D4A537'` |
+| `filter` | 数据过滤函数 | - |
+
+### useSharedSubscription
+
+**路径：** `app/frontend/hooks/useSharedSubscription.ts`
+
+多个图表共享一个 WebSocket 连接：
+
+```tsx
+import { useSharedSubscription } from '@/hooks/useSharedSubscription'
+
+function MyChart() {
+  const { data, connected } = useSharedSubscription('DashboardChannel')
+
+  // data 是最新收到的消息数组
+  // connected 是连接状态
+}
+```
+
+**优势：**
+- 多图表只用 1 个 WebSocket 连接
+- 组件卸载自动清理
+- 无订阅者时自动断开
 
 ### DashboardChannel
 
@@ -140,19 +173,42 @@ self.class.set(wait: 5.minutes).perform_later
 }
 ```
 
-前端 `received` 回调接收此数据并添加到图表。
+前端 `useSharedSubscription` hook 接收此数据并添加到图表。
 
 ## 架构
 
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  DashboardStats │────▶│  ActionCable     │────▶│  RealtimeTrend  │
-│  Job            │     │  (WebSocket)     │     │  Chart          │
-│                 │     │                  │     │                 │
-│  - 统计数据     │     │  - Dashboard     │     │  - 折线图       │
-│  - 定时推送     │     │    Channel       │     │  - 实时更新     │
-└─────────────────┘     └──────────────────┘     └─────────────────┘
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────────────┐
+│  DashboardStats │────▶│  ActionCable     │────▶│  useSharedSubscription  │
+│  Job            │     │  (WebSocket)     │     │  (全局单例)              │
+│                 │     │                  │     │                         │
+│  - 统计数据     │     │  - Dashboard     │     │  - 订阅者管理            │
+│  - 定时推送     │     │    Channel       │     │  - 自动清理              │
+└─────────────────┘     └──────────────────┘     └─────────────────────────┘
+                                                           │
+                         ┌─────────────────────────────────┼─────────────────┐
+                         ▼                                 ▼                 ▼
+                    ┌────────┐                        ┌────────┐       ┌────────┐
+                    │Chart 1 │                        │Chart 2 │       │Chart 3 │
+                    └────────┘                        └────────┘       └────────┘
 ```
+
+**关键点：**
+- 多图表共享 1 个 WebSocket 连接
+- 全局 consumer 单例，按 Channel 管理订阅者
+- 组件卸载时自动清理，无订阅者时断开连接
+
+## 大屏模式
+
+访问 `/admin/bigscreen` 可进入大屏模式：
+
+- 无侧边栏，全屏深色主题
+- 实时趋势图
+- 统计卡片
+- 最近活动
+- 全屏切换按钮
+
+Dashboard 页面有"大屏模式"入口按钮。
 
 ## 常见问题
 
@@ -167,6 +223,19 @@ self.class.set(wait: 5.minutes).perform_later
 1. 确认 `calculate_value` 方法返回的值会变化
 2. 检查推送间隔是否合理
 3. 检查 ActionCable 连接是否正常
+
+### 多图表性能问题
+
+使用 `useSharedSubscription` hook 而非单独订阅，共享连接：
+
+```tsx
+// ✅ 推荐：共享连接
+const { data } = useSharedSubscription('DashboardChannel')
+
+// ❌ 不推荐：每个图表单独连接
+const consumer = createConsumer(cableUrl)
+consumer.subscriptions.create(...)
+```
 
 ### 生产环境部署
 

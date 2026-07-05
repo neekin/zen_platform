@@ -33,6 +33,9 @@ void createInertiaApp({
 
   strictMode: true,
 
+  // 开发环境禁用 history encryption（需要 SSL）
+  encryptHistory: window.location.protocol === 'https:',
+
   defaults: {
     form: {
       forceIndicesArrayFormatInFormData: false,

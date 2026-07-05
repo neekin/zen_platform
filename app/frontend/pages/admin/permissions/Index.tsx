@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { router } from '@inertiajs/react'
 import { PageContainer, ProTable, ProCard, type ProColumns } from '@ant-design/pro-components'
-import { App, Button, Tag, Switch, Space, Drawer, Modal } from 'antd'
+import { App, Button, Tag, Switch, Space, Drawer, Modal, Tabs, Select } from 'antd'
 import { ReloadOutlined, SettingOutlined } from '@ant-design/icons'
 import AdminLayout from '@/layouts/AdminLayout'
 import DslModal from '@/modules/dsl/DslModal'
@@ -56,10 +56,28 @@ const roleLabels: Record<string, string> = {
   viewer: '查看者',
 }
 
+interface FieldPermissionItem {
+  field: string
+  action: string
+  persisted: boolean
+}
+
+interface FieldMatrixData {
+  roles: string[]
+  fields: string[]
+  matrix: Array<{
+    role: string
+    fields: FieldPermissionItem[]
+  }>
+}
+
 function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, resource_actions }: PermissionsIndexProps) {
   const { message } = App.useApp()
   const [matrix, setMatrix] = useState<RolePermissions[]>(initialMatrix)
   const [selectedRole, setSelectedRole] = useState<RolePermissions | null>(null)
+  const [selectedResource, setSelectedResource] = useState<string>('')
+  const [fieldMatrix, setFieldMatrix] = useState<FieldMatrixData | null>(null)
+  const [fieldLoading, setFieldLoading] = useState(false)
 
   // 同步 prop 变化（Inertia 重载后）
   useEffect(() => { setMatrix(initialMatrix) }, [initialMatrix])
@@ -128,6 +146,65 @@ function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, re
           message.error('重置失败')
         }
       },
+    })
+  }
+
+  // 加载字段权限矩阵
+  const loadFieldMatrix = async (resource: string) => {
+    if (!resource) return
+    setFieldLoading(true)
+    try {
+      const res = await fetch(`/admin/permissions/field_matrix?resource=${resource}`, {
+        headers: { 'Accept': 'application/json' },
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setFieldMatrix(data.data)
+      }
+    } catch {
+      message.error('加载字段权限失败')
+    } finally {
+      setFieldLoading(false)
+    }
+  }
+
+  // 当选择资源时加载字段权限
+  useEffect(() => {
+    if (selectedResource) {
+      loadFieldMatrix(selectedResource)
+    }
+  }, [selectedResource])
+
+  // 更新字段权限
+  const handleFieldPermissionChange = (roleName: string, fieldName: string, action: string) => {
+    const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
+
+    // 乐观更新
+    setFieldMatrix(prev => {
+      if (!prev) return prev
+      return {
+        ...prev,
+        matrix: prev.matrix.map(r =>
+          r.role === roleName
+            ? {
+                ...r,
+                fields: r.fields.map(f =>
+                  f.field === fieldName ? { ...f, action } : f
+                ),
+              }
+            : r
+        ),
+      }
+    })
+
+    fetch('/admin/permissions/update_field', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+      body: JSON.stringify({ role_name: roleName, resource: selectedResource, field_name: fieldName, action }),
+    }).catch(() => {
+      message.error('更新失败')
+      // 回滚
+      if (selectedResource) loadFieldMatrix(selectedResource)
     })
   }
 
@@ -232,59 +309,143 @@ function PermissionsIndex({ matrix: initialMatrix, roles, resources, actions, re
           </Space>
         }
         open={!!selectedRole}
-        onClose={() => setSelectedRole(null)}
-        size="default"
+        onClose={() => { setSelectedRole(null); setSelectedResource(''); setFieldMatrix(null) }}
+        size="large"
       >
-        {selectedRole && (() => {
-          // 收集当前角色所有资源的有效操作并集（保持顺序）
-          const allActions = Array.from(new Set(
-            selectedRole.permissions.flatMap((p) => p.actions.map((a) => a.action))
-          ))
+        {selectedRole && (
+          <Tabs
+            items={[
+              {
+                key: 'actions',
+                label: '操作权限',
+                children: (() => {
+                  const allActions = Array.from(new Set(
+                    selectedRole.permissions.flatMap((p) => p.actions.map((a) => a.action))
+                  ))
 
-          return (
-            <ProCard>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
-                      资源
-                    </th>
-                    {allActions.map((action) => (
-                      <th key={action} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
-                        {actionLabels[action] || action}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedRole.permissions.map((resourcePerm) => (
-                    <tr key={resourcePerm.resource}>
-                      <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
-                        <Tag color="geekblue">{resourcePerm.resource}</Tag>
-                      </td>
-                      {allActions.map((action) => {
-                        const actionData = resourcePerm.actions.find((a) => a.action === action)
-                        return (
-                          <td key={action} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
-                            {actionData ? (
-                              <Switch
-                                size="small"
-                                checked={actionData.allowed}
-                                onChange={() => handleToggle(selectedRole.role, resourcePerm.resource, action, actionData.allowed)}
-                              />
-                            ) : (
-                              <span style={{ color: 'var(--ant-color-text-quaternary)' }}>—</span>
-                            )}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </ProCard>
-          )
-        })()}
+                  return (
+                    <ProCard>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr>
+                            <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
+                              资源
+                            </th>
+                            {allActions.map((action) => (
+                              <th key={action} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
+                                {actionLabels[action] || action}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedRole.permissions.map((resourcePerm) => (
+                            <tr key={resourcePerm.resource}>
+                              <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                                <Tag color="geekblue">{resourcePerm.resource}</Tag>
+                              </td>
+                              {allActions.map((action) => {
+                                const actionData = resourcePerm.actions.find((a) => a.action === action)
+                                return (
+                                  <td key={action} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                                    {actionData ? (
+                                      <Switch
+                                        size="small"
+                                        checked={actionData.allowed}
+                                        onChange={() => handleToggle(selectedRole.role, resourcePerm.resource, action, actionData.allowed)}
+                                      />
+                                    ) : (
+                                      <span style={{ color: 'var(--ant-color-text-quaternary)' }}>—</span>
+                                    )}
+                                  </td>
+                                )
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </ProCard>
+                  )
+                })(),
+              },
+              {
+                key: 'fields',
+                label: '字段权限',
+                children: (
+                  <div>
+                    <div style={{ marginBottom: 16 }}>
+                      <span style={{ marginRight: 8 }}>选择资源：</span>
+                      <Select
+                        style={{ width: 200 }}
+                        placeholder="选择资源"
+                        value={selectedResource || undefined}
+                        onChange={setSelectedResource}
+                        options={resources.map(r => ({ label: r, value: r }))}
+                      />
+                    </div>
+
+                    {fieldLoading && <div style={{ textAlign: 'center', padding: 20 }}>加载中...</div>}
+
+                    {!fieldLoading && fieldMatrix && (
+                      <ProCard>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <thead>
+                            <tr>
+                              <th style={{ padding: '8px 12px', textAlign: 'left', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600 }}>
+                                字段
+                              </th>
+                              {fieldMatrix.roles.map(role => (
+                                <th key={role} style={{ padding: '8px 8px', textAlign: 'center', borderBottom: '2px solid var(--ant-color-border)', fontWeight: 600, fontSize: 12 }}>
+                                  <Tag color={roleColors[role] || 'default'} style={{ fontSize: 11 }}>
+                                    {roleLabels[role] || role}
+                                  </Tag>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {fieldMatrix.fields.map(field => (
+                              <tr key={field}>
+                                <td style={{ padding: '10px 12px', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                                  <Tag>{field}</Tag>
+                                </td>
+                                {fieldMatrix.matrix.map(roleData => {
+                                  const fieldData = roleData.fields.find(f => f.field === field)
+                                  const currentAction = fieldData?.action || 'edit'
+                                  return (
+                                    <td key={roleData.role} style={{ padding: '10px 8px', textAlign: 'center', borderBottom: '1px solid var(--ant-color-border-secondary)' }}>
+                                      <Select
+                                        size="small"
+                                        style={{ width: 80 }}
+                                        value={currentAction}
+                                        onChange={(value) => handleFieldPermissionChange(roleData.role, field, value)}
+                                        options={[
+                                          { label: '可编辑', value: 'edit' },
+                                          { label: '只读', value: 'view' },
+                                          { label: '隐藏', value: 'deny' },
+                                        ]}
+                                      />
+                                    </td>
+                                  )
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </ProCard>
+                    )}
+
+                    {!fieldLoading && !fieldMatrix && (
+                      <div style={{ textAlign: 'center', padding: 40, color: 'var(--ant-color-text-secondary)' }}>
+                        请选择资源查看字段权限
+                      </div>
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        )}
       </Drawer>
     </PageContainer>
   )

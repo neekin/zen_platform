@@ -41,9 +41,33 @@ module Zen
       options[:visible_when]
     end
 
-    # 是否有联动条件
+    # 是否有可见性联动条件
     def has_visible_when?
       options[:visible_when].is_a?(Hash) && options[:visible_when].present?
+    end
+
+    # 字段禁用联动条件
+    # field :email, :string, disabled_when: { verified: true }
+    # field :price, :decimal, disabled_when: { status: "published" }
+    def disabled_when
+      options[:disabled_when]
+    end
+
+    # 是否有禁用联动条件
+    def has_disabled_when?
+      options[:disabled_when].is_a?(Hash) && options[:disabled_when].present?
+    end
+
+    # 字段必填联动条件
+    # field :reason, :text, required_when: { status: "rejected" }
+    # field :phone, :string, required_when: { contact_method: "sms" }
+    def required_when
+      options[:required_when]
+    end
+
+    # 是否有必填联动条件
+    def has_required_when?
+      options[:required_when].is_a?(Hash) && options[:required_when].present?
     end
 
     # 默认值
@@ -144,6 +168,8 @@ module Zen
 
       # 联动条件
       result[:visible_when] = visible_when if has_visible_when?
+      result[:disabled_when] = disabled_when if has_disabled_when?
+      result[:required_when] = required_when if has_required_when?
 
       result
     end

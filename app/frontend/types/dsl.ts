@@ -31,6 +31,10 @@ export interface FieldDefinition {
   max_count?: number | null
   /** 字段联动条件：当指定字段满足条件时显示 */
   visible_when?: Record<string, any>
+  /** 字段联动条件：当指定字段满足条件时禁用 */
+  disabled_when?: Record<string, any>
+  /** 字段联动条件：当指定字段满足条件时必填 */
+  required_when?: Record<string, any>
 }
 
 /** 关联类型 */

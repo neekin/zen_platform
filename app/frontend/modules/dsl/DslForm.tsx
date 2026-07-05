@@ -3,9 +3,9 @@ import {
   ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard,
 } from '@ant-design/pro-components'
 import { Form } from 'antd'
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { getFieldType } from './fieldTypeRegistry'
-import { useFieldVisibility } from '@/hooks/useFieldVisibility'
+import { useFieldConditions } from '@/hooks/useFieldConditions'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '@/types/dsl'
 
 const LazyRichTextEditor = lazy(() =>
@@ -33,8 +33,8 @@ export default function DslForm({
   const [formValues, setFormValues] = useState<Record<string, any>>(initialValues || {})
   const formRef = useRef<any>(null)
 
-  // 字段联动可见性
-  const { isFieldVisible } = useFieldVisibility({
+  // 字段联动条件
+  const { isFieldVisible, isFieldDisabled, isFieldRequired } = useFieldConditions({
     fields: meta.fields,
     values: formValues,
   })
@@ -73,7 +73,8 @@ export default function DslForm({
                 fieldDef={meta.fields[fieldConfig.name]}
                 association={findAssociation(meta, fieldConfig.name)}
                 associationOptions={associations?.[fieldConfig.name]}
-                disabled={disabled}
+                disabled={disabled || isFieldDisabled(fieldConfig.name)}
+                required={isFieldRequired(fieldConfig.name)}
               />
             ))}
         </ProCard>
@@ -94,6 +95,7 @@ interface DslFormFieldProps {
   association?: AssociationDefinition
   associationOptions?: Array<{ label: string; value: any }>
   disabled?: boolean
+  required?: boolean
 }
 
 function DslFormField({
@@ -102,10 +104,13 @@ function DslFormField({
   association,
   associationOptions,
   disabled = false,
+  required = false,
 }: DslFormFieldProps) {
   const name = fieldConfig.name
   const label = fieldDef?.placeholder || name
-  const rules = fieldConfig.required || fieldDef?.required
+  // 优先使用动态 required，其次使用静态配置
+  const isRequired = required || fieldConfig.required || fieldDef?.required
+  const rules = isRequired
     ? [{ required: true, message: `请输入${name}` }]
     : []
 

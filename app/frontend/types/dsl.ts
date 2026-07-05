@@ -108,12 +108,6 @@ export interface ProductConfig {
   options: Record<string, any>
 }
 
-/** 字段权限 */
-export interface FieldPermission {
-  field: string
-  action: 'view' | 'edit' | 'deny'
-}
-
 /** 完整模型元数据 */
 export interface DslMeta {
   model_name: string
@@ -126,5 +120,6 @@ export interface DslMeta {
     label: string
     confirm?: string
   }>
-  field_permissions?: FieldPermission[]
+  /** 有可见性限制的字段列表（后端已根据用户角色过滤） */
+  restricted_fields?: string[]
 }

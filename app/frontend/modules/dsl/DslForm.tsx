@@ -29,9 +29,6 @@ export default function DslForm({
   disabled = false,
 }: DslFormProps) {
   const sections: FormSection[] = meta.display.form?.sections || []
-  const { canView, getFieldDisabled } = useFieldPermissions({
-    field_permissions: meta.field_permissions,
-  })
 
   return (
     <ProForm
@@ -51,18 +48,16 @@ export default function DslForm({
           title={section.title !== 'default' ? section.title : undefined}
           style={{ marginBottom: 16 }}
         >
-          {section.fields
-            .filter((fieldConfig) => canView(fieldConfig.name))
-            .map((fieldConfig) => (
-              <DslFormField
-                key={fieldConfig.name}
-                fieldConfig={fieldConfig}
-                fieldDef={meta.fields[fieldConfig.name]}
-                association={findAssociation(meta, fieldConfig.name)}
-                associationOptions={associations?.[fieldConfig.name]}
-                disabled={disabled || getFieldDisabled(fieldConfig.name)}
-              />
-            ))}
+          {section.fields.map((fieldConfig) => (
+            <DslFormField
+              key={fieldConfig.name}
+              fieldConfig={fieldConfig}
+              fieldDef={meta.fields[fieldConfig.name]}
+              association={findAssociation(meta, fieldConfig.name)}
+              associationOptions={associations?.[fieldConfig.name]}
+              disabled={disabled}
+            />
+          ))}
         </ProCard>
       ))}
     </ProForm>

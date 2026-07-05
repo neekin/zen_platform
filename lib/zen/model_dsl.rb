@@ -156,15 +156,50 @@ module Zen
       end
 
       # 获取完整元数据（用于前端动态渲染）
-      def zen_meta
+      # @param user [User, nil] 当前用户，用于过滤字段可见性
+      def zen_meta(user = nil)
+        filtered_fields = if user
+          zen_fields.select { |_, field| field.visible_for?(user) }
+        else
+          zen_fields
+        end
+
         {
           model_name: name,
-          fields: zen_fields.transform_values(&:to_h),
+          fields: filtered_fields.transform_values(&:to_h),
           associations: zen_associations.transform_values(&:to_h),
-          display: zen_display_config,
+          display: filter_display_config(zen_display_config, filtered_fields.keys),
           products: zen_product_configs,
-          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } }
+          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } },
+          restricted_fields: zen_fields.select { |_, f| f.has_visibility_restriction? }.keys.map(&:to_s),
         }
+      end
+
+      # 过滤 display 配置中的字段
+      def filter_display_config(config, allowed_fields)
+        return config unless config.is_a?(Hash)
+
+        result = config.deep_dup
+
+        # 过滤 list columns
+        if result[:list].is_a?(Hash) && result[:list][:columns].is_a?(Array)
+          result[:list][:columns] = result[:list][:columns].select do |col|
+            allowed_fields.include?(col[:name]&.to_sym)
+          end
+        end
+
+        # 过滤 form sections
+        if result[:form].is_a?(Hash) && result[:form][:sections].is_a?(Array)
+          result[:form][:sections] = result[:form][:sections].map do |section|
+            if section[:fields].is_a?(Array)
+              section.merge(fields: section[:fields].select { |f| allowed_fields.include?(f[:name]&.to_sym) })
+            else
+              section
+            end
+          end
+        end
+
+        result
       end
     end
 

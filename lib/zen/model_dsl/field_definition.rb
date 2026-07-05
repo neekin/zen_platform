@@ -16,6 +16,23 @@ module Zen
       options[:required] == true
     end
 
+    # 字段可见性检查（支持 lambda）
+    # field :price, :decimal, visible_if: ->(user) { user.has_any_role?(:admin, :finance) }
+    def visible_for?(user)
+      return true unless options[:visible_if]
+      return true unless options[:visible_if].is_a?(Proc)
+
+      options[:visible_if].call(user)
+    rescue => e
+      Rails.logger.warn("[Zen::ModelDsl] visible_if error for #{name}: #{e.message}")
+      true
+    end
+
+    # 是否有可见性限制
+    def has_visibility_restriction?
+      options[:visible_if].is_a?(Proc)
+    end
+
     # 默认值
     def default
       options[:default]

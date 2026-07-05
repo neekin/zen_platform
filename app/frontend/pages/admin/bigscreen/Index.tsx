@@ -30,6 +30,7 @@ import {
   ClockCircleOutlined,
 } from '@ant-design/icons'
 import RealtimeTrendChart from '@/components/admin/RealtimeTrendChart'
+import '@/styles/bigscreen.css'
 import type { ReactNode } from 'react'
 
 const { Text, Title } = Typography
@@ -103,24 +104,9 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
   }, [])
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0a0f1e 0%, #1a1f3e 50%, #0a0f1e 100%)',
-        color: 'white',
-        padding: '24px',
-      }}
-    >
+    <div className="bigscreen-page" style={{ background: 'linear-gradient(135deg, #0a0f1e 0%, #1a1f3e 50%, #0a0f1e 100%)', color: 'white', padding: '24px' }}>
       {/* 顶部导航 */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 24,
-          padding: '0 8px',
-        }}
-      >
+      <div className="bigscreen-header">
         <Space>
           <img src="/logo-mark.svg" alt="Logo" style={{ width: 40 }} />
           <Title level={3} style={{ margin: 0, color: '#D4A537' }}>
@@ -132,23 +118,12 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
         <Space size={16}>
           <Space>
             <ClockCircleOutlined style={{ color: 'rgba(255,255,255,0.65)' }} />
-            <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 16, fontFamily: 'monospace' }}>
+            <Text className="bigscreen-clock">
               {currentTime.toLocaleTimeString('zh-CN')}
             </Text>
           </Space>
 
-          <div
-            onClick={toggleFullscreen}
-            style={{
-              cursor: 'pointer',
-              padding: '8px',
-              borderRadius: 8,
-              background: 'rgba(255,255,255,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+          <div className="bigscreen-action-btn" onClick={toggleFullscreen}>
             {isFullscreen ? (
               <FullscreenExitOutlined style={{ color: 'rgba(255,255,255,0.85)', fontSize: 18 }} />
             ) : (
@@ -156,18 +131,7 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
             )}
           </div>
 
-          <div
-            onClick={() => router.visit('/admin/dashboard')}
-            style={{
-              cursor: 'pointer',
-              padding: '8px 16px',
-              borderRadius: 8,
-              background: 'rgba(255,255,255,0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-            }}
-          >
+          <div className="bigscreen-action-btn" onClick={() => router.visit('/admin/dashboard')}>
             <ArrowLeftOutlined style={{ color: 'rgba(255,255,255,0.85)' }} />
             <Text style={{ color: 'rgba(255,255,255,0.85)' }}>返回</Text>
           </div>
@@ -178,15 +142,7 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {stats.map((stat, index) => (
           <Col key={index} xs={24} sm={12} lg={Math.max(6, 24 / stats.length)}>
-            <div
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 12,
-                padding: '24px',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
+            <div className="bigscreen-stat">
               <Statistic
                 title={<span style={{ color: 'rgba(255,255,255,0.65)' }}>{stat.label}</span>}
                 value={stat.value}
@@ -200,51 +156,27 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
       {/* 图表区域 */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} lg={16}>
-          <div
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 12,
-              padding: '24px',
-              backdropFilter: 'blur(10px)',
-            }}
-          >
-            <div style={{ marginBottom: 16 }}>
-              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 16, fontWeight: 600 }}>
-                实时数据趋势
-              </Text>
+          <div className="bigscreen-card bigscreen-chart-container">
+            <div className="bigscreen-chart-title">实时数据趋势</div>
+            <div className="bigscreen-chart-wrapper">
+              <RealtimeTrendChart
+                initialData={chart_data}
+                title=""
+                yFieldLabel="数值"
+                color="#D4A537"
+              />
             </div>
-            <RealtimeTrendChart
-              initialData={chart_data}
-              title=""
-              yFieldLabel="数值"
-              color="#D4A537"
-            />
           </div>
         </Col>
 
         <Col xs={24} lg={8}>
-          <div
-            style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 12,
-              padding: '24px',
-              backdropFilter: 'blur(10px)',
-              height: '100%',
-            }}
-          >
-            <div style={{ marginBottom: 16 }}>
-              <Text style={{ color: 'rgba(255,255,255,0.85)', fontSize: 16, fontWeight: 600 }}>
-                最近活动
-              </Text>
-            </div>
+          <div className="bigscreen-card" style={{ height: '100%' }}>
+            <div className="bigscreen-chart-title">最近活动</div>
             <Table
               size="small"
               dataSource={recent_activities}
               rowKey="id"
               pagination={false}
-              style={{ background: 'transparent' }}
               columns={[
                 {
                   title: '事件',
@@ -280,14 +212,7 @@ export default function BigScreen({ stats, chart_data, recent_activities, framew
       </Row>
 
       {/* 底部信息 */}
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '16px',
-          color: 'rgba(255,255,255,0.3)',
-          fontSize: 12,
-        }}
-      >
+      <div className="bigscreen-footer">
         {framework.name} v{framework.version} · 数据每 30 秒自动刷新
       </div>
     </div>

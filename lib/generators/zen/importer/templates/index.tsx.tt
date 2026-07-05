@@ -1,0 +1,154 @@
+/**
+ * <%= class_name %> 数据导入页面
+ * 路由: /admin/<%= plural_name %>/import
+ */
+import { useState } from 'react'
+import { router } from '@inertiajs/react'
+import { PageContainer, ProCard } from '@ant-design/pro-components'
+import { App, Upload, Button, Table, Space, Typography, Alert, Progress } from 'antd'
+import { UploadOutlined, DownloadOutlined, InboxOutlined } from '@ant-design/icons'
+import AdminLayout from '@/layouts/AdminLayout'
+import type { ReactNode, UploadFile } from 'react'
+
+const { Text, Title, Link } = Typography
+const { Dragger } = Upload
+
+interface ImportPageProps {
+  resource: string
+  fields: string[]
+}
+
+function <%= class_name %>Import({ resource, fields }: ImportPageProps) {
+  const { message } = App.useApp()
+  const [fileList, setFileList] = useState<UploadFile[]>([])
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async () => {
+    if (fileList.length === 0) {
+      message.warning('请先选择文件')
+      return
+    }
+
+    setUploading(true)
+    const formData = new FormData()
+    formData.append('file', fileList[0] as any)
+
+    try {
+      const csrfToken = document.querySelector<HTMLMetaElement>('meta[name="csrf-token"]')?.content || ''
+      const res = await fetch('/admin/<%= plural_name %>/import', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': csrfToken },
+        body: formData,
+      })
+
+      if (res.redirected) {
+        // Inertia 会处理重定向
+        window.location.href = res.url
+      } else {
+        const data = await res.json()
+        if (data.success) {
+          message.success(`导入成功！共导入 ${data.imported_count} 条记录`)
+          router.visit('/admin/<%= plural_name %>')
+        } else {
+          message.error(data.errors?.[0] || '导入失败')
+        }
+      }
+    } catch {
+      message.error('导入失败')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const downloadTemplate = () => {
+    // 生成 CSV 模板
+    const headers = fields.join(',')
+    const blob = new Blob([headers + '\n'], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `<%= file_name %>_template.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <PageContainer title="<%= class_name %> 数据导入">
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={16}>
+          <Card title="上传文件" variant="borderless">
+            <Dragger
+              fileList={fileList}
+              onChange={({ fileList }) => setFileList(fileList)}
+              beforeUpload={() => false}
+              accept=".csv,.xlsx,.xls"
+              maxCount={1}
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
+              <p className="ant-upload-hint">
+                支持 CSV、Excel (.xlsx) 格式
+              </p>
+            </Dragger>
+
+            <div style={{ marginTop: 16, textAlign: 'right' }}>
+              <Space>
+                <Button
+                  icon={<DownloadOutlined />}
+                  onClick={downloadTemplate}
+                >
+                  下载模板
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handleUpload}
+                  loading={uploading}
+                  disabled={fileList.length === 0}
+                >
+                  开始导入
+                </Button>
+              </Space>
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={8}>
+          <Card title="导入说明" variant="borderless">
+            <Space orientation="vertical" size={16}>
+              <Alert
+                type="info"
+                showIcon
+                title="文件格式"
+                description="支持 CSV 和 Excel (.xlsx) 格式，第一行为表头"
+              />
+
+              <div>
+                <Text strong>支持的字段：</Text>
+                <div style={{ marginTop: 8 }}>
+                  {fields.map(field => (
+                    <Tag key={field}>{field}</Tag>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Text strong>注意事项：</Text>
+                <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+                  <li>第一行必须是字段名</li>
+                  <li>必填字段不能为空</li>
+                  <li>枚举值必须与定义一致</li>
+                  <li>日期格式: YYYY-MM-DD</li>
+                </ul>
+              </div>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Import.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Import

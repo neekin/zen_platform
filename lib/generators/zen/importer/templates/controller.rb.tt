@@ -1,0 +1,40 @@
+# frozen_string_literal: true
+
+module Admin
+  class <%= plural_name.camelize %>ImportsController < AdminController
+    skip_after_action :verify_authorized
+    skip_after_action :verify_policy_scoped
+
+    # GET /admin/<%= plural_name %>/import
+    def import_page
+      render inertia: "admin/<%= plural_name %>/Import", props: {
+        resource: "<%= class_name %>",
+        fields: <%= class_name %>.respond_to?(:zen_fields) ? <%= class_name %>.zen_fields.keys.map(&:to_s) : [],
+      }
+    end
+
+    # POST /admin/<%= plural_name %>/import
+    def process_import
+      file = params[:file]
+
+      unless file
+        redirect_to import_admin_<%= plural_name %>_path, alert: "请选择文件"
+        return
+      end
+
+      importer = <%= class_name %>Importer.new(file)
+      result = importer.import
+
+      if result[:success]
+        redirect_to admin_<%= plural_name %>_path,
+          notice: "导入成功！共导入 #{result[:imported_count]} 条记录"
+      else
+        error_messages = result[:errors].first(10).join("\n")
+        error_messages += "\n...共 #{result[:errors].size} 个错误" if result[:errors].size > 10
+
+        redirect_to import_admin_<%= plural_name %>_path,
+          alert: "导入失败：\n#{error_messages}"
+      end
+    end
+  end
+end

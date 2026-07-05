@@ -1,6 +1,7 @@
 import type { ProColumns } from '@ant-design/pro-components'
 import { router } from '@inertiajs/react'
 import { Tag, Image } from 'antd'
+import { getFieldType } from './fieldTypeRegistry'
 import type { DslMeta, ListColumn } from '@/types/dsl'
 
 /**
@@ -20,6 +21,21 @@ function buildColumn(col: ListColumn, meta: DslMeta, basePath: string): ProColum
     dataIndex: col.display ? [col.display, 'name'] : fieldName,
     key: fieldName,
     width: col.width,
+  }
+
+  // 自定义字段类型
+  const customType = fieldDef?.type ? getFieldType(fieldDef.type) : undefined
+  if (customType) {
+    const DisplayComp = customType.ColumnComponent || customType.DisplayComponent
+    if (DisplayComp) {
+      column.render = (_: any, record: any) => {
+        const val = record[fieldName]
+        if (val == null) return '-'
+        const parsed = customType.parse ? customType.parse(val) : val
+        return <DisplayComp value={parsed} record={record} />
+      }
+      return column
+    }
   }
 
   if (col.link) {

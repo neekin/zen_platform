@@ -9,6 +9,16 @@ export type { DslModalProps } from './DslModal'
 
 export { buildColumns } from './columnRenderer'
 
+export {
+  registerFieldType,
+  getFieldType,
+  hasFieldType,
+  getRegisteredFieldTypes,
+  serializeFieldValue,
+  parseFieldValue,
+} from './fieldTypeRegistry'
+export type { FieldTypeDef } from './fieldTypeRegistry'
+
 export type {
   DslMeta, FieldDefinition, AssociationDefinition,
   DisplayConfig, FormSection, ListColumn, ProductConfig,

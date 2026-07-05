@@ -4,7 +4,7 @@ import {
 } from '@ant-design/pro-components'
 import { Form } from 'antd'
 import { lazy, Suspense } from 'react'
-import { useFieldPermissions } from '@/hooks/useFieldPermissions'
+import { getFieldType } from './fieldTypeRegistry'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '@/types/dsl'
 
 const LazyRichTextEditor = lazy(() =>
@@ -90,6 +90,20 @@ function DslFormField({
   const rules = fieldConfig.required || fieldDef?.required
     ? [{ required: true, message: `请输入${name}` }]
     : []
+
+  // 自定义字段类型
+  const customType = fieldDef?.type ? getFieldType(fieldDef.type) : undefined
+  if (customType) {
+    const CustomFormComponent = customType.FormComponent
+    return (
+      <Form.Item name={name} label={label} rules={rules}>
+        <CustomFormComponent
+          disabled={disabled}
+          {...(customType.defaultProps || {})}
+        />
+      </Form.Item>
+    )
+  }
 
   // 关联字段 → Select
   if (association || fieldDef?.reference) {

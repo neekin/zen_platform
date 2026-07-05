@@ -4,6 +4,7 @@
     "watchAdditionalPaths": []
   },
   "development": {
+    "host": "*",
     "autoBuild": true,
     "skipProxy": true,
     "publicOutputDir": "vite-dev",

@@ -36,11 +36,6 @@ Rails.application.routes.draw do
     post "password", to: "password_resets#create", as: :password
     get  "password/:token/edit", to: "password_resets#edit", as: :edit_password
     patch "password/:token", to: "password_resets#update"
-    resources :articles do
-      collection do
-        post :batch_action
-      end
-    end
     resources :audit_logs, only: [ :index, :show ] do
       member do
         post :restore

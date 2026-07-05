@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0] - 2026-07-05
+
+### Added
+- **用户系统增强** — 个人中心、头像上传（Active Storage）、手机绑定、验证码登录
+- **密码重置** — 忘记密码 → 邮箱重置链接（控制台显示）
+- **富文本增强** — 文本格式合并插件、字体颜色/背景色/字号、文本对齐
+- **ERB 富文本渲染** — `RichTextHelper` 支持服务端渲染 HTML
+- **文件存储文档** — MinIO 集成指南、Docker 持久化说明
+- **Flash 消息组件** — Inertia redirect 后显示成功/错误提示
+
+### Fixed
+- 脚手架模板修复（import 路径、DslModal 闭合标签、JSX 注释）
+- antd v6 废弃属性修复（maskClosable、Space direction、Notification message）
+- UsersController 改用 Inertia 重定向
+- 通知图标适配浅色主题
+- 手机号验证改为失去焦点触发
+
 ## [1.0.0] - 2026-07-05
 
 ### Added

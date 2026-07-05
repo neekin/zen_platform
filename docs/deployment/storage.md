@@ -25,39 +25,39 @@ services:
     # ...
 ```
 
-或者使用命名卷：
-
-```yaml
-services:
-  web:
-    build: .
-    volumes:
-      - zen_storage:/rails/storage
-      - zen_db:/rails/db
-
-volumes:
-  zen_storage:
-  zen_db:
-```
-
 ## MinIO 集成（推荐）
 
-[MinIO](https://min.io/) 是 S3 兼容的对象存储，适合自托管部署。
+MinIO 是 S3 兼容的对象存储，适合自托管部署。
+
+::: tip 为什么用 pgsty/minio？
+官方 MinIO 镜像已移除 Web 控制台且不再维护。`pgsty/minio` 是社区维护的分支，内置 Web 管理界面，开箱即用。
+:::
 
 ### 1. 启动 MinIO
+
+```bash
+docker run -d \
+  --name minio \
+  -p 9000:9000 \
+  -e "MINIO_ROOT_USER=your_access_key" \
+  -e "MINIO_ROOT_PASSWORD=your_secret_key" \
+  -v /path/to/data:/data \
+  pgsty/minio server /data
+```
+
+或使用 docker-compose：
 
 ```yaml
 # docker-compose.yml
 services:
   minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
+    image: pgsty/minio
+    command: server /data
     ports:
-      - "9000:9000"   # API 端口
-      - "9001:9001"   # 管理控制台
+      - "9000:9000"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ROOT_USER: your_access_key
+      MINIO_ROOT_PASSWORD: your_secret_key
     volumes:
       - minio_data:/data
 
@@ -65,15 +65,18 @@ volumes:
   minio_data:
 ```
 
-### 2. 创建存储桶
+### 2. 访问 Web 控制台
 
-1. 访问 `http://localhost:9001` 打开 MinIO 控制台
-2. 使用 `minioadmin / minioadmin123` 登录
-3. 点击 "Buckets" → "Create Bucket"
-4. 创建名为 `zen-platform` 的存储桶
-5. 设置访问策略为 `public`（或按需配置）
+启动后访问 `http://localhost:9000`，使用设置的账号密码登录。
 
-### 3. 配置 Rails
+### 3. 创建存储桶
+
+1. 登录 Web 控制台
+2. 点击 "Buckets" → "Create Bucket"
+3. 创建名为 `zen-platform` 的存储桶
+4. 设置访问策略为 `public`（或按需配置）
+
+### 4. 配置 Rails
 
 添加 `aws-sdk-s3` gem：
 
@@ -93,8 +96,8 @@ bundle install
 minio:
   service: S3
   endpoint: http://localhost:9000
-  access_key_id: minioadmin
-  secret_access_key: minioadmin123
+  access_key_id: your_access_key
+  secret_access_key: your_secret_key
   region: us-east-1
   bucket: zen-platform
   force_path_style: true  # MinIO 必须设置为 true
@@ -105,7 +108,7 @@ minio:
 config.active_storage.service = :minio
 ```
 
-### 4. 环境变量
+### 5. 环境变量
 
 生产环境建议通过环境变量配置敏感信息：
 
@@ -114,8 +117,8 @@ config.active_storage.service = :minio
 minio:
   service: S3
   endpoint: <%= ENV.fetch("MINIO_ENDPOINT", "http://localhost:9000") %>
-  access_key_id: <%= ENV.fetch("MINIO_ACCESS_KEY", "minioadmin") %>
-  secret_access_key: <%= ENV.fetch("MINIO_SECRET_KEY", "minioadmin123") %>
+  access_key_id: <%= ENV.fetch("MINIO_ACCESS_KEY", "your_access_key") %>
+  secret_access_key: <%= ENV.fetch("MINIO_SECRET_KEY", "your_secret_key") %>
   region: <%= ENV.fetch("MINIO_REGION", "us-east-1") %>
   bucket: <%= ENV.fetch("MINIO_BUCKET", "zen-platform") %>
   force_path_style: true
@@ -124,12 +127,12 @@ minio:
 | 环境变量 | 说明 | 默认值 |
 |---------|------|--------|
 | `MINIO_ENDPOINT` | MinIO API 地址 | `http://localhost:9000` |
-| `MINIO_ACCESS_KEY` | Access Key | `minioadmin` |
-| `MINIO_SECRET_KEY` | Secret Key | `minioadmin123` |
+| `MINIO_ACCESS_KEY` | Access Key | - |
+| `MINIO_SECRET_KEY` | Secret Key | - |
 | `MINIO_REGION` | 区域 | `us-east-1` |
 | `MINIO_BUCKET` | 存储桶名称 | `zen-platform` |
 
-### 5. 完整 docker-compose 示例
+### 6. 完整 docker-compose 示例
 
 ```yaml
 # docker-compose.yml
@@ -144,37 +147,46 @@ services:
       RAILS_ENV: production
       DATABASE_URL: postgresql://postgres:password@db:5432/zen_production
       MINIO_ENDPOINT: http://minio:9000
-      MINIO_ACCESS_KEY: minioadmin
-      MINIO_SECRET_KEY: minioadmin123
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_BUCKET: zen-platform
     depends_on:
       - db
       - minio
     volumes:
-      - zen_db:/rails/db
+      - zen_storage:/rails/storage
 
   db:
     image: postgres:16
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - zen_db:/var/lib/postgresql/data
 
   minio:
-    image: minio/minio:latest
-    command: server /data --console-address ":9001"
+    image: pgsty/minio
+    command: server /data
     ports:
       - "9000:9000"
-      - "9001:9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     volumes:
       - minio_data:/data
 
 volumes:
+  zen_storage:
   zen_db:
   minio_data:
+```
+
+创建 `.env` 文件：
+
+```bash
+# .env（不要提交到 git）
+MINIO_ACCESS_KEY=your_access_key
+MINIO_SECRET_KEY=your_secret_key
+DB_PASSWORD=your_db_password
 ```
 
 ## S3 兼容服务

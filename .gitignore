@@ -63,4 +63,4 @@ docs/.vitepress/cache
 
 design/
 .DS_Store
-.env.development
+

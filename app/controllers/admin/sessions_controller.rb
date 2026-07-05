@@ -8,7 +8,10 @@ module Admin
     layout "admin"
 
     def new
-      redirect_to admin_root_path if current_user
+      if current_user
+        redirect_to admin_root_path
+        return
+      end
       render inertia: "admin/Login"
     end
 

@@ -23,8 +23,8 @@ module Admin
       [
         { label: "用户总数", value: User.count, icon: "user", color: "#D4A537" },
         { label: "今日新增", value: User.where("created_at > ?", Date.today).count, icon: "rise", color: "#52c41a" },
-        { label: "本周活跃", value: User.where("last_sign_in_at > ?", 1.week.ago).count, icon: "active", color: "#1677FF" },
-        { label: "数据总量", value: ActiveRecord::Base.connection.tables.count, icon: "database", color: "#722ed1" },
+        { label: "本周新增", value: User.where("created_at > ?", 1.week.ago).count, icon: "active", color: "#1677FF" },
+        { label: "数据表数量", value: ActiveRecord::Base.connection.tables.count, icon: "database", color: "#722ed1" },
       ]
     end
 

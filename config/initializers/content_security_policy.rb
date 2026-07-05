@@ -18,7 +18,8 @@ Rails.application.configure do
       policy.connect_src :self, :https, vite_host,
                          "ws://#{ViteRuby.config.host_with_port}",
                          "ws://localhost:3100", "ws://127.0.0.1:3100",
-                         "ws://localhost:3000", "ws://127.0.0.1:3000"
+                         "ws://localhost:3000", "ws://127.0.0.1:3000",
+                         "ws://zen_platform.test", "http://zen_platform.test"
     end
   end
 

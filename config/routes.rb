@@ -47,6 +47,8 @@ Rails.application.routes.draw do
       collection do
         patch :update
         post :reset
+        get :field_matrix
+        patch :update_field
       end
     end
     resources :api_keys, only: [ :index, :create, :destroy ]

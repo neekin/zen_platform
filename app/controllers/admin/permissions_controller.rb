@@ -89,6 +89,31 @@ module Admin
       render json: { code: 0, message: "已重置为默认权限" }
     end
 
+    # GET /admin/permissions/field_matrix?resource=User
+    def field_matrix
+      resource = params[:resource]
+      data = Permission.field_matrix(resource)
+      render json: { code: 0, data: data }
+    end
+
+    # PATCH /admin/permissions/field
+    def update_field
+      role_name = params[:role_name]
+      resource = params[:resource]
+      field_name = params[:field_name]
+      action = params[:action]
+
+      if role_name == "super_admin"
+        return render json: { code: 1, message: "超级管理员无需配置权限" }, status: :forbidden
+      end
+
+      if Permission.update_field_permission(role_name, resource, field_name, action)
+        render json: { code: 0, message: "字段权限已更新" }
+      else
+        render json: { code: 1, message: "更新失败" }, status: :unprocessable_entity
+      end
+    end
+
     private
 
     def require_super_admin!

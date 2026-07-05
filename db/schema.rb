@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_04_231758) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_05_164647) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -109,10 +109,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_04_231758) do
     t.string "action_name", null: false
     t.boolean "allowed", default: true
     t.datetime "created_at", null: false
+    t.string "field_action"
+    t.string "field_name"
     t.string "resource", null: false
     t.string "role_name", null: false
     t.datetime "updated_at", null: false
     t.index ["role_name", "resource", "action_name"], name: "idx_permissions_role_resource_action", unique: true
+    t.index ["role_name", "resource", "field_name"], name: "index_permissions_on_role_resource_field", unique: true
     t.index ["role_name"], name: "index_permissions_on_role_name"
   end
 

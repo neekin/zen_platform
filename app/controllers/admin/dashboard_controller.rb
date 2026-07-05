@@ -25,20 +25,10 @@ module Admin
       # 每个 stat: { label:, value:, icon: }
       # icon 可选: user, article, comment, rise, database
       stats = [
-        { label: "用户总数", value: User.count, icon: "user" }
+        { label: "用户总数", value: User.count, icon: "user" },
+        { label: "今日新增", value: User.where("created_at > ?", Date.today).count, icon: "rise" }
       ]
 
-      # 自动发现 DSL 模型并添加统计
-      ApplicationRecord.descendants.select { |m| m.respond_to?(:zen_display_config) && m.table_exists? }.each do |model|
-        icon = case model.name
-        when "Article" then "article"
-        when "Comment" then "comment"
-        else "database"
-        end
-        stats << { label: "#{model.model_name.human}总数", value: model.count, icon: icon }
-      end
-
-      stats << { label: "今日新增", value: User.where("created_at > ?", Date.today).count, icon: "rise" }
       stats
     end
 

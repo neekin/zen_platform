@@ -3,7 +3,7 @@
   <h1 align="center">Zen Platform</h1>
 </p>
 
-[English](./README.md) | 简体中文
+[English](./README_EN.md) | 简体中文
 
 ---
 
@@ -57,7 +57,7 @@ end
 
 ## 📖 文档
 
-完整文档：https://neekin.github.io/zen_platform
+完整文档：https://zen.justfunit.net
 
 ## 🆚 对比
 

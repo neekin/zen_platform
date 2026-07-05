@@ -81,4 +81,97 @@ class Permission < ApplicationRecord
     delete_all
     seed_defaults!
   end
+
+  # ==================== 字段级权限 ====================
+
+  # 检查角色是否有字段权限
+  # @param role_name [String] 角色名称
+  # @param resource [String] 资源名称
+  # @param field_name [String] 字段名称
+  # @param field_action [Symbol] :view | :edit
+  # @return [Boolean]
+  def self.field_allowed?(role_name, resource, field_name, field_action = :view)
+    return true if role_name == "super_admin"
+
+    perm = find_by(role_name: role_name, resource: resource, field_name: field_name)
+    return perm.field_action.to_s == field_action.to_s if perm&.field_action
+
+    # 回退到 Model DSL 默认配置
+    model = resource.safe_constantize
+    return true unless model&.respond_to?(:zen_field_permissions)
+
+    defaults = model.zen_field_permissions[field_name.to_sym]
+    return true unless defaults
+
+    allowed = defaults[role_name.to_sym]
+    return false if allowed == :deny
+    return true if allowed == :edit
+    return true if allowed == :view && field_action == :view
+
+    false
+  end
+
+  # 获取角色在某资源上可见的字段
+  def self.visible_fields(role_name, resource)
+    model = resource.safe_constantize
+    return [] unless model&.respond_to?(:zen_fields)
+
+    all_fields = model.zen_fields.keys
+    all_fields.select { |f| field_allowed?(role_name, resource, f, :view) }
+  end
+
+  # 获取角色在某资源上可编辑的字段
+  def self.editable_fields(role_name, resource)
+    model = resource.safe_constantize
+    return [] unless model&.respond_to?(:zen_fields)
+
+    all_fields = model.zen_fields.keys
+    all_fields.select { |f| field_allowed?(role_name, resource, f, :edit) }
+  end
+
+  # 获取字段权限矩阵（用于前端配置 UI）
+  def self.field_matrix(resource)
+    roles = Role.where.not(name: "super_admin").pluck(:name)
+    model = resource.safe_constantize
+    return { roles: [], fields: [], matrix: [] } unless model&.respond_to?(:zen_fields)
+
+    fields = model.zen_fields.keys
+
+    matrix = roles.map do |role|
+      {
+        role: role,
+        fields: fields.map do |field|
+          perm = find_by(role_name: role, resource: resource, field_name: field)
+          {
+            field: field,
+            action: perm&.field_action || "edit",
+            persisted: perm&.field_action.present?,
+          }
+        end,
+      }
+    end
+
+    { roles: roles, fields: fields, matrix: matrix }
+  end
+
+  # 更新字段权限
+  def self.update_field_permission(role_name, resource, field_name, action)
+    return false if role_name == "super_admin"
+
+    perm = find_or_initialize_by(
+      role_name: role_name,
+      resource: resource,
+      field_name: field_name
+    )
+
+    if action == "edit"
+      # 默认就是 edit，删除记录即可
+      perm.destroy if perm.persisted?
+    else
+      perm.field_action = action
+      perm.save!
+    end
+
+    true
+  end
 end

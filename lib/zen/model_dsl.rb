@@ -35,6 +35,7 @@ module Zen
       class_attribute :zen_display_config, default: {}
       class_attribute :zen_product_configs, default: []
       class_attribute :zen_batch_actions, default: []
+      class_attribute :zen_field_permissions_config, default: {}
     end
 
     class_methods do
@@ -136,6 +137,24 @@ module Zen
         private "batch_#{name}"
       end
 
+      # 定义字段级权限
+      #
+      # field_permissions do
+      #   field :email, viewer: :view, editor: :view
+      #   field :role, viewer: :deny, editor: :view
+      #   field :phone, viewer: :deny, editor: :deny
+      # end
+      def field_permissions(&block)
+        dsl = FieldPermissionsDsl.new
+        dsl.instance_eval(&block)
+        self.zen_field_permissions_config = dsl.to_h
+      end
+
+      # 获取字段权限配置（用于 Permission 模型回退）
+      def zen_field_permissions
+        zen_field_permissions_config
+      end
+
       # 获取完整元数据（用于前端动态渲染）
       def zen_meta
         {
@@ -198,6 +217,27 @@ module Zen
         model.zen_display_config[:list].is_a?(Hash) &&
         model.zen_display_config[:list][:searchable_fields].is_a?(Array) &&
         model.zen_display_config[:list][:searchable_fields].present?
+    end
+  end
+
+  # 字段权限 DSL
+  class FieldPermissionsDsl
+    attr_reader :permissions
+
+    def initialize
+      @permissions = {}
+    end
+
+    # 声明字段权限
+    #
+    # field :email, viewer: :view, editor: :view
+    # field :role, viewer: :deny, editor: :view
+    def field(name, **roles)
+      @permissions[name.to_sym] = roles
+    end
+
+    def to_h
+      @permissions
     end
   end
 end

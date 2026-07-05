@@ -4,6 +4,7 @@ import {
 } from '@ant-design/pro-components'
 import { Form } from 'antd'
 import { lazy, Suspense } from 'react'
+import { useFieldPermissions } from '@/hooks/useFieldPermissions'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '@/types/dsl'
 
 const LazyRichTextEditor = lazy(() =>
@@ -28,6 +29,9 @@ export default function DslForm({
   disabled = false,
 }: DslFormProps) {
   const sections: FormSection[] = meta.display.form?.sections || []
+  const { canView, getFieldDisabled } = useFieldPermissions({
+    field_permissions: meta.field_permissions,
+  })
 
   return (
     <ProForm
@@ -47,16 +51,18 @@ export default function DslForm({
           title={section.title !== 'default' ? section.title : undefined}
           style={{ marginBottom: 16 }}
         >
-          {section.fields.map((fieldConfig) => (
-            <DslFormField
-              key={fieldConfig.name}
-              fieldConfig={fieldConfig}
-              fieldDef={meta.fields[fieldConfig.name]}
-              association={findAssociation(meta, fieldConfig.name)}
-              associationOptions={associations?.[fieldConfig.name]}
-              disabled={disabled}
-            />
-          ))}
+          {section.fields
+            .filter((fieldConfig) => canView(fieldConfig.name))
+            .map((fieldConfig) => (
+              <DslFormField
+                key={fieldConfig.name}
+                fieldConfig={fieldConfig}
+                fieldDef={meta.fields[fieldConfig.name]}
+                association={findAssociation(meta, fieldConfig.name)}
+                associationOptions={associations?.[fieldConfig.name]}
+                disabled={disabled || getFieldDisabled(fieldConfig.name)}
+              />
+            ))}
         </ProCard>
       ))}
     </ProForm>

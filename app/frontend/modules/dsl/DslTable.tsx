@@ -5,6 +5,7 @@ import { router } from '@inertiajs/react'
 import { useState, useCallback } from 'react'
 import type { ProColumns } from '@ant-design/pro-components'
 import type { DslMeta } from '@/types/dsl'
+import { useFieldPermissions } from '@/hooks/useFieldPermissions'
 import { buildColumns } from './columnRenderer'
 
 export interface PaginationConfig {
@@ -59,6 +60,9 @@ export default function DslTable({
 }: DslTableProps) {
   const { message } = App.useApp()
   const [searchText, setSearchText] = useState('')
+  const { canView } = useFieldPermissions({
+    field_permissions: meta.field_permissions,
+  })
 
   const handleSearch = useCallback((value: string) => {
     if (serverSide && onServerChange) {
@@ -66,10 +70,18 @@ export default function DslTable({
     }
   }, [serverSide, onServerChange, pagination])
 
-  const columns: ProColumns[] = [
+  // 构建列并过滤不可见字段
+  const allColumns: ProColumns[] = [
     ...buildColumns(meta, basePath),
     ...extraColumns,
   ]
+  const columns = allColumns.filter(col => {
+    // 操作列始终显示
+    if (col.key === 'action') return true
+    // 根据字段权限过滤
+    const fieldName = col.dataIndex as string
+    return !fieldName || canView(fieldName)
+  })
 
   if (showActions) {
     columns.push({

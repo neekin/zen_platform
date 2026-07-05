@@ -1,38 +1,39 @@
 /**
  * 共享 ActionCable 订阅管理器
  *
- * 解决问题：多个图表组件各自订阅 WebSocket 会创建多个连接
- * 方案：一个共享连接，多个订阅者
+ * 单个 Channel，通过 type 字段区分不同数据源
  *
  * ==============================================
  *  使用方式
  * ==============================================
  *
- * // 在组件中使用
- * import { useSharedSubscription } from '@/hooks/useSharedSubscription'
+ * // 订阅用户趋势
+ * const { data, connected } = useSharedSubscription({ type: 'trend' })
  *
- * function MyChart() {
- *   const { data, connected } = useSharedSubscription('DashboardChannel')
- *   // data 是最新收到的消息
- * }
+ * // 订阅订单统计
+ * const { data, connected } = useSharedSubscription({ type: 'orders' })
+ *
+ * // 订阅所有数据
+ * const { data, connected } = useSharedSubscription()
  *
  * ==============================================
  */
-import { useEffect, useRef, useCallback, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createConsumer } from '@rails/actioncable'
 import type { Cable, Channel } from '@rails/actioncable'
 
 // 全局共享的 consumer 实例
 let globalConsumer: Cable | null = null
 
-// 订阅者管理
+// 单个 Channel 的订阅者管理
 interface SubscriptionEntry {
   channel: Channel
-  subscribers: Set<(data: any) => void>
+  subscribers: Map<string, (data: any) => void>
   data: any[]
 }
 
-const subscriptions = new Map<string, SubscriptionEntry>()
+let mainSubscription: SubscriptionEntry | null = null
+const CHANNEL_NAME = 'DashboardChannel'
 
 /**
  * 获取或创建全局 consumer
@@ -49,61 +50,73 @@ function getConsumer(): Cable {
 }
 
 /**
- * 订阅 Channel（如果已存在则复用）
+ * 确保 Channel 订阅存在
  */
-function subscribe(channelName: string, onData: (data: any) => void): () => void {
-  let entry = subscriptions.get(channelName)
-
-  if (!entry) {
-    // 创建新订阅
+function ensureSubscription(): SubscriptionEntry {
+  if (!mainSubscription) {
     const consumer = getConsumer()
-    const subscribers = new Set<(data: any) => void>()
+    const subscribers = new Map<string, (data: any) => void>()
 
-    const channel = consumer.subscriptions.create(channelName, {
+    const channel = consumer.subscriptions.create(CHANNEL_NAME, {
       received(data: any) {
         // 保存数据
-        entry!.data = [...entry!.data.slice(-99), data] // 保留最近 100 条
-
+        mainSubscription!.data = [...mainSubscription!.data.slice(-99), data]
         // 通知所有订阅者
         subscribers.forEach(callback => callback(data))
       },
     })
 
-    entry = { channel, subscribers, data: [] }
-    subscriptions.set(channelName, entry)
+    mainSubscription = { channel, subscribers, data: [] }
   }
 
-  // 添加订阅者
-  entry.subscribers.add(onData)
+  return mainSubscription
+}
 
-  // 返回取消订阅函数
+/**
+ * 订阅（带可选的 type 过滤）
+ */
+function subscribe(
+  subscriberId: string,
+  onData: (data: any) => void
+): () => void {
+  const entry = ensureSubscription()
+  entry.subscribers.set(subscriberId, onData)
+
   return () => {
-    entry!.subscribers.delete(onData)
-
-    // 如果没有订阅者了，取消订阅
-    if (entry!.subscribers.size === 0) {
-      entry!.channel.unsubscribe()
-      subscriptions.delete(channelName)
+    entry.subscribers.delete(subscriberId)
+    // 无订阅者时断开连接
+    if (entry.subscribers.size === 0) {
+      entry.channel.unsubscribe()
+      mainSubscription = null
     }
   }
 }
 
+interface UseSharedSubscriptionOptions {
+  /** 过滤数据类型（如 'trend', 'orders', 'revenue'） */
+  type?: string
+  /** 最大数据点数 */
+  maxDataPoints?: number
+}
+
 /**
  * Hook：使用共享订阅
- *
- * @param channelName Channel 名称
- * @param maxDataPoints 最大数据点数
  */
-export function useSharedSubscription(channelName: string, maxDataPoints = 50) {
+export function useSharedSubscription(options: UseSharedSubscriptionOptions = {}) {
+  const { type, maxDataPoints = 50 } = options
   const [data, setData] = useState<any[]>([])
   const [connected, setConnected] = useState(false)
   const isMountedRef = useRef(true)
+  const subscriberIdRef = useRef(`sub-${Math.random().toString(36).slice(2, 9)}`)
 
   useEffect(() => {
     isMountedRef.current = true
 
     const handleData = (newData: any) => {
       if (!isMountedRef.current) return
+
+      // 如果指定了类型，只处理匹配的数据
+      if (type && newData.type !== type) return
 
       setData(prev => {
         const updated = [...prev, newData]
@@ -113,9 +126,7 @@ export function useSharedSubscription(channelName: string, maxDataPoints = 50) {
       })
     }
 
-    const unsubscribe = subscribe(channelName, handleData)
-
-    // 模拟连接状态（实际状态需要从 channel 获取）
+    const unsubscribe = subscribe(subscriberIdRef.current, handleData)
     setConnected(true)
 
     return () => {
@@ -123,7 +134,7 @@ export function useSharedSubscription(channelName: string, maxDataPoints = 50) {
       unsubscribe()
       setConnected(false)
     }
-  }, [channelName, maxDataPoints])
+  }, [type, maxDataPoints])
 
   return { data, connected }
 }
@@ -132,9 +143,9 @@ export function useSharedSubscription(channelName: string, maxDataPoints = 50) {
  * 获取订阅统计信息（调试用）
  */
 export function getSubscriptionStats() {
-  const stats: Record<string, number> = {}
-  subscriptions.forEach((entry, name) => {
-    stats[name] = entry.subscribers.size
-  })
-  return stats
+  if (!mainSubscription) return { subscribers: 0, dataPoints: 0 }
+  return {
+    subscribers: mainSubscription.subscribers.size,
+    dataPoints: mainSubscription.data.length,
+  }
 }

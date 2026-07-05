@@ -25,6 +25,7 @@ export default defineConfig({
             { text: '安装配置', link: '/guide/installation' },
             { text: '配置参考', link: '/guide/configuration' },
             { text: '通知系统', link: '/guide/notifications' },
+            { text: '实时仪表盘', link: '/guide/realtime-dashboard' },
           ],
         },
       ],

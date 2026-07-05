@@ -3,8 +3,9 @@ import {
   ProFormSelect, ProFormRadio, ProFormDatePicker, ProFormDateTimePicker, ProCard,
 } from '@ant-design/pro-components'
 import { Form } from 'antd'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { getFieldType } from './fieldTypeRegistry'
+import { useFieldVisibility } from '@/hooks/useFieldVisibility'
 import type { DslMeta, FormSection, FormField, FieldDefinition, AssociationDefinition } from '@/types/dsl'
 
 const LazyRichTextEditor = lazy(() =>
@@ -29,10 +30,25 @@ export default function DslForm({
   disabled = false,
 }: DslFormProps) {
   const sections: FormSection[] = meta.display.form?.sections || []
+  const [formValues, setFormValues] = useState<Record<string, any>>(initialValues || {})
+  const formRef = useRef<any>(null)
+
+  // 字段联动可见性
+  const { isFieldVisible } = useFieldVisibility({
+    fields: meta.fields,
+    values: formValues,
+  })
+
+  // 监听表单值变化
+  const handleValuesChange = (_: any, allValues: Record<string, any>) => {
+    setFormValues(allValues)
+  }
 
   return (
     <ProForm
+      formRef={formRef}
       initialValues={initialValues || {}}
+      onValuesChange={handleValuesChange}
       onFinish={async (values) => {
         const result = await onFinish?.(values)
         return result !== false
@@ -48,16 +64,18 @@ export default function DslForm({
           title={section.title !== 'default' ? section.title : undefined}
           style={{ marginBottom: 16 }}
         >
-          {section.fields.map((fieldConfig) => (
-            <DslFormField
-              key={fieldConfig.name}
-              fieldConfig={fieldConfig}
-              fieldDef={meta.fields[fieldConfig.name]}
-              association={findAssociation(meta, fieldConfig.name)}
-              associationOptions={associations?.[fieldConfig.name]}
-              disabled={disabled}
-            />
-          ))}
+          {section.fields
+            .filter((fieldConfig) => isFieldVisible(fieldConfig.name))
+            .map((fieldConfig) => (
+              <DslFormField
+                key={fieldConfig.name}
+                fieldConfig={fieldConfig}
+                fieldDef={meta.fields[fieldConfig.name]}
+                association={findAssociation(meta, fieldConfig.name)}
+                associationOptions={associations?.[fieldConfig.name]}
+                disabled={disabled}
+              />
+            ))}
         </ProCard>
       ))}
     </ProForm>

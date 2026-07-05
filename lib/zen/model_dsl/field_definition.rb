@@ -33,6 +33,19 @@ module Zen
       options[:visible_if].is_a?(Proc)
     end
 
+    # 字段联动条件（前端使用）
+    # field :end_date, :date, visible_when: { status: "published" }
+    # field :reason, :text, visible_when: { status: ["rejected", "cancelled"] }
+    # field :priority, :enum, visible_when: { status: "published", type: "urgent" }
+    def visible_when
+      options[:visible_when]
+    end
+
+    # 是否有联动条件
+    def has_visible_when?
+      options[:visible_when].is_a?(Hash) && options[:visible_when].present?
+    end
+
     # 默认值
     def default
       options[:default]
@@ -109,7 +122,7 @@ module Zen
 
     # 转换为哈希（用于 JSON 序列化）
     def to_h
-      {
+      result = {
         name: name,
         type: type,
         required: required?,
@@ -128,6 +141,11 @@ module Zen
         multiple: multiple?,
         max_count: max_count
       }.compact
+
+      # 联动条件
+      result[:visible_when] = visible_when if has_visible_when?
+
+      result
     end
 
     # 获取前端组件类型

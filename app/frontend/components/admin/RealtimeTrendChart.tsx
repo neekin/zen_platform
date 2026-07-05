@@ -34,6 +34,7 @@ import { ProCard } from '@ant-design/pro-components'
 import { Badge, Space, Typography, Spin } from 'antd'
 import { ThunderboltOutlined } from '@ant-design/icons'
 import { createConsumer } from '@rails/actioncable'
+import type { Cable } from '@rails/actioncable'
 
 const { Text } = Typography
 
@@ -77,7 +78,10 @@ export default function RealtimeTrendChart({
 }: RealtimeTrendChartProps) {
   const [data, setData] = useState<TrendDataPoint[]>(initialData)
   const [connected, setConnected] = useState(false)
-  const consumerRef = useRef<any>(null)
+
+  // 使用 ref 追踪组件挂载状态，防止卸载后更新 state
+  const isMountedRef = useRef(true)
+  const consumerRef = useRef<Cable | null>(null)
 
   /**
    * ============================================
@@ -88,6 +92,9 @@ export default function RealtimeTrendChart({
    * 后端推送格式：{ time: "12:00:00", value: 42 }
    */
   useEffect(() => {
+    // 标记组件已挂载
+    isMountedRef.current = true
+
     // 获取 Rails 端口（开发环境 Vite 代理）
     const meta = document.querySelector<HTMLMetaElement>('meta[name="cable-port"]')
     const port = meta?.content || window.location.port
@@ -99,13 +106,18 @@ export default function RealtimeTrendChart({
 
     const subscription = consumer.subscriptions.create(CHANNEL_NAME, {
       connected() {
-        console.log('[Dashboard] WebSocket 已连接')
-        setConnected(true)
+        // 检查组件是否仍然挂载
+        if (isMountedRef.current) {
+          console.log('[Dashboard] WebSocket 已连接')
+          setConnected(true)
+        }
       },
 
       disconnected() {
-        console.log('[Dashboard] WebSocket 已断开')
-        setConnected(false)
+        if (isMountedRef.current) {
+          console.log('[Dashboard] WebSocket 已断开')
+          setConnected(false)
+        }
       },
 
       /**
@@ -116,16 +128,22 @@ export default function RealtimeTrendChart({
        * 后端推送的数据会到达这里
        * 根据你的数据格式修改 handleNewData
        */
-      received(data: TrendDataPoint) {
-        handleNewData(data)
+      received(newData: TrendDataPoint) {
+        // 检查组件是否仍然挂载
+        if (!isMountedRef.current) return
+
+        handleNewData(newData)
       },
     })
 
+    // 清理函数：组件卸载时断开连接
     return () => {
+      isMountedRef.current = false
       subscription.unsubscribe()
       consumer.disconnect()
+      consumerRef.current = null
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * ============================================

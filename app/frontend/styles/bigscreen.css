@@ -1,0 +1,124 @@
+/* 大屏页面专用样式 */
+
+/* 防止溢出 */
+.bigscreen-page {
+  overflow: hidden;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.bigscreen-page * {
+  box-sizing: border-box;
+}
+
+/* 卡片容器 */
+.bigscreen-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+/* 图表容器 - 防止图表溢出 */
+.bigscreen-chart-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.bigscreen-chart-container .g2-container,
+.bigscreen-chart-container canvas {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* 表格样式 - 适配深色主题 */
+.bigscreen-card .ant-table {
+  background: transparent !important;
+}
+
+.bigscreen-card .ant-table-thead > tr > th {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.bigscreen-card .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.bigscreen-card .ant-table-tbody > tr:hover > td {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* 统计卡片 */
+.bigscreen-stat {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.bigscreen-stat:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 165, 55, 0.3);
+}
+
+/* 图表标题 */
+.bigscreen-chart-title {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* 顶部导航 */
+.bigscreen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+/* 时钟 */
+.bigscreen-clock {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 16px;
+  font-family: monospace;
+}
+
+/* 操作按钮 */
+.bigscreen-action-btn {
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.bigscreen-action-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* 底部信息 */
+.bigscreen-footer {
+  text-align: center;
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+}
+
+/* 确保图表不会导致布局抖动 */
+.bigscreen-chart-wrapper {
+  min-height: 300px;
+  max-height: 400px;
+  overflow: hidden;
+}

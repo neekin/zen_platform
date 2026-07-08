@@ -1,0 +1,196 @@
+# frozen_string_literal: true
+
+# <%= class_name %> 数据导入器
+# 用法: <%= class_name %>Importer.new(file).import
+class <%= class_name %>Importer
+  attr_reader :errors, :imported_count, :skipped_count
+
+  REQUIRED_COLUMNS = [].freeze
+  # TODO: 添加必填列
+  # REQUIRED_COLUMNS = %w[title body].freeze
+
+  def initialize(file)
+    @file = file
+    @errors = []
+    @imported_count = 0
+    @skipped_count = 0
+  end
+
+  # 执行导入
+  # @return [Hash] 导入结果
+  def import
+    return { success: false, errors: ["文件不能为空"] } unless @file
+    return { success: false, errors: ["不支持的文件格式"] } unless valid_format?
+
+    rows = parse_file
+    return { success: false, errors: @errors } if @errors.any?
+
+    validate_headers(rows.first&.keys || [])
+    return { success: false, errors: @errors } if @errors.any?
+
+    ActiveRecord::Base.transaction do
+      rows.each_with_index do |row, index|
+        import_row(row, index + 2) # +2 因为第一行是表头，索引从 1 开始
+      end
+    end
+
+    {
+      success: @errors.empty?,
+      imported_count: @imported_count,
+      skipped_count: @skipped_count,
+      errors: @errors,
+    }
+  rescue StandardError => e
+    Rails.logger.error("[<%= class_name %>Importer] Import error: #{e.message}")
+    { success: false, errors: ["导入失败: #{e.message}"] }
+  end
+
+  private
+
+  def valid_format?
+    extension = File.extname(@file.original_filename).downcase
+    %w[.csv .xlsx .xls].include?(extension)
+  end
+
+  def parse_file
+    extension = File.extname(@file.original_filename).downcase
+
+    case extension
+    when ".csv"
+      parse_csv
+    when ".xlsx", ".xls"
+      parse_excel
+    else
+      @errors << "不支持的文件格式: #{extension}"
+      []
+    end
+  end
+
+  def parse_csv
+    require "csv"
+
+    rows = []
+    CSV.foreach(@file.path, headers: true, encoding: "bom|utf-8") do |row|
+      rows << row.to_h
+    end
+    rows
+  rescue CSV::MalformedCSVError => e
+    @errors << "CSV 格式错误: #{e.message}"
+    []
+  end
+
+  def parse_excel
+    require "roo"
+
+    xlsx = Roo::Spreadsheet.open(@file.path, extension: :xlsx)
+    sheet = xlsx.sheet(0)
+
+    headers = sheet.row(1).map(&:to_s)
+    rows = []
+
+    (2..sheet.last_row).each do |i|
+      row_data = sheet.row(i)
+      row = headers.zip(row_data).to_h
+      rows << row
+    end
+
+    rows
+  rescue StandardError => e
+    @errors << "Excel 解析错误: #{e.message}"
+    []
+  end
+
+  def validate_headers(headers)
+    missing = REQUIRED_COLUMNS - headers.map(&:to_s)
+    if missing.any?
+      @errors << "缺少必填列: #{missing.join(', ')}"
+    end
+  end
+
+  def import_row(row, line_number)
+    # 清理数据
+    attributes = clean_attributes(row)
+
+    # 数据验证
+    validation_errors = validate_row(attributes)
+    if validation_errors.any?
+      @errors << "第 #{line_number} 行: #{validation_errors.join(', ')}"
+      @skipped_count += 1
+      return
+    end
+
+    # 创建记录
+    record = build_record(attributes)
+
+    if record.save
+      @imported_count += 1
+    else
+      @errors << "第 #{line_number} 行: #{record.errors.full_messages.join(', ')}"
+      @skipped_count += 1
+    end
+  end
+
+  def clean_attributes(row)
+    attrs = {}
+
+    row.each do |key, value|
+      # 跳过空值
+      next if value.nil? || value.to_s.strip.empty?
+
+      # 清理键名（去除空格、转换为小写）
+      clean_key = key.to_s.strip.downcase.gsub(/\s+/, "_")
+
+      attrs[clean_key] = value.to_s.strip
+    end
+
+    attrs
+  end
+
+  def validate_row(attributes)
+    errors = []
+
+    # 必填字段验证
+    REQUIRED_COLUMNS.each do |col|
+      if attributes[col].blank?
+        errors << "#{col} 不能为空"
+      end
+    end
+
+    # TODO: 添加自定义验证规则
+    # 例如：
+    # if attributes["email"] && !attributes["email"].match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+    #   errors << "邮箱格式不正确"
+    # end
+
+    errors
+  end
+
+  def build_record(attributes)
+    # 映射列名到模型字段
+    mapped_attributes = map_attributes(attributes)
+
+    # TODO: 自定义记录构建逻辑
+    # 例如添加默认值：
+    # mapped_attributes[:status] ||= "draft"
+    # mapped_attributes[:user_id] ||= Current.user&.id
+
+    <%= class_name %>.new(mapped_attributes)
+  end
+
+  def map_attributes(attributes)
+    # 默认直接映射，可自定义映射关系
+    mapping = {
+      # "csv列名" => "model字段名"
+      # "标题" => "title",
+      # "内容" => "body",
+    }
+
+    mapped = {}
+    attributes.each do |key, value|
+      model_key = mapping[key] || key
+      mapped[model_key.to_sym] = value
+    end
+
+    mapped
+  end
+end

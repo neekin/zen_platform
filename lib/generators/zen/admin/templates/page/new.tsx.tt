@@ -1,0 +1,57 @@
+/**
+ * <%= class_name %> 新建页
+ * 路由: /admin/<%= plural_name %>/new
+ */
+import { router, useForm } from '@inertiajs/react'
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components'
+import { App, Card, Button, Space } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import AdminLayout from '@/layouts/AdminLayout'
+import type { ReactNode } from 'react'
+
+function <%= class_name %>New({ errors }: { errors?: string[] }) {
+  const { message } = App.useApp()
+  const { data, setData, post, processing } = useForm({
+<%= attributes.map { |a| "    #{a.name}: #{js_default_value(a.type)}" }.join(",\n") %>,
+  })
+
+  const handleSubmit = () => {
+    post('/admin/<%= plural_name %>', { onSuccess: () => message.success('创建成功') })
+  }
+
+  return (
+    <PageContainer
+      title="新建<%= class_name %>"
+      extra={[
+        <Button key="back" icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>')}>返回列表</Button>,
+      ]}
+    >
+      <Card>
+        {errors && errors.length > 0 && (
+          <div style={{ marginBottom: 16, color: 'var(--ant-color-error)' }}>
+            {errors.map((err, i) => <div key={i}>{err}</div>)}
+          </div>
+        )}
+        <ProForm
+          onFinish={handleSubmit}
+          submitter={{
+            submitButtonProps: { loading: processing },
+            submitterRender: (_, dom) => (
+              <Space>
+                <Button onClick={() => router.visit('/admin/<%= plural_name %>')}>取消</Button>
+                {dom}
+              </Space>
+            ),
+          }}
+        >
+<% attributes.each do |a| %>
+          <ProFormText name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% end %>
+        </ProForm>
+      </Card>
+    </PageContainer>
+  )
+}
+
+<%= class_name %>New.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>New

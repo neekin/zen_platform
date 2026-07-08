@@ -1,0 +1,97 @@
+/**
+ * <%= class_name %> 详情页
+ * 路由: /admin/<%= plural_name %>/:id
+ */
+import { router } from '@inertiajs/react'
+import { PageContainer } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm, Tag, Card, Descriptions, Row, Col, Statistic } from 'antd'
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, ClockCircleOutlined } from '@ant-design/icons'
+import AdminLayout from '@/layouts/AdminLayout'
+<% if has_rich_text? %>
+import { RichTextViewer } from '@/modules/content'
+<% end %>
+import type { ReactNode } from 'react'
+
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+<% belongs_to_associations.each do |assoc| %>
+  <%= assoc[:name] %>?: { id: number; <%= assoc[:display] %>: string }
+<% end %>
+  created_at: string
+  updated_at: string
+}
+
+function <%= class_name %>Show({ <%= singular_name %> }: { <%= singular_name %>: <%= class_name %> }) {
+  const { message } = App.useApp()
+
+  return (
+    <PageContainer
+      title={<%= singular_name %>.<%= attributes.find { |a| a.type == 'string' && !rich_text?(a) }&.name || 'id' %> || '<%= class_name %>详情'}
+      subTitle={<Tag color="blue">ID: {<%= singular_name %>.id}</Tag>}
+      extra={
+        <Space>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>')}>返回列表</Button>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${<%= singular_name %>.id}/edit`)}>编辑</Button>
+          <Popconfirm title="确定删除？" onConfirm={() => { router.delete(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, { onSuccess: () => { message.success('删除成功'); router.visit('/admin/<%= plural_name %>') } }) }}>
+            <Button danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      }
+    >
+      <Row gutter={[16, 16]}>
+        {/* 基本信息卡片 */}
+        <Col span={24}>
+          <Card title="基本信息" variant="borderless">
+            <Descriptions column={{ xs: 1, sm: 2, md: 3 }} bordered size="middle">
+<% attributes.each do |a| %>
+<% if enum?(a) %>
+              <Descriptions.Item label="<%= a.name %>"><Tag>{<%= singular_name %>.<%= a.name %>}</Tag></Descriptions.Item>
+<% elsif a.type == 'boolean' %>
+              <Descriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %> ? '是' : '否'}</Descriptions.Item>
+<% elsif association_foreign_key?(a) %>
+              <Descriptions.Item label="<%= association_name_for_foreign_key(a.name) %>">{<%= singular_name %>.<%= association_name_for_foreign_key(a.name) %>?.<%= belongs_to_associations.find { |bt| bt[:foreign_key] == a.name }&.dig(:display) || :name %> || '-'}</Descriptions.Item>
+<% elsif rich_text?(a) %>
+<% else %>
+              <Descriptions.Item label="<%= a.name %>">{<%= singular_name %>.<%= a.name %>}</Descriptions.Item>
+<% end %>
+<% end %>
+            </Descriptions>
+          </Card>
+        </Col>
+
+<% rich_text_attributes.each do |a| %>
+        {/* <%= a.name %> 富文本内容 */}
+        <Col span={24}>
+          <Card title="<%= a.name %>" variant="borderless">
+            {<%= singular_name %>.<%= a.name %> && <%= singular_name %>.<%= a.name %> !== '{}' ? (
+              <RichTextViewer content={<%= singular_name %>.<%= a.name %>} />
+            ) : (
+              <span style={{ color: '#999', fontStyle: 'italic' }}>暂无内容</span>
+            )}
+          </Card>
+        </Col>
+<% end %>
+
+        {/* 时间信息 */}
+        <Col span={24}>
+          <Card variant="borderless" size="small">
+            <Space split={<span style={{ color: '#ddd' }}>|</span>}>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>创建于 {<%= singular_name %>.created_at}</span>
+              </Space>
+              <Space>
+                <ClockCircleOutlined style={{ color: '#999' }} />
+                <span style={{ color: '#666' }}>更新于 {<%= singular_name %>.updated_at}</span>
+              </Space>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Show.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Show

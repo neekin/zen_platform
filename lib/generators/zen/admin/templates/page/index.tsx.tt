@@ -1,0 +1,59 @@
+/**
+ * <%= class_name %> 列表页
+ * 路由: /admin/<%= plural_name %>
+ */
+import { router } from '@inertiajs/react'
+import { PageContainer, ProTable } from '@ant-design/pro-components'
+import { App, Button, Space, Popconfirm } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import AdminLayout from '@/layouts/AdminLayout'
+import type { ReactNode } from 'react'
+import type { ProColumns } from '@ant-design/pro-components'
+
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  created_at: string
+  updated_at: string
+}
+
+function <%= class_name %>Index({ <%= plural_name %> }: { <%= plural_name %>: <%= class_name %>[] }) {
+  const { message } = App.useApp()
+
+  const columns: ProColumns<<%= class_name %>>[] = [
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+<%= attributes.map { |a| "    { title: '#{a.name}', dataIndex: '#{a.name}', key: '#{a.name}' }" }.join(",\n") %>,
+    { title: '创建时间', dataIndex: 'created_at', key: 'created_at', valueType: 'dateTime' },
+    {
+      title: '操作',
+      key: 'action',
+      width: 200,
+      render: (_: any, record: <%= class_name %>) => (
+        <Space>
+          <Button type="link" icon={<EyeOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}`)}>查看</Button>
+          <Button type="link" icon={<EditOutlined />} onClick={() => router.visit(`/admin/<%= plural_name %>/${record.id}/edit`)}>编辑</Button>
+          <Popconfirm title="确定删除？" onConfirm={() => router.delete(`/admin/<%= plural_name %>/${record.id}`, { onSuccess: () => message.success('删除成功') })}>
+            <Button type="link" danger icon={<DeleteOutlined />}>删除</Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ]
+
+  return (
+    <PageContainer title="<%= class_name %>管理">
+      <ProTable
+        columns={columns}
+        dataSource={<%= plural_name %>}
+        rowKey="id"
+        search={false}
+        toolBarRender={() => [
+          <Button key="add" type="primary" icon={<PlusOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>/new')}>新建<%= class_name %></Button>,
+        ]}
+      />
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Index.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Index

@@ -1,0 +1,22 @@
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/3.3.0/gems/bcrypt_pbkdf-1.1.2/ext/mri
+/usr/bin/ruby3.3 -I/usr/lib/ruby/vendor_ruby extconf.rb
+creating Makefile
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/3.3.0/gems/bcrypt_pbkdf-1.1.2/ext/mri
+make DESTDIR\= sitearchdir\=./.gem.20260707-5267-tx52kz sitelibdir\=./.gem.20260707-5267-tx52kz clean
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/3.3.0/gems/bcrypt_pbkdf-1.1.2/ext/mri
+make DESTDIR\= sitearchdir\=./.gem.20260707-5267-tx52kz sitelibdir\=./.gem.20260707-5267-tx52kz
+compiling bcrypt_pbkdf.c
+compiling bcrypt_pbkdf_ext.c
+compiling blowfish.c
+compiling explicit_bzero.c
+compiling hash_sha512.c
+linking shared-object bcrypt_pbkdf_ext.so
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/3.3.0/gems/bcrypt_pbkdf-1.1.2/ext/mri
+make DESTDIR\= sitearchdir\=./.gem.20260707-5267-tx52kz sitelibdir\=./.gem.20260707-5267-tx52kz install
+/usr/bin/install -c -m 0755 bcrypt_pbkdf_ext.so ./.gem.20260707-5267-tx52kz
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/3.3.0/gems/bcrypt_pbkdf-1.1.2/ext/mri
+make DESTDIR\= sitearchdir\=./.gem.20260707-5267-tx52kz sitelibdir\=./.gem.20260707-5267-tx52kz clean

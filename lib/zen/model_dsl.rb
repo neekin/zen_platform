@@ -1,0 +1,278 @@
+# frozen_string_literal: true
+
+require "active_support"
+require "active_support/concern"
+require "active_support/core_ext/string"
+
+# Zen Model DSL
+# 声明式定义模型字段、关联、展示方式
+#
+# 用法:
+#   class Article < ApplicationRecord
+#     include Zen::ModelDsl
+#
+#     field :title, :string, required: true
+#     field :body, :rich_text
+#     field :status, :enum, values: %w[draft published]
+#
+#     belongs_to :category
+#     has_many :comments
+#     has_many :tags, through: :article_tags
+#
+#     display do
+#       list { column :title, link: true }
+#       form { section "内容" { field :body, as: :rich_text } }
+#     end
+#   end
+
+module Zen
+  module ModelDsl
+    extend ActiveSupport::Concern
+
+    included do
+      class_attribute :zen_fields, default: {}
+      class_attribute :zen_associations, default: {}
+      class_attribute :zen_display_config, default: {}
+      class_attribute :zen_product_configs, default: []
+      class_attribute :zen_batch_actions, default: []
+      class_attribute :zen_field_permissions_config, default: {}
+    end
+
+    class_methods do
+      # 定义字段
+      #
+      # field :title, :string, required: true, placeholder: "请输入标题"
+      # field :status, :enum, values: %w[draft published], default: "draft"
+      # field :cover, :image, accept: %w[image/jpeg image/png]
+      # field :category_id, :reference, target: Category
+      def field(name, type, **options)
+        self.zen_fields = zen_fields.merge(name.to_sym => Zen::ModelDsl::FieldDefinition.new(name, type, options))
+
+        # 自动集成 ActiveRecord enum
+        if type == :enum && options[:values].is_a?(Array) && !options[:values].empty?
+          values_map = options[:values].each_with_index.to_h { |v, i| [ v.to_sym, i ] }
+          enum name, values_map
+        end
+      end
+
+      # 定义 belongs_to 关联
+      #
+      # belongs_to :category
+      # belongs_to :user, display: :name, searchable: true
+      def belongs_to(name, **options)
+        # 保存 DSL 配置
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :belongs_to, options.except(:optional, :foreign_key, :class_name))
+        self.zen_associations = zen_associations.merge(name.to_sym => assoc)
+
+        # 调用 ActiveRecord 的 belongs_to 创建实际关联
+        super(name, **options)
+      end
+
+      # 定义 has_many 关联
+      #
+      # has_many :comments
+      # has_many :comments, dependent: :destroy
+      def has_many(name, *args, **options)
+        # 调用 ActiveRecord 的 has_many 创建实际关联
+        super(name, *args, **options)
+
+        # 只保存 DSL 声明的关联，排除 PaperTrail 等内部关联
+        return if name == :versions
+        return unless options.key?(:dependent) || options.key?(:class_name) || args.empty?
+
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :has_many, options.except(:dependent, :class_name))
+        self.zen_associations = zen_associations.merge(name.to_sym => assoc)
+      end
+
+      # 定义 has_many through 关联
+      #
+      # has_many :tags, through: :article_tags
+      def has_many_through(name, through, **options)
+        # 保存 DSL 配置
+        assoc = Zen::ModelDsl::AssociationDefinition.new(name, :has_many_through, options.merge(through: through))
+        self.zen_associations = zen_associations.merge(name.to_sym => assoc)
+
+        # 调用 ActiveRecord 的 has_many 创建实际关联
+        has_many(name, through: through, **options)
+      end
+
+      # 展示配置块
+      def display(&block)
+        config = Zen::ModelDsl::DisplayConfig.new
+        config.instance_eval(&block) if block
+        self.zen_display_config = config.to_h
+      end
+
+      # 产品形态配置
+      def product(type, **options)
+        self.zen_product_configs = zen_product_configs + [ { type: type.to_sym, options: options } ]
+
+        if type.to_sym == :soft_delete
+          column = options[:column] || :deleted_at
+
+          scope :active, -> { where(column => nil) }
+          default_scope { where(column => nil) }
+
+          define_method(:archive!) { update!(column => Time.current) }
+          define_method(:restore!) { update!(column => nil) }
+          define_method(:archived?) { !!self[column] }
+        end
+      end
+
+      # 定义批量操作
+      #
+      # batch_action :publish, label: "批量发布", confirm: "确定发布选中的记录？" do |ids|
+      #   where(id: ids).update_all(status: "published")
+      # end
+      def batch_action(name, label: nil, confirm: nil, &block)
+        self.zen_batch_actions = zen_batch_actions + [ {
+          name: name.to_s,
+          label: label || name.to_s.humanize,
+          confirm: confirm
+        } ]
+
+        define_method("batch_#{name}") do |ids|
+          instance_exec(ids, &block)
+        end
+        private "batch_#{name}"
+      end
+
+      # 定义字段级权限
+      #
+      # field_permissions do
+      #   field :email, viewer: :view, editor: :view
+      #   field :role, viewer: :deny, editor: :view
+      #   field :phone, viewer: :deny, editor: :deny
+      # end
+      def field_permissions(&block)
+        dsl = FieldPermissionsDsl.new
+        dsl.instance_eval(&block)
+        self.zen_field_permissions_config = dsl.to_h
+      end
+
+      # 获取字段权限配置（用于 Permission 模型回退）
+      def zen_field_permissions
+        zen_field_permissions_config
+      end
+
+      # 获取完整元数据（用于前端动态渲染）
+      # @param user [User, nil] 当前用户，用于过滤字段可见性
+      def zen_meta(user = nil)
+        filtered_fields = if user
+          zen_fields.select { |_, field| field.visible_for?(user) }
+        else
+          zen_fields
+        end
+
+        {
+          model_name: name,
+          fields: filtered_fields.transform_values(&:to_h),
+          associations: zen_associations.transform_values(&:to_h),
+          display: filter_display_config(zen_display_config, filtered_fields.keys),
+          products: zen_product_configs,
+          batch_actions: zen_batch_actions.map { |a| { name: a[:name], label: a[:label], confirm: a[:confirm] } },
+          restricted_fields: zen_fields.select { |_, f| f.has_visibility_restriction? }.keys.map(&:to_s),
+        }
+      end
+
+      # 过滤 display 配置中的字段
+      def filter_display_config(config, allowed_fields)
+        return config unless config.is_a?(Hash)
+
+        result = config.deep_dup
+
+        # 过滤 list columns
+        if result[:list].is_a?(Hash) && result[:list][:columns].is_a?(Array)
+          result[:list][:columns] = result[:list][:columns].select do |col|
+            allowed_fields.include?(col[:name]&.to_sym)
+          end
+        end
+
+        # 过滤 form sections
+        if result[:form].is_a?(Hash) && result[:form][:sections].is_a?(Array)
+          result[:form][:sections] = result[:form][:sections].map do |section|
+            if section[:fields].is_a?(Array)
+              section.merge(fields: section[:fields].select { |f| allowed_fields.include?(f[:name]&.to_sym) })
+            else
+              section
+            end
+          end
+        end
+
+        result
+      end
+    end
+
+    # 获取字段定义
+    def zen_field(name)
+      self.class.zen_fields[name.to_sym]
+    end
+
+    # 获取所有字段定义
+    def zen_all_fields
+      self.class.zen_fields
+    end
+
+    # 获取关联定义
+    def zen_association(name)
+      self.class.zen_associations[name.to_sym]
+    end
+
+    # 获取所有关联定义
+    def zen_all_associations
+      self.class.zen_associations
+    end
+
+    # 获取 belongs_to 关联
+    def zen_belongs_to_associations
+      self.class.zen_associations.select { |_, a| a.belongs_to? }
+    end
+
+    # 获取 has_many 关联
+    def zen_has_many_associations
+      self.class.zen_associations.select { |_, a| a.has_many? || a.has_many_through? }
+    end
+
+    # 获取展示配置
+    def zen_display
+      self.class.zen_display_config
+    end
+
+    # 获取产品形态配置
+    def zen_products
+      self.class.zen_product_configs
+    end
+  end
+
+  # 获取所有声明了 searchable 字段的 DSL 模型
+  def self.searchable_models
+    ApplicationRecord.descendants.select do |model|
+      model.respond_to?(:zen_display_config) &&
+        model.zen_display_config.is_a?(Hash) &&
+        model.zen_display_config[:list].is_a?(Hash) &&
+        model.zen_display_config[:list][:searchable_fields].is_a?(Array) &&
+        model.zen_display_config[:list][:searchable_fields].present?
+    end
+  end
+
+  # 字段权限 DSL
+  class FieldPermissionsDsl
+    attr_reader :permissions
+
+    def initialize
+      @permissions = {}
+    end
+
+    # 声明字段权限
+    #
+    # field :email, viewer: :view, editor: :view
+    # field :role, viewer: :deny, editor: :view
+    def field(name, **roles)
+      @permissions[name.to_sym] = roles
+    end
+
+    def to_h
+      @permissions
+    end
+  end
+end

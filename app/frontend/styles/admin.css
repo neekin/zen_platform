@@ -1,0 +1,276 @@
+/* Zen Platform - Theme System */
+
+/* ===== Dark Theme (default) ===== */
+[data-theme="dark"] {
+  --zen-bg-primary: #0a0f1e;
+  --zen-bg-card: rgba(20, 27, 45, 0.7);
+  --zen-bg-glass: rgba(20, 27, 45, 0.6);
+  --zen-bg-sider: rgba(12, 18, 35, 0.9);
+  --zen-bg-header: rgba(10, 15, 30, 0.8);
+  --zen-border-glass: rgba(100, 140, 200, 0.15);
+  --zen-border-glass-subtle: rgba(100, 140, 200, 0.08);
+  --zen-glow-blue: rgba(22, 119, 255, 0.3);
+  --zen-text-primary: rgba(255, 255, 255, 0.85);
+  --zen-text-secondary: rgba(255, 255, 255, 0.65);
+  --zen-table-header-bg: rgba(22, 119, 255, 0.08);
+  --zen-table-row-hover: rgba(22, 119, 255, 0.05);
+  --zen-shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
+  --zen-shadow-card-hover: 0 8px 32px rgba(22, 119, 255, 0.15);
+  --zen-scrollbar-track: rgba(0, 0, 0, 0.1);
+  --zen-scrollbar-thumb: rgba(100, 140, 200, 0.3);
+  --zen-scrollbar-thumb-hover: rgba(100, 140, 200, 0.5);
+  --zen-header-icon-color: rgba(255, 255, 255, 0.65);
+  --zen-menu-selected-bg: rgba(22, 119, 255, 0.15);
+  --zen-menu-hover-bg: rgba(22, 119, 255, 0.1);
+  --zen-menu-selected-border: #1677FF;
+}
+
+/* ===== Light Theme ===== */
+[data-theme="light"] {
+  --zen-bg-primary: #f5f7fa;
+  --zen-bg-card: #ffffff;
+  --zen-bg-glass: rgba(255, 255, 255, 0.85);
+  --zen-bg-sider: #ffffff;
+  --zen-bg-header: #ffffff;
+  --zen-border-glass: #e8ecf0;
+  --zen-border-glass-subtle: #f0f2f5;
+  --zen-glow-blue: rgba(22, 119, 255, 0.15);
+  --zen-text-primary: rgba(0, 0, 0, 0.88);
+  --zen-text-secondary: rgba(0, 0, 0, 0.55);
+  --zen-table-header-bg: rgba(22, 119, 255, 0.04);
+  --zen-table-row-hover: rgba(22, 119, 255, 0.03);
+  --zen-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --zen-shadow-card-hover: 0 4px 20px rgba(22, 119, 255, 0.12);
+  --zen-scrollbar-track: rgba(0, 0, 0, 0.04);
+  --zen-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --zen-scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --zen-header-icon-color: rgba(0, 0, 0, 0.55);
+  --zen-menu-selected-bg: rgba(22, 119, 255, 0.08);
+  --zen-menu-hover-bg: rgba(22, 119, 255, 0.05);
+  --zen-menu-selected-border: #1677FF;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--zen-bg-primary);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(22, 119, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+  min-height: 100vh;
+}
+
+/* Frosted glass effect */
+.glass-card {
+  background: var(--zen-bg-glass) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--zen-border-glass) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--zen-shadow-card);
+}
+
+/* Admin layout */
+.admin-layout {
+  min-height: 100vh;
+}
+
+/* ProLayout overrides */
+.ant-pro-layout .ant-layout {
+  background: transparent !important;
+}
+
+.ant-pro-layout .ant-layout-sider {
+  background: var(--zen-bg-sider) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--zen-border-glass) !important;
+}
+
+.ant-pro-layout .ant-layout-header {
+  background: var(--zen-bg-header) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--zen-border-glass) !important;
+}
+
+/* Menu styling */
+.ant-menu-dark {
+  background: transparent !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: var(--zen-menu-selected-bg) !important;
+  border-right: 3px solid var(--zen-menu-selected-border);
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  background: var(--zen-menu-hover-bg) !important;
+}
+
+/* Light mode menu overrides */
+.ant-menu-light {
+  background: transparent !important;
+}
+
+.ant-menu-light .ant-menu-item-selected {
+  background: var(--zen-menu-selected-bg) !important;
+}
+
+.ant-menu-light .ant-menu-item:hover {
+  background: var(--zen-menu-hover-bg) !important;
+}
+
+/* Card styling */
+.ant-card {
+  background: var(--zen-bg-glass) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--zen-border-glass) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--zen-shadow-card);
+  transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+  border-color: rgba(22, 119, 255, 0.3) !important;
+  box-shadow: var(--zen-shadow-card-hover);
+}
+
+/* Statistic cards */
+.ant-statistic-card {
+  background: var(--zen-bg-glass) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--zen-border-glass) !important;
+  border-radius: 12px !important;
+}
+
+.ant-statistic-card .ant-statistic-content-prefix {
+  color: #1677FF !important;
+}
+
+/* Table styling */
+.ant-table {
+  background: transparent !important;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--zen-table-header-bg) !important;
+  border-bottom: 1px solid var(--zen-border-glass) !important;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--zen-border-glass-subtle) !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: var(--zen-table-row-hover) !important;
+}
+
+/* Tag styling */
+.ant-tag {
+  border-radius: 4px;
+}
+
+/* Button glow effect */
+.ant-btn-primary {
+  box-shadow: 0 0 20px rgba(22, 119, 255, 0.2);
+}
+
+.ant-btn-primary:hover {
+  box-shadow: 0 0 30px rgba(22, 119, 255, 0.35);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--zen-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--zen-scrollbar-thumb);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--zen-scrollbar-thumb-hover);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ant-card, .ant-statistic-card {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Page container */
+.ant-page-header {
+  background: transparent !important;
+}
+
+/* Avatar dropdown */
+.ant-dropdown-trigger {
+  cursor: pointer;
+}
+
+/* Theme transition */
+.ant-config-provider,
+.ant-layout,
+.ant-card,
+.ant-statistic-card,
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td,
+.ant-menu {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+/* 固定列背景色 - 防止滚动时内容透出 */
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  background-color: var(--ant-color-bg-container, #fff) !important;
+}
+
+.ant-table-cell-fix-left-last::after {
+  box-shadow: 6px 0 8px -4px rgba(0, 0, 0, 0.08);
+}
+
+.ant-table-cell-fix-right-first::before {
+  box-shadow: -6px 0 8px -4px rgba(0, 0, 0, 0.08);
+}
+
+/* 固定列背景 - 更高优先级 */
+table .ant-table-cell.ant-table-cell-fix-left,
+table .ant-table-cell.ant-table-cell-fix-right,
+.ant-table-wrapper .ant-table-cell.ant-table-cell-fix-left,
+.ant-table-wrapper .ant-table-cell.ant-table-cell-fix-right {
+  background-color: #fff !important;
+  background: #fff !important;
+}
+
+/* 深色模式下用深色背景 */
+[data-theme="dark"] table .ant-table-cell.ant-table-cell-fix-left,
+[data-theme="dark"] table .ant-table-cell.ant-table-cell-fix-right,
+[data-theme="dark"] .ant-table-wrapper .ant-table-cell.ant-table-cell-fix-left,
+[data-theme="dark"] .ant-table-wrapper .ant-table-cell.ant-table-cell-fix-right {
+  background-color: #141414 !important;
+  background: #141414 !important;
+}

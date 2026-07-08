@@ -1,0 +1,65 @@
+/**
+ * <%= class_name %> 编辑页
+ * 路由: /admin/<%= plural_name %>/:id/edit
+ */
+import { router, useForm } from '@inertiajs/react'
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components'
+import { App, Card, Button, Space } from 'antd'
+import { ArrowLeftOutlined } from '@ant-design/icons'
+import AdminLayout from '@/layouts/AdminLayout'
+import type { ReactNode } from 'react'
+
+interface <%= class_name %> {
+  id: number
+<%= attributes.map { |a| "  #{a.name}: #{a.type == 'integer' ? 'number' : 'string'}" }.join("\n") %>
+  created_at: string
+  updated_at: string
+}
+
+function <%= class_name %>Edit({ <%= singular_name %>, errors }: { <%= singular_name %>: <%= class_name %>; errors?: string[] }) {
+  const { message } = App.useApp()
+  const { data, setData, put, processing } = useForm({
+<% attrs = attributes.map { |a| "    #{a.name}: #{singular_name}.#{a.name}" }.join(",\n") %>
+<%= attrs %>,
+  })
+
+  const handleSubmit = () => {
+    put(`/admin/<%= plural_name %>/${<%= singular_name %>.id}`, { onSuccess: () => message.success('更新成功') })
+  }
+
+  return (
+    <PageContainer
+      title="编辑<%= class_name %>"
+      extra={[
+        <Button key="back" icon={<ArrowLeftOutlined />} onClick={() => router.visit('/admin/<%= plural_name %>')}>返回列表</Button>,
+      ]}
+    >
+      <Card>
+        {errors && errors.length > 0 && (
+          <div style={{ marginBottom: 16, color: 'var(--ant-color-error)' }}>
+            {errors.map((err, i) => <div key={i}>{err}</div>)}
+          </div>
+        )}
+        <ProForm
+          onFinish={handleSubmit}
+          submitter={{
+            submitButtonProps: { loading: processing },
+            submitterRender: (_, dom) => (
+              <Space>
+                <Button onClick={() => router.visit('/admin/<%= plural_name %>')}>取消</Button>
+                {dom}
+              </Space>
+            ),
+          }}
+        >
+<% attributes.each do |a| %>
+          <ProFormText name="<%= a.name %>" label="<%= a.name %>" rules={[{ required: true, message: '请输入<%= a.name %>' }]} />
+<% end %>
+        </ProForm>
+      </Card>
+    </PageContainer>
+  )
+}
+
+<%= class_name %>Edit.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Edit

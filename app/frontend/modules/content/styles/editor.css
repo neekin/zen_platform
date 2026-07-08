@@ -1,0 +1,158 @@
+/* Content Engine 编辑器样式 */
+
+/* ==================== 段落 ==================== */
+.zen-paragraph {
+  margin: 0 0 8px 0;
+}
+
+/* ==================== 标题 ==================== */
+.zen-h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 24px 0 12px 0;
+  line-height: 1.3;
+}
+
+.zen-h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 20px 0 10px 0;
+  line-height: 1.4;
+}
+
+.zen-h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 8px 0;
+  line-height: 1.5;
+}
+
+/* ==================== 列表 ==================== */
+.zen-ol,
+.zen-ul {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.zen-listitem {
+  margin: 4px 0;
+}
+
+.zen-nested-listitem {
+  list-style-type: none;
+}
+
+/* ==================== 引用 ==================== */
+.zen-quote {
+  border-left: 4px solid var(--ant-color-border);
+  padding-left: 16px;
+  margin: 12px 0;
+  color: var(--ant-color-text-secondary);
+}
+
+/* ==================== 代码 ==================== */
+.zen-code {
+  background: var(--ant-color-fill-tertiary);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+  font-size: 0.9em;
+}
+
+.zen-text-code {
+  background: var(--ant-color-fill-tertiary);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+}
+
+/* ==================== 文本对齐 ==================== */
+.zen-align-left {
+  text-align: left;
+}
+
+.zen-align-center {
+  text-align: center;
+}
+
+.zen-align-right {
+  text-align: right;
+}
+
+.zen-align-justify {
+  text-align: justify;
+}
+
+/* ==================== 文本格式 ==================== */
+.zen-text-bold {
+  font-weight: 700;
+}
+
+.zen-text-italic {
+  font-style: italic;
+}
+
+.zen-text-underline {
+  text-decoration: underline;
+}
+
+.zen-text-strikethrough {
+  text-decoration: line-through;
+}
+
+/* ==================== 链接 ==================== */
+.zen-link {
+  color: var(--ant-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.zen-link:hover {
+  color: var(--ant-color-primary-hover);
+}
+
+/* ==================== 图片 ==================== */
+.zen-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--ant-border-radius);
+  margin: 8px 0;
+}
+
+.zen-image-caption {
+  text-align: center;
+  font-size: 12px;
+  color: var(--ant-color-text-secondary);
+  margin-top: 4px;
+}
+
+/* ==================== 表格 ==================== */
+.zen-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+}
+
+.zen-table-cell {
+  border: 1px solid var(--ant-color-border);
+  padding: 8px 12px;
+  min-width: 80px;
+}
+
+.zen-table-cell-header {
+  background: var(--ant-color-fill-tertiary);
+  font-weight: 600;
+}
+
+/* ==================== 分割线 ==================== */
+.zen-divider {
+  border: none;
+  border-top: 1px solid var(--ant-color-border);
+  margin: 16px 0;
+}
+
+/* ==================== 焦点状态 ==================== */
+.zen-editor-focused {
+  border-color: var(--ant-color-primary);
+  box-shadow: 0 0 0 2px var(--ant-color-primary-bg);
+}

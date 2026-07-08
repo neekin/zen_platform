@@ -1,0 +1,46 @@
+/* RichText 编辑器样式 */
+
+.rich-text-container {
+  transition: border-color 0.2s;
+}
+
+.rich-text-container:focus-within {
+  border-color: #1677ff;
+  box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+}
+
+.rich-text-paragraph {
+  margin: 0 0 8px 0;
+}
+
+.rich-text-h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 16px 0 8px 0;
+}
+
+.rich-text-h2 {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 12px 0 8px 0;
+}
+
+.rich-text-h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 8px 0 4px 0;
+}
+
+.rich-text-ol,
+.rich-text-ul {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.rich-text-listitem {
+  margin: 4px 0;
+}
+
+.rich-text-nested-listitem {
+  list-style-type: none;
+}

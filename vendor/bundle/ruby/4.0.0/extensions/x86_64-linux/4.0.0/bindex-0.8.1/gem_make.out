@@ -1,0 +1,18 @@
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/4.0.0/gems/bindex-0.8.1/ext/skiptrace
+/home/ubuntu/.rbenv/versions/4.0.5/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/4.0.0/gems/bindex-0.8.1/ext/skiptrace
+make -j5 DESTDIR\= sitearchdir\=./.gem.20260707-109912-a3xtz8 sitelibdir\=./.gem.20260707-109912-a3xtz8 clean
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/4.0.0/gems/bindex-0.8.1/ext/skiptrace
+make -j5 DESTDIR\= sitearchdir\=./.gem.20260707-109912-a3xtz8 sitelibdir\=./.gem.20260707-109912-a3xtz8
+compiling cruby.c
+linking shared-object skiptrace/internal/cruby.so
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/4.0.0/gems/bindex-0.8.1/ext/skiptrace
+make -j5 DESTDIR\= sitearchdir\=./.gem.20260707-109912-a3xtz8 sitelibdir\=./.gem.20260707-109912-a3xtz8 install
+/usr/bin/install -c -m 0755 cruby.so ./.gem.20260707-109912-a3xtz8/skiptrace/internal
+
+current directory: /home/ubuntu/projects/zen_platform/vendor/bundle/ruby/4.0.0/gems/bindex-0.8.1/ext/skiptrace
+make DESTDIR\= sitearchdir\=./.gem.20260707-109912-a3xtz8 sitelibdir\=./.gem.20260707-109912-a3xtz8 clean

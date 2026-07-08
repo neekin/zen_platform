@@ -1,0 +1,92 @@
+/**
+ * <%= class_name %> 管理页
+ * 路由: /admin/<%= plural_name %>
+ *
+ * 由 Zen 脚手架生成 — 使用 DslTable + DslForm 动态渲染
+ */
+import { useState } from 'react'
+import { router } from '@inertiajs/react'
+import { App } from 'antd'
+import AdminLayout from '@/layouts/AdminLayout'
+import { DslTable, DslForm, DslModal } from '@/modules/dsl'
+import type { DslMeta } from '../../../types/dsl'
+import type { ReactNode } from 'react'
+
+interface <%= class_name %>IndexProps {
+  meta: DslMeta
+  <%= plural_name %>: Record<string, any>[]
+<% belongs_to_associations.each do |assoc| %>
+  <%= assoc[:name] %>s: { id: number; <%= assoc[:display] %>: string }[]
+<% end %>
+}
+
+function <%= class_name %>Index({ meta, <%= plural_name %>, ...props }: <%= class_name %>IndexProps) {
+  const { message } = App.useApp()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState<Record<string, any> | null>(null)
+
+  const openCreate = () => {
+    setEditing(null)
+    setModalOpen(true)
+  }
+
+  const openEdit = (record: Record<string, any>) => {
+    setEditing(record)
+    setModalOpen(true)
+  }
+
+  const handleFinish = async (values: Record<string, any>) => {
+    if (editing) {
+      router.put(`/admin/<%= plural_name %>/${editing.id}`, values, {
+        onSuccess: () => { message.success('更新成功'); setModalOpen(false) },
+      })
+    } else {
+      router.post('/admin/<%= plural_name %>', values, {
+        onSuccess: () => { message.success('创建成功'); setModalOpen(false) },
+      })
+    }
+    return true
+  }
+
+  // 关联数据源
+  const associations: Record<string, Array<{ label: string; value: any }>> = {}
+<% belongs_to_associations.each do |assoc| %>
+  associations['<%= assoc[:name] %>'] = (props.<%= assoc[:name] %>s || []).map((item: any) => ({
+    label: item.<%= assoc[:display] %>,
+    value: item.id,
+  }))
+<% end %>
+
+  return (
+    <>
+      <DslTable
+        meta={meta}
+        data={<%= plural_name %>}
+        basePath="/admin/<%= plural_name %>"
+        createText="新建<%= class_name %>"
+        onCreate={() => { setEditing(null); setModalOpen(true) }}
+        onEdit={(record) => { setEditing(record); setModalOpen(true) }}
+      />
+
+      <DslModal
+        title={editing ? '编辑<%= class_name %>' : '新建<%= class_name %>'}
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+        destroyOnHidden
+        width={800}
+      >
+        <DslForm
+          meta={meta}
+          initialValues={editing || {}}
+          onFinish={handleFinish}
+          associations={associations}
+          submitText={editing ? '更新' : '创建'}
+        />
+      </DslModal>
+    </>
+  )
+}
+
+<%= class_name %>Index.layout = (page: ReactNode) => <AdminLayout>{page}</AdminLayout>
+export default <%= class_name %>Index

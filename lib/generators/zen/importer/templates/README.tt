@@ -1,0 +1,65 @@
+## 生成的文件
+
+1. `app/importers/<file_name>_importer.rb` — 数据导入器
+2. `app/controllers/admin/<plural_name>_imports_controller.rb` — 导入控制器
+3. `app/frontend/pages/admin/<plural_name>/Import.tsx` — 导入页面
+
+## 使用方法
+
+1. 配置导入器：
+   - 设置 `REQUIRED_COLUMNS` 必填列
+   - 自定义 `validate_row` 验证规则
+   - 自定义 `build_record` 构建逻辑
+   - 自定义 `map_attributes` 列名映射
+
+2. 访问导入页面：
+   ```
+   /admin/<plural_name>/import
+   ```
+
+3. 上传 CSV 或 Excel 文件
+
+## 自定义验证
+
+```ruby
+def validate_row(attributes)
+  errors = []
+
+  # 必填验证
+  if attributes["title"].blank?
+    errors << "标题不能为空"
+  end
+
+  # 格式验证
+  if attributes["email"] && !attributes["email"].match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+    errors << "邮箱格式不正确"
+  end
+
+  # 唯一性验证
+  if <%= class_name %>.exists?(title: attributes["title"])
+    errors << "标题已存在"
+  end
+
+  errors
+end
+```
+
+## 自定义列映射
+
+```ruby
+def map_attributes(attributes)
+  mapping = {
+    "标题" => "title",
+    "内容" => "body",
+    "状态" => "status",
+  }
+
+  mapped = {}
+  attributes.each do |key, value|
+    model_key = mapping[key] || key
+    mapped[model_key.to_sym] = value
+  end
+
+  mapped
+end
+```

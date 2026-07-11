@@ -51,3 +51,8 @@ Rack::Attack.throttled_responder = lambda do |req|
   body = { error: "Rate limit exceeded. Retry later." }.to_json
   [ 429, headers, [ body ] ]
 end
+
+# --- Tier 5: Password reset (防止试探） ---
+Rack::Attack.throttle("password_resets/ip", limit: 5, period: 300) do |req|
+  req.ip if req.path == "/admin/password" && req.post?
+end

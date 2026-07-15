@@ -62,3 +62,6 @@ design/
 .DS_Store
 
 package-lock.json
+
+# Vendor dependencies
+vendor/

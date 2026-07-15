@@ -281,6 +281,9 @@ export default function CRUDDataTable<T extends Record<string, any>>({
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total) => `共 ${total} 条`,
+          onChange: (page, pageSize) => {
+            router.get(getBaseUrl(), { page, per_page: pageSize })
+          },
         }}
         options={{ density: true, fullScreen: true, reload: false }}
         toolBarRender={() => [

@@ -44,7 +44,7 @@
     "@inertiajs/vite": "^3.5.0",
     "@lexical/code": "^0.46.0",
     "@lexical/html": "^0.46.0",
-    "@lexical/link": "^0.46.0",
+    "@lexical/link": "^0.47.0",
     "@lexical/list": "^0.46.0",
     "@lexical/markdown": "^0.46.0",
     "@lexical/react": "^0.46.0",

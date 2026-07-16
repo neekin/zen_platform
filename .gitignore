@@ -65,3 +65,13 @@ package-lock.json
 
 # Vendor dependencies
 vendor/
+
+# Plugin source code (managed by plugins)
+plugins/
+app/models/cms_*.rb
+app/controllers/admin/cms/
+app/frontend/pages/admin/cms/
+app/frontend/modules/cms/
+app/frontend/components/cms/
+spec/models/cms/
+db/migrate/*cms*

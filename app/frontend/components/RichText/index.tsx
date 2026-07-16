@@ -40,7 +40,8 @@ function DefaultValuePlugin({ value }: { value?: string }) {
         const nodes = $generateNodesFromDOM(editor, dom)
         const root = $getRoot()
         root.clear()
-        root.append(...nodes)
+        const elementNodes = nodes.filter(node => "getChildren" in node || "getType" in node)
+        root.append(...elementNodes)
       })
       isInit.current = true
     }

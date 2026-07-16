@@ -66,7 +66,7 @@ export default function ToolbarPlugin() {
         </Tooltip>
       </Space>
 
-      <Divider type="vertical" />
+      <Divider orientation="vertical" />
 
       <Space size={4}>
         <Tooltip title="加粗">
@@ -83,7 +83,7 @@ export default function ToolbarPlugin() {
         </Tooltip>
       </Space>
 
-      <Divider type="vertical" />
+      <Divider orientation="vertical" />
 
       <Space size={4}>
         <Tooltip title="无序列表">

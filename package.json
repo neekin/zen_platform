@@ -42,7 +42,7 @@
     "@antv/x6-react-shape": "^3.0.1",
     "@inertiajs/react": "^3.5.0",
     "@inertiajs/vite": "^3.5.0",
-    "@lexical/code": "^0.46.0",
+    "@lexical/code": "^0.47.0",
     "@lexical/html": "^0.46.0",
     "@lexical/link": "^0.46.0",
     "@lexical/list": "^0.46.0",

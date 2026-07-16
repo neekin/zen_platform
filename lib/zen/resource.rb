@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "workflow_trigger"
 
 module Zen
   class Resource

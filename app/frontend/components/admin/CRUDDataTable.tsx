@@ -76,12 +76,13 @@ interface CRUDDataTableProps<T> {
   headerTitle?: ReactNode
   columns: ProColumns<T>[]
   dataSource: T[]
-  pagination: { current: number; pageSize: number; total: number } | false | false
+  pagination: { current: number; pageSize: number; total: number } | false
   crudConfig: CRUDConfig<T>
   fixedLeftKeys?: string[]
   scrollX?: number
   rowKey?: string
   toolBarRender?: () => ReactNode[]
+  onPaginationChange?: (page: number, pageSize: number) => void
 }
 
 // ============ CRUDDataTable 组件 ============
@@ -96,6 +97,7 @@ export default function CRUDDataTable<T extends Record<string, any>>({
   scrollX = 1200,
   rowKey = 'id',
   toolBarRender,
+  onPaginationChange,
 }: CRUDDataTableProps<T>) {
   const { message } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
@@ -282,6 +284,9 @@ export default function CRUDDataTable<T extends Record<string, any>>({
           showQuickJumper: true,
           showTotal: (total) => `共 ${total} 条`,
         }}
+        onChange={onPaginationChange ? (paginationInfo) => {
+          onPaginationChange(paginationInfo.current || 1, paginationInfo.pageSize || 20)
+        } : undefined}
         options={{ density: true, fullScreen: true, reload: false }}
         toolBarRender={() => [
           ...(toolBarRender?.() || []),

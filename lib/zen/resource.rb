@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "workflow_trigger"
-
 module Zen
   class Resource
     class << self
       attr_reader :model_class, :resource_attributes, :resource_associations
       attr_reader :pagination_config, :sortable_fields, :views, :default_includes
-      attr_reader :workflow_triggers
+      
 
       def model(klass)
         @model_class = klass
@@ -22,28 +20,10 @@ module Zen
           @resource_attributes[:updated_at] ||= AttributeDefinition.new(:updated_at, :datetime, readonly: true)
         end
         # 注入工作流触发器回调
-        inject_workflow_callbacks! if @workflow_triggers&.any?
+        
       end
 
-      # 声明工作流触发器
-      # @param name [Symbol] 触发器名称
-      # @param workflow_key [String] 工作流定义的 key
-      # @param event [Symbol] 触发事件 (:after_create, :after_update 等)
-      # @param variables [Proc] 变量提取函数
-      # @param condition [Proc] 条件判断函数
-      def workflow_trigger(name, workflow_key:, event: :after_create, variables: nil, condition: nil, **options)
-        @workflow_triggers ||= {}
-        @workflow_triggers[name] = WorkflowTrigger.new(
-          name,
-          workflow_key: workflow_key,
-          event: event,
-          variables: variables,
-          condition: condition,
-          **options
-        )
-      end
-
-      def attribute(name, type, **options)
+            def attribute(name, type, **options)
         @resource_attributes ||= {}
         @resource_attributes[name.to_sym] = AttributeDefinition.new(name, type, **options)
       end
@@ -181,29 +161,7 @@ module Zen
         end
       end
 
-      private
-
-      # 注入工作流触发器回调到 Model
-      def inject_workflow_callbacks!
-        return unless @model_class && @workflow_triggers
-
-        # 按事件分组
-        triggers_by_event = @workflow_triggers.values.group_by(&:event)
-
-        triggers_by_event.each do |event, triggers|
-          @model_class.send(event) do |record|
-            triggers.each do |trigger|
-              begin
-                trigger.trigger!(record)
-              rescue Zen::WorkflowTrigger::TriggerError => e
-                Rails.logger.error("[WorkflowTrigger] 回调执行失败: #{e.message}")
-              end
-            end
-          end
-        end
-      end
-
-      def serialize_belongs_to(record, assoc_def, view_name)
+            def serialize_belongs_to(record, assoc_def, view_name)
         associated = record.public_send(assoc_def.name)
         return Result.new(data: nil) unless associated
 

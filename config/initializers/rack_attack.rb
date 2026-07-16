@@ -30,17 +30,7 @@ class Rack::Attack
     req.ip if req.path == "/admin/login" && req.post?
   end
 
-  # 工作流 API 限流：每分钟最多 30 个请求
-  throttle("workflow/api", limit: 30, period: 1.minute) do |req|
-    req.ip if req.path.start_with?("/admin/workflow/") && req.post?
-  end
-
-  # 工作流启动限流：每分钟最多 10 个请求
-  throttle("workflow/start", limit: 10, period: 1.minute) do |req|
-    req.ip if req.path.match?(%r{/admin/workflow/.*/start})
-  end
-
-  ### Custom Response ###
+      ### Custom Response ###
 
   # 自定义限流响应
   self.throttled_responder = lambda do |req|

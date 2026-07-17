@@ -64,10 +64,10 @@ export default function ToolbarPlugin() {
       const element = $findMatchingParent(anchorNode, (e) => {
         const parent = e.getParent()
         return parent !== null && $isRootOrShadowRoot(parent)
-      }) || anchorNode.getTopLevelElementOrThrow()
+      }) || anchorNode.getTopLevelElement()
 
-      const type = element.getType()
-      if (type === 'heading') {
+      const type = element?.getType()
+      if (!element) { setBlockType('paragraph') } else if (type === 'heading') {
         const tag = (element as any).__tag
         setBlockType(tag as BlockType)
       } else if (type === 'quote') {

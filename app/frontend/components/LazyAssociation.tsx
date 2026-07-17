@@ -220,7 +220,7 @@ function LazyHasMany({
               {state.data.length === 0 ? (
                 <span style={{ color: 'var(--ant-color-text-tertiary)' }}>暂无数据</span>
               ) : (
-                <Space direction="vertical" style={{ width: '100%' }}>
+                <Space orientation="vertical" style={{ width: '100%' }}>
                   {state.data.map((item: any, index: number) =>
                     renderHasManyItem ? (
                       <div key={item.id || index}>{renderHasManyItem(item, index)}</div>

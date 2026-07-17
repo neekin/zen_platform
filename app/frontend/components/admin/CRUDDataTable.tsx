@@ -4,7 +4,7 @@
  * 封装列表 + 新建 + 编辑 + 删除的通用行为：
  * - 列表：ProTable + 固定列 + 横向滚动
  * - 新建/编辑：Modal + ProForm
- * - 删除：Modal.confirm
+ * - 删除：modal.confirm
  * - 操作栏：最多3个直接按钮 + Dropdown
  */
 import { useState, useCallback } from 'react'
@@ -99,7 +99,7 @@ export default function CRUDDataTable<T extends Record<string, any>>({
   toolBarRender,
   onPaginationChange,
 }: CRUDDataTableProps<T>) {
-  const { message } = App.useApp()
+  const { message, modal } = App.useApp()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingRecord, setEditingRecord] = useState<T | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -138,7 +138,7 @@ export default function CRUDDataTable<T extends Record<string, any>>({
   // 删除
   const handleDelete = (record: T) => {
     const confirmText = deleteConfirm?.(record) || `确定要删除吗？`
-    Modal.confirm({
+    modal.confirm({
       title: '确认删除',
       content: confirmText,
       okText: '删除',

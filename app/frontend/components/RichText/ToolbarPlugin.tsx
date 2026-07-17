@@ -67,7 +67,7 @@ export default function ToolbarPlugin() {
       }) || anchorNode.getTopLevelElement()
 
       const type = element?.getType()
-      if (!element) { setBlockType('paragraph') } else if (type === 'heading') {
+      if (!element) { setBlockType('paragraph') } else if (!element) { setBlockType('paragraph') } else if (type === 'heading') {
         const tag = (element as any).__tag
         setBlockType(tag as BlockType)
       } else if (type === 'quote') {
@@ -146,7 +146,8 @@ export default function ToolbarPlugin() {
   const handleUploadImage: UploadProps['customRequest'] = async (options) => {
     const { file, onSuccess, onError } = options
     const formData = new FormData()
-    formData.append('file', file)
+    formData.append('cms_medium[file]', file)
+    formData.append('cms_medium[name]', (file as File).name)
 
     try {
       const res = await fetch('/admin/cms/media', {

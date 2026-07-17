@@ -153,7 +153,7 @@ export default function ToolbarPlugin() {
       const res = await fetch('/admin/cms/media', {
         method: 'POST',
         body: formData,
-        headers: { 'Accept': 'application/json' },
+        headers: { 'Accept': 'application/json', 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '' },
       })
       if (res.ok) {
         const data = await res.json()
